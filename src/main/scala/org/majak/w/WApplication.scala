@@ -8,17 +8,15 @@ import org.apache.pivot.wtk.DesktopApplicationContext
 import org.apache.pivot.wtk.Display
 import org.apache.pivot.wtk.Label
 import org.apache.pivot.wtk.Window
+import org.majak.w.ui.Binding
 
-class WApplication extends Application.Adapter {
-
+class WApplication extends Application.Adapter with Binding {
+  
   @BXML
   var wlabel: Label = _
 
-  override def startup(display: Display, properties: Map[String, String]): Unit = {
-    val bxmlSerializer = new BXMLSerializer
-    val window = bxmlSerializer.readObject(classOf[WApplication], "wapplication.xml").asInstanceOf[Window]
-    bxmlSerializer.bind(this, classOf[WApplication]);
-    
+  override def startup(display: Display, properties: Map[String, String]) = {
+    val window = bind(classOf[Window])
     window open display
   }
 
