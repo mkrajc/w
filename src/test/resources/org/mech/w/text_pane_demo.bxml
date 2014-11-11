@@ -1,0 +1,52 @@
+<Window title="Text Areas" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns="org.apache.pivot.wtk">
+    <Border styles="{padding:6}">
+        <TablePane>
+            <columns>
+                <TablePane.Column width="1*"/>
+            </columns>
+            <TablePane.Row height="-1">
+                <FlowPane styles="{padding:1, alignToBaseline:true}">
+                    <PushButton bxml:id="openFileButton" buttonData="Open File"/>
+                    <PushButton bxml:id="saveFileButton" buttonData="Save File"/>
+                    <Label text="  "/> <!-- spacer -->
+                    <PushButton bxml:id="boldButton" buttonData="Bold"/>
+                    <PushButton bxml:id="italicButton" buttonData="Italic"/>
+                    <PushButton bxml:id="underlineButton" buttonData="Underline"/>
+                    <PushButton bxml:id="strikethroughButton" buttonData="Strikethrough"/>
+                    <Label text="  "/> <!-- spacer -->
+                    <Label text="Foreground"/>
+                    <ColorChooserButton bxml:id="foregroundColorChooserButton" selectedColor="#000000"/>
+                    <Label text="Background"/>
+                    <ColorChooserButton bxml:id="backgroundColorChooserButton" selectedColor="#ffffff"/>
+                    <Label text="  "/> <!-- spacer -->
+                    <Label text="Font"/>
+                    <ListButton bxml:id="fontFamilyListButton"/>
+                    <ListButton bxml:id="fontSizeListButton"/>
+                    <Label text="  "/> <!-- spacer -->
+                    <Label text="Horizontal Align"/>
+                    <PushButton bxml:id="alignLeftButton" buttonData="Left"/>
+                    <PushButton bxml:id="alignCentreButton" buttonData="Centre"/>
+                    <PushButton bxml:id="alignRightButton" buttonData="Right"/>
+                    <Label text="  "/> <!-- spacer -->
+                    <Checkbox bxml:id="wrapTextCheckbox" buttonData="Wrap Text" selected="false"/>
+                </FlowPane>
+            </TablePane.Row>
+            <TablePane.Row height="-1">
+                <Label text="  "/> <!-- spacer -->
+            </TablePane.Row>
+            <TablePane.Row height="1*">
+                <Border styles="{color:10}">
+                    <ScrollPane horizontalScrollBarPolicy="fill"
+                        verticalScrollBarPolicy="fill_to_capacity"
+                        preferredHeight="240">
+                        <TextPane bxml:id="textPane" styles="{margin:10, wrapText:false}">
+                           <bxml:include src="document.bxml"/>
+                        </TextPane>
+                    </ScrollPane>
+                </Border>
+            </TablePane.Row>
+        </TablePane>
+    </Border>
+</Window>

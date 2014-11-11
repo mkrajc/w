@@ -1,0 +1,8 @@
+<Window title="Text Areas" maximized="true"
+	xmlns:bxml="http://pivot.apache.org/bxml" xmlns="org.apache.pivot.wtk">
+	<Border styles="{padding:6}">
+		<FlowPane styles="{padding:1, alignToBaseline:true}">
+			<Label bxml:id="wlabel" text="W" />
+		</FlowPane>
+	</Border>
+</Window>
