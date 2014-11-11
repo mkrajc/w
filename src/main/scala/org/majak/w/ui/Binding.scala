@@ -2,18 +2,23 @@ package org.majak.w.ui
 
 import org.apache.pivot.beans.BXMLSerializer
 
-trait Binding {
+/**
+ * Helps binds BXML files into instances of [[org.majak.w.ui.Binding]] trait
+ *
+ * @author martin.krajc
+ */
+trait Binding[T] {
 
-  lazy val serializer = new BXMLSerializer
+  protected lazy val serializer = new BXMLSerializer
 
-  def xmlName: String = getClass().getSimpleName().toLowerCase() + ".xml"
-
-  def parse[R](root: Class[R]): R = serializer.readObject(getClass(), xmlName).asInstanceOf[R]
-
-  def bind[R](root: Class[R]): R = {
-    val ret = parse(root)
+  protected lazy val xmlName: String = getClass().getSimpleName().toLowerCase() + ".xml"
+  
+  protected lazy val root: T = serializer.readObject(getClass(), xmlName).asInstanceOf[T]
+  
+  lazy val bind = {
+    // first initialize root if not already
+    root
     serializer.bind(this, getClass())
-    ret
   }
 
 }

@@ -8,33 +8,39 @@ import org.scalatest.junit.JUnitRunner
 import org.apache.pivot.wtk.Window
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.PushButton
+import org.scalatest.PrivateMethodTester.PrivateMethod
+import org.scalatest.PrivateMethodTester
 
 @RunWith(classOf[JUnitRunner])
 class BindingSpec extends FlatSpec with Matchers {
 
-  class BindingSpecClass extends Binding {
+  class BindingSpecClass extends Binding[Window] {
     @BXML
     var button: PushButton = _
   }
 
   "Bindings" should "return xml name from class" in {
-    val t = new BindingSpecClass
-    assert("testingclass.xml" === t.xmlName)
+    new PrivateMethodTester {
+      val t = new BindingSpecClass
+      val xmlNameValue = PrivateMethod[String]('xmlName)
+      assert("bindingspecclass.xml" === t.invokePrivate(xmlNameValue()))
+    }
   }
 
   it should "parse xml from class and return root" in {
-    val t = new BindingSpecClass
-    val root = t.parse(classOf[Window])
-    root shouldNot be(null);
-    root shouldBe a[Window]
+    new PrivateMethodTester {
+      val t = new BindingSpecClass
+      val rootValue = PrivateMethod[Window]('root)
+      val root = t invokePrivate rootValue()
+      root shouldNot be(null);
+      root shouldBe a[Window]
+    }
   }
 
   it should "bind xml to instance and return root" in {
     val t = new BindingSpecClass
-    val root = t.bind(classOf[Window])
-    root shouldNot be (null);
-    root shouldBe a[Window]
-    t.button shouldNot be (null)
+    t.bind
+    t.button shouldNot be(null)
   }
 
 }

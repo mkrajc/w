@@ -10,14 +10,14 @@ import org.apache.pivot.wtk.Label
 import org.apache.pivot.wtk.Window
 import org.majak.w.ui.Binding
 
-class WApplication extends Application.Adapter with Binding {
+class WApplication extends Application.Adapter with Binding[Window] {
   
   @BXML
   var wlabel: Label = _
 
   override def startup(display: Display, properties: Map[String, String]) = {
-    val window = bind(classOf[Window])
-    window open display
+    bind
+    root open display
   }
 
 }
