@@ -1,5 +1,11 @@
 package org.majak.w.ui.event
 
+import org.junit.runner.RunWith
+import org.mockito.{Matchers, Mockito}
+import org.scalatest.FlatSpec
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.mock.MockitoSugar
+
 class Msg extends Messaging
 
 class XEvent extends Event[XH] {
@@ -12,18 +18,39 @@ class XH extends Handler {
   def xh() = println("xh " + this.##)
 }
 
-object EventBusSuite {
-  def main(args: Array[String]) {
-    val e = new XEvent
+@RunWith(classOf[JUnitRunner])
+class EventBusSuite extends FlatSpec with MockitoSugar {
 
-    val h = new XH
-    val h2 = new XH
+  import Mockito._
 
-    val b = new EventBus
-    b.addHandler(classOf[XEvent], h)
-    b.addHandler(classOf[XEvent], h2)
-    b.fire(e)
-    b.removeHandler(classOf[XEvent], h)
-    b.fire(e)
+  "EventBus" should " notify event fire to each registered handler" in {
+    val bus = new EventBus
+    val event = mock[XEvent]
+    bus.addHandler(event.getClass, new XH {})
+    bus.fire(event)
+
+    verify(event, times(1)).dispatch(Matchers.any())
   }
+
+  it should " call handler method on fired event " in {
+    val bus = new EventBus
+    val event = new XEvent
+    val h = mock[XH]
+    bus.addHandler(event.getClass, h)
+    bus.fire(event)
+
+    verify(h, times(1)).xh()
+  }
+
+  it should " not call any handlers if removed all" in {
+    val bus = new EventBus
+    val event = new XEvent
+    val h = mock[XH]
+    bus.addHandler(event.getClass, h)
+    bus.removeHandler(event.getClass, h)
+    bus.fire(event)
+
+    verifyZeroInteractions(h)
+  }
+
 }
