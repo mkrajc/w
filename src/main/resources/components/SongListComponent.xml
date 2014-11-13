@@ -1,0 +1,3 @@
+<ListView xmlns:bxml="http://pivot.apache.org/bxml"
+          xmlns="org.apache.pivot.wtk"
+          bxml:id="listView"/>

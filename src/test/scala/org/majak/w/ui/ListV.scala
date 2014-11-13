@@ -8,8 +8,10 @@ import org.apache.pivot.wtk.ListViewSelectionListener
 import org.apache.pivot.collections.Sequence
 import org.apache.pivot.wtk.Span
 import org.apache.pivot.wtk.content.ListItem
+import org.majak.w.model.SongListItem
+import org.majak.w.ui.component.songlist.view.SongListView
 
-class ListV extends Binding[Border] {
+class ListV extends Binding[Border] with SongListView {
 
   @BXML
   var selectionLabel: Label = _
@@ -67,4 +69,9 @@ class ListV extends Binding[Border] {
     })
   }
 
+  override def showData(data: List[SongListItem]): Unit = ???
+
+  override def select(obj: SongListItem): Unit = ???
+
+  override def selected: Option[SongListItem] = ???
 }
