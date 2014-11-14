@@ -5,7 +5,7 @@ import org.apache.pivot.wtk.ListView.ItemRenderer
 import org.majak.w.model.SongListItem
 import org.majak.w.ui.component.common.wtk.WtkComponent
 import org.majak.w.ui.component.songlist.view.SongListView
-import org.majak.w.ui.mvp.Presenter
+import org.majak.w.ui.mvp.{View, Presenter}
 import org.majak.w.ui.wtk.utils.WtkConversions.seqAsWtkList
 
 package view {
@@ -21,16 +21,11 @@ trait SongListView extends ListView[SongListItem] with Selectable[SongListItem] 
 
 class SongListPresenter extends Presenter[SongListView] {
 
-  override protected def createViewImpl: SongListView = ???
+  override protected def createViewImpl: SongListView = new SongListComponent
 
 }
 
 class SongListComponent extends SongListView with WtkComponent[ListView] {
-
-  override def onBind = {
-
-
-  }
 
   override def showData(data: List[SongListItem]): Unit = root.setListData(seqAsWtkList(data))
 

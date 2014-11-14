@@ -19,7 +19,7 @@ trait Binding[T] {
     // first initialize root if not already
     root
     serializer.bind(this, getClass())
-    onBind
+    onUiBind
   }
 
   /**
@@ -30,6 +30,6 @@ trait Binding[T] {
   /**
    * hook called after binding
    */
-  protected def onBind = {}
+  protected def onUiBind = {}
 
 }
