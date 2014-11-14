@@ -4,10 +4,12 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.Button.State
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
+import org.majak.w.di.PresenterModule
+import org.majak.w.ui.component.common.wtk.WtkView
 import org.majak.w.ui.component.songlist.SongListComponent
 import org.majak.w.ui.wtk.utils.WtkConversions
 
-class ShowcaseApplication extends Application.Adapter {
+class ShowcaseApplication extends Application.Adapter with PresenterModule {
   val pane = new TablePane
 
   val wrapper = new FlowPane
@@ -20,7 +22,7 @@ class ShowcaseApplication extends Application.Adapter {
   val wrapCheck = new Checkbox("wrap")
 
   val components = List(
-    new PushButton("pushbutton"),
+    (songListPresenter.view.asInstanceOf[WtkView]).asComponent,
     new Checkbox("checkbox")
   )
 

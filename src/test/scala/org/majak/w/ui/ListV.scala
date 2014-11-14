@@ -23,20 +23,20 @@ class ListV extends Binding[Border] with SongListView {
   
   override def xmlName = "/org/mech/w/test.xml"
   
-  override def onBind = {
+  override def onUiBind = {
 
     listView.getListViewSelectionListeners().add(new ListViewSelectionListener() {
       def selectedRangeAdded(listView: ListView, rangeStart: Int, rangeEnd: Int) {
-        updateSelection(listView);
+        updateSelection(listView)
       }
 
       def selectedRangeRemoved(listView: ListView, rangeStart: Int, rangeEnd: Int) {
-        updateSelection(listView);
+        updateSelection(listView)
       }
 
       def selectedRangesChanged(listView: ListView, previousSelectedRanges: Sequence[Span]) {
         if (previousSelectedRanges != null && previousSelectedRanges != listView.getSelectedRanges()) {
-          updateSelection(listView);
+          updateSelection(listView)
         }
       }
 
