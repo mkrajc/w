@@ -4,11 +4,13 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.Button.State
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
-import org.majak.w.di.PresenterModule
+import org.majak.w.di.Module
+import org.majak.w.model.SongListItem
 import org.majak.w.ui.component.common.wtk.WtkView
+import org.majak.w.ui.component.songlist.view.SongListViewHandler
 import org.majak.w.ui.wtk.utils.WtkConversions
 
-class ShowcaseApplication extends Application.Adapter with PresenterModule {
+class ShowcaseApplication extends Application.Adapter with Module {
 
   private val NONE_LABEL = new Label("<NONE>")
 
@@ -22,10 +24,7 @@ class ShowcaseApplication extends Application.Adapter with PresenterModule {
   val compButton = new ListButton
   val wrapCheck = new Checkbox("wrap")
 
-  val components = List(
-    (songListPresenter.view.asInstanceOf[WtkView]).asComponent,
-    new Checkbox("checkbox")
-  )
+  val components = scala.collection.immutable.Map("SongList" -> (songListPresenter.view.asInstanceOf[WtkView]).asComponent)
 
   val r = new Row
 
@@ -49,12 +48,18 @@ class ShowcaseApplication extends Application.Adapter with PresenterModule {
   menuPanel.add(compButton)
   menuPanel.add(wrapCheck)
 
+  songListPresenter.view.addHandler(new SongListViewHandler {
+    override def onSongListItemSelected(item: Option[SongListItem]): Unit = {
+      println(if (item.isDefined) item.get.name else "none")
+    }
+  })
+
   setupUI
 
   private def setupUI: Unit = {
     val current: Option[Component] =
       if (compButton.getSelectedItem == null) None
-      else Some(compButton.getSelectedItem.asInstanceOf[Component])
+      else components.get(compButton.getSelectedItem.asInstanceOf[String])
 
     compPanel removeAll()
     wrapper removeAll()
@@ -67,7 +72,7 @@ class ShowcaseApplication extends Application.Adapter with PresenterModule {
     }
   }
 
-  compButton setListData WtkConversions.seqAsWtkList(components)
+  compButton setListData WtkConversions.seqAsWtkList(components.keys.toList)
   (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener {
     override def selectedIndexChanged(b: ListButton, psi: Int): Unit = {}
 
@@ -83,6 +88,8 @@ class ShowcaseApplication extends Application.Adapter with PresenterModule {
 
     window setContent pane
     window.setMaximized(true)
+
+    songController.start
 
     window open display
   }

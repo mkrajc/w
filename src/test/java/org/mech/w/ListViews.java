@@ -1,17 +1,13 @@
 package org.mech.w;
 
-import java.net.URL;
-
 import org.apache.pivot.beans.Bindable;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.util.Resources;
-import org.apache.pivot.wtk.Label;
-import org.apache.pivot.wtk.ListView;
-import org.apache.pivot.wtk.ListViewSelectionListener;
-import org.apache.pivot.wtk.Span;
-import org.apache.pivot.wtk.Window;
+import org.apache.pivot.wtk.*;
 import org.apache.pivot.wtk.content.ListItem;
+
+import java.net.URL;
 
 public class ListViews extends Window implements Bindable {
     private Label selectionLabel = null;

@@ -7,7 +7,7 @@ abstract class Presenter[V <: View] extends Messaging {
 
   bind
 
-  protected def createViewImpl: V
+  protected def createViewImpl: V = {new View {}.asInstanceOf[V]}
   protected def onBind(v: View) = {}
   protected final def bind = onBind (view)
   val view: V = createViewImpl

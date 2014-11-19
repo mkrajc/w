@@ -1,7 +1,6 @@
 package org.majak.w.ui.event
 
-import scala.collection.mutable.Map
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer, Map}
 
 /**
  *

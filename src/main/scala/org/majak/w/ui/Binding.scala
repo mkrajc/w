@@ -15,7 +15,7 @@ trait Binding[T] {
 
   protected lazy val root: T = serializer.readObject(getClass(), xmlName).asInstanceOf[T]
 
-  lazy val bind = {
+  lazy val bindUi = {
     // first initialize root if not already
     root
     serializer.bind(this, getClass())

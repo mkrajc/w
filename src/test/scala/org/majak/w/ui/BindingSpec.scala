@@ -1,15 +1,10 @@
 package org.majak.w.ui
 
-import org.apache.pivot.wtk.Label
-import org.junit.runner.RunWith
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
-import org.scalatest.junit.JUnitRunner
-import org.apache.pivot.wtk.Window
 import org.apache.pivot.beans.BXML
-import org.apache.pivot.wtk.PushButton
-import org.scalatest.PrivateMethodTester.PrivateMethod
-import org.scalatest.PrivateMethodTester
+import org.apache.pivot.wtk.{PushButton, Window}
+import org.junit.runner.RunWith
+import org.scalatest.{FlatSpec, Matchers, PrivateMethodTester}
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class BindingSpec extends FlatSpec with Matchers {
@@ -39,7 +34,7 @@ class BindingSpec extends FlatSpec with Matchers {
 
   it should "bind xml to instance and return root" in {
     val t = new BindingSpecClass
-    t.bind
+    t.bindUi
     t.button shouldNot be(null)
   }
 

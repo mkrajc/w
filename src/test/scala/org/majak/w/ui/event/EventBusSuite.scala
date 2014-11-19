@@ -21,7 +21,7 @@ class XH extends Handler {
 @RunWith(classOf[JUnitRunner])
 class EventBusSuite extends FlatSpec with MockitoSugar {
 
-  import Mockito._
+  import org.mockito.Mockito._
 
   "EventBus" should " notify event fire to each registered handler" in {
     val bus = new EventBus

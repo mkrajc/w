@@ -1,8 +1,11 @@
 package org.majak.w.di
 
-/**
- * Just marker interface to indicate module is repsonsible for dependency injection
- */
-trait Module {
+import org.majak.w.controller.SongController
+import org.majak.w.service.LocalSongService
+import org.majak.w.ui.component.songlist.SongListPresenter
 
+trait Module {
+  val songController = new SongController
+  val songService = new LocalSongService
+  val songListPresenter = new SongListPresenter(songController, songService)
 }

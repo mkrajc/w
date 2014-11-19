@@ -1,49 +1,23 @@
 package org.mech.w;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Map;
-import org.apache.pivot.wtk.Alert;
-import org.apache.pivot.wtk.Application;
+import org.apache.pivot.wtk.*;
 import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Checkbox;
-import org.apache.pivot.wtk.ColorChooserButton;
-import org.apache.pivot.wtk.ColorChooserButtonSelectionListener;
-import org.apache.pivot.wtk.DesktopApplicationContext;
-import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.FileBrowserSheet;
-import org.apache.pivot.wtk.HorizontalAlignment;
-import org.apache.pivot.wtk.ListButton;
-import org.apache.pivot.wtk.ListButtonSelectionListener;
-import org.apache.pivot.wtk.ListView;
-import org.apache.pivot.wtk.PushButton;
-import org.apache.pivot.wtk.Sheet;
-import org.apache.pivot.wtk.SheetCloseListener;
-import org.apache.pivot.wtk.TextPane;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ListButtonDataRenderer;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
 import org.apache.pivot.wtk.content.NumericSpinnerData;
-import org.apache.pivot.wtk.text.Document;
-import org.apache.pivot.wtk.text.Element;
-import org.apache.pivot.wtk.text.Node;
-import org.apache.pivot.wtk.text.Paragraph;
-import org.apache.pivot.wtk.text.PlainTextSerializer;
-import org.apache.pivot.wtk.text.TextNode;
-import org.apache.pivot.wtk.text.TextSpan;
+import org.apache.pivot.wtk.text.*;
+
+import java.awt.*;
+import java.io.*;
+
+import org.apache.pivot.collections.List;
 
 /**
  * Demonstrates the use of the rich-text functionality in TextPane.

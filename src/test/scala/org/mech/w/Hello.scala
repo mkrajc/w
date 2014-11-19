@@ -1,24 +1,10 @@
 package org.mech.w
 
-import java.awt.GraphicsEnvironment
+import java.awt.{Font, GraphicsEnvironment}
+
 import org.apache.pivot.collections.Map
-import org.apache.pivot.wtk.Application
-import org.apache.pivot.wtk.Button
-import org.apache.pivot.wtk.ButtonPressListener
-import org.apache.pivot.wtk.DesktopApplicationContext
-import org.apache.pivot.wtk.Display
-import org.apache.pivot.wtk.HorizontalAlignment
-import org.apache.pivot.wtk.Label
-import org.apache.pivot.wtk.PushButton
-import org.apache.pivot.wtk.VerticalAlignment
-import org.apache.pivot.wtk.Window
-import java.awt.Dimension
-import java.awt.Font
-import org.apache.pivot.wtk.effects.DropShadowDecorator
-import org.apache.pivot.wtk.effects.TransitionListener
-import org.apache.pivot.wtk.effects.Transition
-import org.apache.pivot.wtk.Component
-import org.apache.pivot.wtk.TextPane
+import org.apache.pivot.wtk.{Application, Button, ButtonPressListener, DesktopApplicationContext, Display, HorizontalAlignment, Label, PushButton, VerticalAlignment, Window}
+import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 
 @Deprecated
 // just for starter

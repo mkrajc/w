@@ -7,6 +7,7 @@ object Utils {
    * @tparam T
    * @return [[Option]]
    */
-  def nullAsOption[T](any: AnyRef): Option[T] = if (any == null) Some(any.asInstanceOf[T]) else None
-
+  def nullAsOption[T](any: AnyRef): Option[T] =
+    if (any == null) None
+    else Some(any.asInstanceOf[T])
 }
