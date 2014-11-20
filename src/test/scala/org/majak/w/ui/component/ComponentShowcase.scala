@@ -4,13 +4,15 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.Button.State
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
+import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.Module
 import org.majak.w.model.SongListItem
-import org.majak.w.ui.component.common.wtk.WtkView
-import org.majak.w.ui.component.songlist.view.SongListViewHandler
-import org.majak.w.ui.wtk.utils.WtkConversions
+import org.majak.w.service.LocalSongService
+import org.majak.w.ui.pivot.PivotView
+import org.majak.w.ui.pivot.Conversions._
 
 class ShowcaseApplication extends Application.Adapter with Module {
+  override def songService = new LocalSongService
 
   private val NONE_LABEL = new Label("<NONE>")
 
@@ -24,7 +26,7 @@ class ShowcaseApplication extends Application.Adapter with Module {
   val compButton = new ListButton
   val wrapCheck = new Checkbox("wrap")
 
-  val components = scala.collection.immutable.Map("SongList" -> (songListPresenter.view.asInstanceOf[WtkView]).asComponent)
+  val components = scala.collection.immutable.Map("SongList" -> (songListPresenter.view.asInstanceOf[PivotView]).asComponent)
 
   val r = new Row
 
@@ -72,7 +74,7 @@ class ShowcaseApplication extends Application.Adapter with Module {
     }
   }
 
-  compButton setListData WtkConversions.seqAsWtkList(components.keys.toList)
+  compButton setListData components.keys.toList
   (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener {
     override def selectedIndexChanged(b: ListButton, psi: Int): Unit = {}
 

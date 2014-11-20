@@ -3,7 +3,7 @@ package org.majak.w
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.{Application, DesktopApplicationContext, Display, Label, Window}
-import org.majak.w.ui.Binding
+import org.majak.w.ui.pivot.Binding
 
 class WApplication extends Application.Adapter with Binding[Window] {
   

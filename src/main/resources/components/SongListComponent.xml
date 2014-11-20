@@ -1,6 +1,6 @@
 <Border xmlns:bxml="http://pivot.apache.org/bxml"
         xmlns="org.apache.pivot.wtk" >
-    <ScrollPane>
+    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
         <ListView bxml:id="listView"/>
     </ScrollPane>
 </Border>

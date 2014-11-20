@@ -1,9 +1,7 @@
 package org.majak.w.ui.mvp
 
-import org.majak.w.ui.event.Messaging
-
 trait View
-abstract class Presenter[V <: View] extends Messaging {
+abstract class Presenter[V <: View] {
 
   bind
 
