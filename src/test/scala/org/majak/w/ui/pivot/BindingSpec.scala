@@ -27,7 +27,7 @@ class BindingSpec extends FlatSpec with Matchers {
       val t = new BindingSpecClass
       val rootValue = PrivateMethod[Window]('root)
       val root = t invokePrivate rootValue()
-      root shouldNot be(null);
+      root shouldNot be(null)
       root shouldBe a[Window]
     }
   }

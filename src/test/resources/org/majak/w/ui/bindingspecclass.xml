@@ -1,4 +1,0 @@
-<Window title="Text Areas" maximized="true"
-	xmlns:bxml="http://pivot.apache.org/bxml" xmlns="org.apache.pivot.wtk">
-	<PushButton bxml:id="button" />
-</Window>
