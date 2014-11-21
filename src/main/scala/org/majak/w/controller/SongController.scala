@@ -10,10 +10,8 @@ class SongController {
 
   private val songIndexChangeListeners = new ListBuffer[SongIndexChangeListener]
 
-  def +=(any: Any) = any match {
-    case h: SongIndexChangeListener => (songIndexChangeListeners += h)
-    case _ => throw new UnsupportedOperationException("cannot add listener : " + any)
-  }
+  def addSongIndexChangeListener(l: SongIndexChangeListener) = songIndexChangeListeners += l
+  def removeSongIndexChangeListener(l: SongIndexChangeListener) = songIndexChangeListeners -= l
 
   private def notifySongIndexChanged() = songIndexChangeListeners foreach (_.onSongIndexChanged)
 

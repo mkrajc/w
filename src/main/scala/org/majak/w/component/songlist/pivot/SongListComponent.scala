@@ -5,6 +5,7 @@ import org.apache.pivot.collections.Sequence
 import org.apache.pivot.wtk._
 import org.majak.w.component.songlist.view.{SongListView, SongListViewHandler}
 import org.majak.w.model.SongListItem
+import org.majak.w.ui.component.pivot.searchbox.{SearchHandler, SearchBox}
 import org.majak.w.ui.pivot.PivotComponent
 import org.majak.w.utils.Utils
 import org.majak.w.ui.pivot.Conversions._
@@ -20,16 +21,16 @@ class SongListComponent extends SongListView with PivotComponent[ScrollPane] {
   @BXML
   private var listView: ListView = _
 
+  @BXML
+  private var searchBox: SearchBox = _
+
   override def addHandler(h: SongListViewHandler): Unit = viewHandlers += h
 
   override def removeHandler(h: SongListViewHandler): Unit = viewHandlers -= h
 
   override protected def onUiBind = {
     listView.setItemRenderer(new SongListItemRenderer)
-    listView.getListViewSelectionListeners.add(new ListViewSelectionListener {
-      override def selectedRangeRemoved(listView: ListView, rangeStart: Int, rangeEnd: Int): Unit = {}
-      override def selectedRangesChanged(listView: ListView, previousSelectedRanges: Sequence[Span]): Unit = {}
-      override def selectedRangeAdded(listView: ListView, rangeStart: Int, rangeEnd: Int): Unit = {}
+    listView.getListViewSelectionListeners.add(new ListViewSelectionListener.Adapter {
       override def selectedItemChanged(listView: ListView, previousSelectedItem: scala.Any): Unit = {
         val selected = Utils.nullAsOption[SongListItem](listView.getSelectedItem)
         viewHandlers foreach (_.onSongListItemSelected(selected))
@@ -45,6 +46,9 @@ class SongListComponent extends SongListView with PivotComponent[ScrollPane] {
     if (listView.getSelectedItem == null) None
     else Some(listView.getSelectedItem.asInstanceOf[SongListItem])
 
+  override def addSearchHandler(h: SearchHandler): Unit = searchBox addSearchHandler h
+
+  override def removeSearchHandler(h: SearchHandler): Unit = searchBox removeSearchHandler h
 }
 
 private class SongListItemRenderer extends BoxPane with ListView.ItemRenderer {

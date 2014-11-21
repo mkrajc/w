@@ -1,6 +1,22 @@
 <Border xmlns:bxml="http://pivot.apache.org/bxml"
-        xmlns="org.apache.pivot.wtk" >
-    <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
-        <ListView bxml:id="listView"/>
-    </ScrollPane>
+        xmlns:w="org.majak.w.ui.component.pivot.searchbox"
+        xmlns="org.apache.pivot.wtk">
+    <TablePane bxml:id="tablePane"
+               styles="{verticalSpacing:3, horizontalSpacing:3, showHorizontalGridLines:false, showVerticalGridLines:false, padding:3}">
+        <columns>
+            <TablePane.Column width="1*"/>
+        </columns>
+
+        <TablePane.Row height="1*">
+            <Border>
+                <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                    <ListView bxml:id="listView"/>
+                </ScrollPane>
+            </Border>
+        </TablePane.Row>
+
+        <TablePane.Row height="25">
+            <w:SearchBox bxml:id="searchBox" />
+        </TablePane.Row>
+    </TablePane>
 </Border>

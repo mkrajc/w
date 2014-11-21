@@ -10,12 +10,14 @@ trait View
  *
  * @tparam V [[View]] class that is managed by presenter
  */
-abstract class Presenter[V <: View] {
+trait Presenter[V <: View] {
 
-  bind
+  lazy  val view: V = createViewImpl
 
-  protected def createViewImpl: V = {new View {}.asInstanceOf[V]}
+  protected def createViewImpl: V
   protected def onBind(v: View) = {}
-  protected final def bind = onBind (view)
-  val view: V = createViewImpl
+
+  final def bind = onBind(view)
+
+
 }
