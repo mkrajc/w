@@ -26,7 +26,12 @@ class ShowcaseApplication extends Application.Adapter with Module {
   val compButton = new ListButton
   val wrapCheck = new Checkbox("wrap")
 
-  val components = scala.collection.immutable.Map("SongList" -> (songListPresenter.view.asInstanceOf[PivotView]).asComponent)
+  val components = scala.collection.immutable.Map[String, Component](
+
+    "SongList" -> (songListPresenter.view.asInstanceOf[PivotView]).asComponent,
+    "Checkbox" -> new Checkbox("check")
+
+  )
 
   val r = new Row
 
