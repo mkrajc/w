@@ -7,5 +7,9 @@ import org.majak.w.service.SongService
 trait Module {
   val songController = new SongController
   def songService: SongService
-  val songListPresenter = new SongListPresenter(songController, songService)
+  val songListPresenter = {
+    val p = new SongListPresenter(songController, songService)
+    p.bind
+    p
+  }
 }
