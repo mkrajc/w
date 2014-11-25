@@ -1,0 +1,19 @@
+<Window title=".w" maximized="true"
+        xmlns:bxml="http://pivot.apache.org/bxml"
+        xmlns="org.apache.pivot.wtk"
+        xmlns:w="org.majak.w.component">
+    <TablePane bxml:id="tablePane"
+               styles="{verticalSpacing:3, horizontalSpacing:3, showHorizontalGridLines:true, showVerticalGridLines:true, padding:3}">
+        <columns>
+            <TablePane.Column width="1*"/>
+        </columns>
+
+        <TablePane.Row height="40">
+            <FillPane bxml:id="menuPanel" />
+        </TablePane.Row>
+
+        <TablePane.Row height="1*">
+            <TablePane.Filler/>
+        </TablePane.Row>
+    </TablePane>
+</Window>

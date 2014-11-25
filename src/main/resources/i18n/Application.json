@@ -1,0 +1,8 @@
+{
+  "mainMenu": {
+    "button": {
+      "live": "Live",
+      "songs": "Songs"
+    }
+  }
+}

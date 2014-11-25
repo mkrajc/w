@@ -5,13 +5,13 @@ import org.apache.pivot.wtk.Button.State
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.songlist.view.SongListViewHandler
-import org.majak.w.di.Module
+import org.majak.w.di.UiModule
 import org.majak.w.model.SongListItem
 import org.majak.w.service.LocalSongService
-import org.majak.w.ui.pivot.PivotView
 import org.majak.w.ui.pivot.Conversions._
+import org.majak.w.ui.pivot.PivotView
 
-class ShowcaseApplication extends Application.Adapter with Module {
+class ShowcaseApplication extends Application.Adapter with UiModule {
   override def songService = new LocalSongService
 
   private val NONE_LABEL = new Label("<NONE>")
@@ -29,7 +29,7 @@ class ShowcaseApplication extends Application.Adapter with Module {
   val components = scala.collection.immutable.Map[String, Component](
 
     "SongList" -> (songListPresenter.view.asInstanceOf[PivotView]).asComponent,
-    "Checkbox" -> new Checkbox("check")
+    "MainMenu" -> wMainMenu.asComponent
 
   )
 

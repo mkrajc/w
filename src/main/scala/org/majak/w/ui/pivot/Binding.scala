@@ -1,6 +1,7 @@
 package org.majak.w.ui.pivot
 
 import org.apache.pivot.beans.BXMLSerializer
+import org.apache.pivot.util.Resources
 import org.apache.pivot.wtk.Component
 
 /**
@@ -40,10 +41,12 @@ trait Binding[T <: Component] {
   /** default xml name - lowercased classname with '.xml' suffix **/
   private lazy val xmlNameDefault: String = getClass().getSimpleName().toLowerCase() + ".xml"
 
+
+
   protected lazy val serializer = new BXMLSerializer
 
   /** Root component object read from xml */
-  protected lazy val root: T = serializer.readObject(getClass(), xmlName).asInstanceOf[T]
+  protected lazy val root: T = serializer.readObject(getClass.getResource(xmlName), resources).asInstanceOf[T]
 
   /**
    * Reads XML and binds result with this instance.
@@ -61,6 +64,12 @@ trait Binding[T <: Component] {
    * Returns XML filename used for reading and binding this object.
    */
   protected def xmlName = xmlNameDefault
+
+  /**
+   * Returns resoures for localization
+   * @return resources object for localization
+   */
+  protected def  resources: Resources = null
 
   /**
    * Is called after binding.

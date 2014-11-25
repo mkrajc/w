@@ -1,0 +1,15 @@
+<BoxPane xmlns:bxml="http://pivot.apache.org/bxml"
+         xmlns:content="org.apache.pivot.wtk.content"
+         xmlns="org.apache.pivot.wtk"
+         styles="{ spacing: 5, horizontalAlignment: 'center', verticalAlignment: 'center'}">
+    <PushButton bxml:id="liveButton">
+        <buttonData>
+            <content:ButtonData text="%mainMenu.button.live" icon="/images/live.png"/>
+        </buttonData>
+    </PushButton>
+    <PushButton bxml:id="songsButton" >
+        <buttonData>
+            <content:ButtonData text="%mainMenu.button.songs" icon="/images/songs.png"/>
+        </buttonData>
+    </PushButton>
+</BoxPane>
