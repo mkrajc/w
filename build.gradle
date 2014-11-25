@@ -1,8 +1,11 @@
 apply plugin: 'scala'
 apply plugin: 'idea'
+apply plugin: 'application'
 
 group = 'org.majak.w'
 version = '1.0.0-SNAPSHOT'
+
+mainClassName = "org.majak.w.WApplication"
 
 repositories {
     mavenCentral()
@@ -19,4 +22,11 @@ dependencies {
     testCompile 'org.scalatest:scalatest_2.11:2.2.2'
     testCompile 'org.mockito:mockito-all:1.9.5'
     
+}
+
+idea {
+    module {
+        downloadJavadoc = false
+        downloadSources = true
+    }
 }
