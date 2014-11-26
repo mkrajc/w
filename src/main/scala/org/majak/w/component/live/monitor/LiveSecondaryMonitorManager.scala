@@ -13,9 +13,12 @@ class LiveSecondaryMonitorManager(devices: List[GraphicsDevice]) {
     val bounds = gc.getBounds()
     val w = new java.awt.Window(appWindow, gc)
 
-    val display = DesktopApplicationContext.createDisplay(bounds.width, bounds.height, w.getX, w.getY, false, true, true, appWindow, null)
 
-    val view = new SecondaryMonitor(display)
+    val diplayHandler = new DisplayProvider {
+       override def createDisplay = DesktopApplicationContext.createDisplay(bounds.width, bounds.height, w.getX, w.getY, false, true, true, appWindow, null)
+    }
+
+    val view = new SecondaryMonitor(diplayHandler)
     view.bindView
     val presenter = new SecondaryMonitorPresenter(view)
     presenter.bind

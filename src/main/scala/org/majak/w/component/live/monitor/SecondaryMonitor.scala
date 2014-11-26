@@ -6,9 +6,11 @@ import org.majak.w.ui.pivot.PivotComponent
 /**
  * Created by martin.krajc on 26. 11. 2014.
  */
-class SecondaryMonitor(val display: Display) extends PivotComponent[Window] with SecondaryMonitorView {
+class SecondaryMonitor(val dp: DisplayProvider) extends PivotComponent[Window] with SecondaryMonitorView {
 
-  require(display != null)
+  require(dp != null)
+
+  var display: Display = _
 
   /**
    * Is called after binding.
@@ -18,10 +20,18 @@ class SecondaryMonitor(val display: Display) extends PivotComponent[Window] with
     asComponent setContent (new Label("TODO"))
   }
 
-  override def show = asComponent open display
+  override def show = {
+    display = dp.createDisplay
+    asComponent open display
+  }
 
   override def hide = {
-    display.getHostWindow.dispose()
     asComponent close()
+    display.getHostWindow.dispose()
   }
+}
+
+trait DisplayProvider {
+  def createDisplay: Display
+
 }
