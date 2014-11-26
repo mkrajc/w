@@ -1,7 +1,6 @@
 <Window title=".w" maximized="true"
         xmlns:bxml="http://pivot.apache.org/bxml"
-        xmlns="org.apache.pivot.wtk"
-        xmlns:w="org.majak.w.component">
+        xmlns="org.apache.pivot.wtk" >
     <TablePane bxml:id="tablePane"
                styles="{verticalSpacing:3, horizontalSpacing:3, showHorizontalGridLines:true, showVerticalGridLines:true, padding:3}">
         <columns>
@@ -13,7 +12,7 @@
         </TablePane.Row>
 
         <TablePane.Row height="1*">
-            <TablePane.Filler/>
+            <FillPane bxml:id="contentPanel" />
         </TablePane.Row>
     </TablePane>
 </Window>
