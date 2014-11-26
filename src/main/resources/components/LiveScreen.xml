@@ -14,8 +14,12 @@
                     <content:ButtonData text="%liveScreen.rightContent.tab.songs"/>
                 </TabPane.tabData>
                 <Border styles="{padding:2}">
-                    <Label text="120x90" preferredWidth="120" preferredHeight="90"
-                           styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
+                    <FlowPane>
+                        <Label bxml:id="text" />
+                        <PushButton bxml:id="button" />
+                        <PushButton bxml:id="show" />
+                        <PushButton bxml:id="hide" />
+                    </FlowPane>
                 </Border>
             </BoxPane>
 
@@ -23,8 +27,8 @@
                 <TabPane.tabData>
                     <content:ButtonData text="%liveScreen.rightContent.tab.quickText"/>
                 </TabPane.tabData>
-                <Border styles="{padding:2}">
-                    <Label text="240x180" preferredWidth="240" preferredHeight="180"
+                <Border styles="{padding:2}" bxml:id="b">
+                    <Label preferredWidth="120" preferredHeight="90"
                            styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
                 </Border>
             </BoxPane>

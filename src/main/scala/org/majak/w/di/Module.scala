@@ -6,4 +6,5 @@ import org.majak.w.service.SongService
 trait Module {
   val songController = new SongController
   def songService: SongService = null
+
 }

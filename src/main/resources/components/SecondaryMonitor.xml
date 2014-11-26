@@ -1,0 +1,3 @@
+<Window xmlns:bxml="http://pivot.apache.org/bxml"
+        xmlns:content="org.apache.pivot.wtk.content"
+        xmlns="org.apache.pivot.wtk"/>
