@@ -1,0 +1,33 @@
+<SplitPane bxml:id="liveScreen" orientation="horizontal"
+           splitRatio="0.3"
+           styles="{splitterThickness:3}"
+           xmlns:bxml="http://pivot.apache.org/bxml"
+           xmlns:content="org.apache.pivot.wtk.content"
+           xmlns="org.apache.pivot.wtk">
+    <left>
+        <FillPane styles="{backgroundColor: '#f6f5f6'}"/>
+    </left>
+    <right>
+        <TabPane>
+            <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                <TabPane.tabData>
+                    <content:ButtonData text="%liveScreen.rightContent.tab.songs"/>
+                </TabPane.tabData>
+                <Border styles="{padding:2}">
+                    <Label text="120x90" preferredWidth="120" preferredHeight="90"
+                           styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
+                </Border>
+            </BoxPane>
+
+            <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+                <TabPane.tabData>
+                    <content:ButtonData text="%liveScreen.rightContent.tab.quickText"/>
+                </TabPane.tabData>
+                <Border styles="{padding:2}">
+                    <Label text="240x180" preferredWidth="240" preferredHeight="180"
+                           styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
+                </Border>
+            </BoxPane>
+        </TabPane>
+    </right>
+</SplitPane>

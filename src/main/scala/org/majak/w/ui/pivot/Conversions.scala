@@ -1,6 +1,8 @@
 package org.majak.w.ui.pivot
 
 import org.apache.pivot.collections.ArrayList
+import org.apache.pivot.wtk.Component
+import org.majak.w.ui.mvp.View
 
 /**
  * Contains implicit conversions between pivot collection types and scala collections
@@ -19,4 +21,7 @@ object Conversions {
       list
     })
   }
+
+  def toPivotView[V >: View](v: V): PivotView = v.asInstanceOf[PivotView]
+  def toComponent[V >: View](v: V): Component = toPivotView(v).asComponent
 }

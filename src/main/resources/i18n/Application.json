@@ -4,5 +4,16 @@
       "live": "Live",
       "songs": "Songs"
     }
+  } ,
+
+  "liveScreen": {
+    "rightContent" : {
+      "tab": {
+        "songs": "Songs",
+        "quickText": "Quick Text"
+      }
+    }
+
   }
+
 }

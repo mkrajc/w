@@ -7,6 +7,7 @@ import org.majak.w.ui.mvp.View
  * Associate [[View]] and pivot [[Component]].
  */
 trait PivotView extends View {
+
   /**
    * Returns associated view's as [[org.apache.pivot.wtk.Component]]
    *

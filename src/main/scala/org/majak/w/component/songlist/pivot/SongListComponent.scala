@@ -1,14 +1,13 @@
 package org.majak.w.component.songlist.pivot
 
 import org.apache.pivot.beans.BXML
-import org.apache.pivot.collections.Sequence
 import org.apache.pivot.wtk._
 import org.majak.w.component.songlist.view.{SongListView, SongListViewHandler}
 import org.majak.w.model.SongListItem
-import org.majak.w.ui.component.pivot.searchbox.{SearchHandler, SearchBox}
+import org.majak.w.ui.component.pivot.searchbox.{SearchBox, SearchHandler}
+import org.majak.w.ui.pivot.Conversions._
 import org.majak.w.ui.pivot.PivotComponent
 import org.majak.w.utils.Utils
-import org.majak.w.ui.pivot.Conversions._
 
 import scala.collection.mutable.ListBuffer
 
@@ -16,13 +15,11 @@ class SongListComponent extends SongListView with PivotComponent[ScrollPane] {
 
   val viewHandlers = new ListBuffer[SongListViewHandler]
 
-  bindUi
+  @BXML
+  protected var listView: ListView = _
 
   @BXML
-  private var listView: ListView = _
-
-  @BXML
-  private var searchBox: SearchBox = _
+  protected var searchBox: SearchBox = _
 
   override def addHandler(h: SongListViewHandler): Unit = viewHandlers += h
 

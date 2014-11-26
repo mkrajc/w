@@ -1,35 +1,18 @@
 package org.majak.w
 
-import org.apache.pivot.beans.BXML
 import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk._
 import org.majak.w.di.UiModule
-import org.majak.w.ui.pivot.PivotComponent
+import org.majak.w.ui.pivot.Conversions._
 
-class WApplication extends Application.Adapter with PivotComponent[Window] with UiModule {
+class WApplication extends Application.Adapter with UiModule {
 
-  @BXML
-  var menuPanel: FillPane = _
-
-  @BXML
-  var contentPanel: FillPane = _
-  
-   override def startup(display: Display, properties: Map[String, String]) = {
-    bindUi
-    root open display
-  }
-
-  override protected def onUiBind: Unit = {
-    menuPanel add wMainMenu.asComponent
-    contentPanel add wMainContentContainer
-
-    wMainMenu.liveButton.getButtonPressListeners.add(new ButtonPressListener {
-      override def buttonPressed(button: Button) = wMainContentContainer.liveContent
-    })
-
-    wMainMenu.songsButton.getButtonPressListeners.add(new ButtonPressListener {
-      override def buttonPressed(button: Button) = wMainContentContainer.songContent
-    })
+  override def startup(display: Display, properties: Map[String, String]) = {
+    val window = new Window
+    window setTitle "w"
+    window setMaximized true
+    window setContent toComponent(mainScreenPresenter.view)
+    window open display
   }
 }
 

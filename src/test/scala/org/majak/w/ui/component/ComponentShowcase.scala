@@ -1,15 +1,15 @@
 package org.majak.w.ui.component
 
 import org.apache.pivot.collections.Map
-import org.apache.pivot.wtk.Button.State
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
+import org.majak.w.component.live.screen.LiveScreen
+import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
 import org.majak.w.model.SongListItem
 import org.majak.w.service.LocalSongService
 import org.majak.w.ui.pivot.Conversions._
-import org.majak.w.ui.pivot.PivotView
 
 class ShowcaseApplication extends Application.Adapter with UiModule {
   override def songService = new LocalSongService
@@ -18,18 +18,16 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
   val pane = new TablePane
 
-  val wrapper = new FlowPane
-
   val menuPanel = new BoxPane
   val compPanel = new FillPane
-
   val compButton = new ListButton
-  val wrapCheck = new Checkbox("wrap")
+
 
   val components = scala.collection.immutable.Map[String, Component](
 
-    "SongList" -> (songListPresenter.view.asInstanceOf[PivotView]).asComponent,
-    "MainMenu" -> wMainMenu.asComponent
+    "SongList" -> toPivotView(songListPresenter.view).asComponent,
+    "MainMenu" -> (new MainMenu).asComponent,
+    "LiveScreen" -> (new LiveScreen).asComponent
 
   )
 
@@ -53,7 +51,6 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   menuPanel.getStyles.put("padding", 10)
   menuPanel.getStyles.put("verticalAlignment", VerticalAlignment.CENTER)
   menuPanel.add(compButton)
-  menuPanel.add(wrapCheck)
 
   songListPresenter.view.addHandler(new SongListViewHandler {
     override def onSongListItemSelected(item: Option[SongListItem]): Unit = {
@@ -69,25 +66,13 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
       else components.get(compButton.getSelectedItem.asInstanceOf[String])
 
     compPanel removeAll()
-    wrapper removeAll()
+    compPanel add current.getOrElse(NONE_LABEL)
 
-    if (wrapCheck.getState == Button.State.SELECTED) {
-      wrapper add current.getOrElse(NONE_LABEL)
-      compPanel add wrapper
-    } else {
-      compPanel add current.getOrElse(NONE_LABEL)
-    }
   }
 
   compButton setListData components.keys.toList
-  (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener {
-    override def selectedIndexChanged(b: ListButton, psi: Int): Unit = {}
-
+  (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener.Adapter {
     override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI
-  }
-
-  (wrapCheck getButtonStateListeners) add new ButtonStateListener {
-    override def stateChanged(b: Button, ps: State) = setupUI
   }
 
   override def startup(display: Display, properties: Map[String, String]): Unit = {
