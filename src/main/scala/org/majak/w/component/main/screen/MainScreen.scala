@@ -1,7 +1,7 @@
 package org.majak.w.component.main.screen
 
 import org.apache.pivot.beans.BXML
-import org.apache.pivot.wtk.{TablePane, FillPane}
+import org.apache.pivot.wtk.FillPane
 import org.majak.w.component.live.screen.LiveScreenView
 import org.majak.w.component.main.menu.{MainMenuUiHandler, MainMenuView}
 import org.majak.w.ui.mvp.View
@@ -9,7 +9,7 @@ import org.majak.w.ui.pivot.Conversions._
 import org.majak.w.ui.pivot.PivotComponent
 
 
-class MainScreen extends PivotComponent[TablePane] with MainScreenView {
+class MainScreen extends PivotComponent with MainScreenView {
 
   @BXML
   protected var menuPanel: FillPane = _

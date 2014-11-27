@@ -1,14 +1,14 @@
 package org.majak.w.component.live.monitor
 
-import org.apache.pivot.wtk.{Display, Label, Window}
+import org.apache.pivot.wtk.{Component, Display, Label, Window}
 import org.majak.w.ui.pivot.PivotComponent
 
-/**
- * Created by martin.krajc on 26. 11. 2014.
- */
-class SecondaryMonitor(val dp: DisplayProvider) extends PivotComponent[Window] with SecondaryMonitorView {
+class Presentation(val dp: DisplayProvider) extends PivotComponent with PresentationView {
 
   require(dp != null)
+
+  val window = new Window()
+
 
   var display: Display = _
 
@@ -16,22 +16,24 @@ class SecondaryMonitor(val dp: DisplayProvider) extends PivotComponent[Window] w
    * Is called after binding.
    */
   override protected def onUiBind = {
-    asComponent setMaximized true
-    asComponent setContent (new Label("TODO"))
+    window.setMaximized(true)
+    window.setTitle("presentation")
+    window setContent (new Label("TODO"))
   }
 
   override def show = {
     display = dp.createDisplay
-    asComponent open display
+    window open display
   }
 
   override def hide = {
-    asComponent close()
+    window close()
     display.getHostWindow.dispose()
   }
+
+  override val asComponent: Component = window
 }
 
 trait DisplayProvider {
   def createDisplay: Display
-
 }

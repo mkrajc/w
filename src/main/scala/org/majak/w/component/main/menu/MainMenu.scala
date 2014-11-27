@@ -1,10 +1,10 @@
 package org.majak.w.component.main.menu
 
 import org.apache.pivot.beans.BXML
-import org.apache.pivot.wtk.{BoxPane, Button, ButtonPressListener, PushButton}
+import org.apache.pivot.wtk.{Button, ButtonPressListener, PushButton}
 import org.majak.w.ui.pivot.PivotComponent
 
-class MainMenu(var uiHandler: MainMenuUiHandler = null) extends PivotComponent[BoxPane] with MainMenuView {
+class MainMenu(var uiHandler: MainMenuUiHandler = null) extends PivotComponent with MainMenuView {
 
   @BXML
   protected var liveButton: PushButton = _

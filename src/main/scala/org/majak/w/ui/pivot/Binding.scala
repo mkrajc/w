@@ -16,7 +16,7 @@ import org.apache.pivot.wtk.Component
  * ==Example==
  * In class `Example.scala`
  * {{{
- * class Example with Binding[Label] {
+ * class Example with Binding {
  *
  *   //bind ui in constructor
  *   bindUi
@@ -34,19 +34,19 @@ import org.apache.pivot.wtk.Component
  *  <Label xmlns:bxml="http://pivot.apache.org/bxml" xmlns="org.apache.pivot.wtk"  bxml:id="id" />
  * }}}
  *
- * @tparam T root component class in xml
  */
-trait Binding[T <: Component] {
+trait Binding {
 
   /** default xml name - lowercased classname with '.xml' suffix **/
   private lazy val xmlNameDefault: String = getClass().getSimpleName().toLowerCase() + ".xml"
-
-
-
   protected lazy val serializer = new BXMLSerializer
 
   /** Root component object read from xml */
-  protected lazy val root: T = serializer.readObject(getClass.getResource(xmlName), resources).asInstanceOf[T]
+  protected lazy val readXml: Option[Component] = {
+    val url = getClass.getResource(xmlName)
+    if(url == null) None
+    else Some(serializer.readObject(url, resources).asInstanceOf[Component])
+  }
 
   /**
    * Reads XML and binds result with this instance.
@@ -54,8 +54,7 @@ trait Binding[T <: Component] {
    * @see Binding
    */
   lazy val bindUi = {
-    // first initialize root if not already
-    root
+    readXml
     serializer.bind(this, getClass())
     onUiBind
   }

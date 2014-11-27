@@ -11,7 +11,7 @@ import org.majak.w.utils.Utils
 
 import scala.collection.mutable.ListBuffer
 
-class SongListComponent extends SongListView with PivotComponent[ScrollPane] {
+class SongListComponent extends SongListView with PivotComponent {
 
   val viewHandlers = new ListBuffer[SongListViewHandler]
 

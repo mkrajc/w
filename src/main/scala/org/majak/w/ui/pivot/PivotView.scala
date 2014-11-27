@@ -13,5 +13,5 @@ trait PivotView extends View {
    *
    * It can be same instance or different component
    */
-  val asComponent: Component
+  def asComponent: Component
 }

@@ -1,7 +1,9 @@
 package org.majak.w.ui.pivot
 
+
+
 import org.apache.pivot.beans.BXML
-import org.apache.pivot.wtk.{PushButton, Window}
+import org.apache.pivot.wtk.{Component, PushButton, Window}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers, PrivateMethodTester}
@@ -9,10 +11,12 @@ import org.scalatest.{FlatSpec, Matchers, PrivateMethodTester}
 @RunWith(classOf[JUnitRunner])
 class BindingSpec extends FlatSpec with Matchers {
 
-  class BindingSpecClass extends Binding[Window] {
+  class BindingSpecClass extends Binding {
     @BXML
     var button: PushButton = _
   }
+
+  class BindingWithoutXmlSpecClass extends Binding {}
 
   "Bindings" should "return xml name from class" in {
     new PrivateMethodTester {
@@ -22,13 +26,24 @@ class BindingSpec extends FlatSpec with Matchers {
     }
   }
 
-  it should "parse xml from class and return root" in {
+  it should "parse xml from class and return root component if xml exists" in {
     new PrivateMethodTester {
       val t = new BindingSpecClass
-      val rootValue = PrivateMethod[Window]('root)
+      val rootValue = PrivateMethod[Option[Component]]('readXml)
       val root = t invokePrivate rootValue()
       root shouldNot be(null)
-      root shouldBe a[Window]
+      root shouldBe a[Option[_]]
+      root.get shouldBe a[Window]
+    }
+  }
+
+  it should "skip parsing xml from class and return root component as None if xml does not exists" in {
+    new PrivateMethodTester {
+      val t = new BindingWithoutXmlSpecClass
+      val rootValue = PrivateMethod[Option[Component]]('readXml)
+      val root = t invokePrivate rootValue()
+      root shouldNot be(null)
+      root should be(scala.None)
     }
   }
 
