@@ -1,5 +1,8 @@
 package org.majak.w.di
 
+import java.awt.Window
+
+import org.majak.w.component.live.monitor.{PresentationPresenterFactory, PresentationPresenter}
 import org.majak.w.component.live.screen.{LiveScreenView, LiveScreen, LiveScreenPresenter}
 import org.majak.w.component.main.menu.{MainMenuView, MainMenu, MainMenuPresenter}
 import org.majak.w.component.main.screen.{MainScreenView, MainScreenPresenter, MainScreen}
@@ -15,6 +18,8 @@ trait UiModule extends Module {
   lazy val mainMenuPresenter = doBind[MainMenuView, MainMenuPresenter](new MainMenuPresenter(new MainMenu))
   lazy val mainScreenPresenter = doBind[MainScreenView, MainScreenPresenter](new MainScreenPresenter(mainMenuPresenter, liveScreenPresenter), new MainScreen())
   lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(new LiveScreen))
+
+  def presentationPresenter(w: Window): PresentationPresenter = PresentationPresenterFactory.createPresentationPresenter(w)
 
 
   private def doBind[V <: View, P <: Presenter[V]](p: P, view: V = null): P = {

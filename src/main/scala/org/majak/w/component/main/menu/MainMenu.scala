@@ -22,5 +22,5 @@ class MainMenu(var uiHandler: MainMenuUiHandler = null) extends PivotComponent w
     })
   }
 
-  override def setUiHandler(h: MainMenuUiHandler): Unit = uiHandler = h
+  override def addUiHandler(h: MainMenuUiHandler): Unit = uiHandler = h
 }

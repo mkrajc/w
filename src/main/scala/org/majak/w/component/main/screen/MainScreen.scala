@@ -21,7 +21,7 @@ class MainScreen extends PivotComponent with MainScreenView {
 
   override def setMenu(menu: MainMenuView) = {
     menuPanel add toComponent(menu)
-    menu.setUiHandler(new MainMenuUiHandler {
+    menu.addUiHandler(new MainMenuUiHandler {
       override def onSongsScreenRequested = {}
       override def onLiveScreenRequested = liveContent
     })

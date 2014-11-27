@@ -1,6 +1,8 @@
 package org.majak.w.component.live.monitor
 
-import org.apache.pivot.wtk.{Component, Display, Label, Window}
+import java.awt.Font
+
+import org.apache.pivot.wtk._
 import org.majak.w.ui.pivot.PivotComponent
 
 class Presentation(val dp: DisplayProvider) extends PivotComponent with PresentationView {
@@ -8,7 +10,6 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
   require(dp != null)
 
   val window = new Window()
-
 
   var display: Display = _
 
@@ -18,17 +19,29 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
   override protected def onUiBind = {
     window.setMaximized(true)
     window.setTitle("presentation")
-    window setContent (new Label("TODO"))
+
+    val l = new Label("Presentation")
+    l.getStyles.put("horizontalAlignment", HorizontalAlignment.CENTER)
+    l.getStyles.put("verticalAlignment", VerticalAlignment.CENTER)
+    l.getStyles.put("backgroundColor", "#000000")
+    l.getStyles.put("color", "#ffffff")
+    l.getStyles().put("font", new Font("Arial", Font.BOLD, 80));
+
+    window setContent (l)
   }
 
   override def show = {
-    display = dp.createDisplay
-    window open display
+    if(window.isClosed) {
+      display = dp.createDisplay
+      window open display
+    }
   }
 
   override def hide = {
-    window close()
-    display.getHostWindow.dispose()
+    if(window.isOpen) {
+      window close()
+      display.getHostWindow.dispose()
+    }
   }
 
   override val asComponent: Component = window

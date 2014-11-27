@@ -7,12 +7,12 @@ import org.apache.pivot.wtk.DesktopApplicationContext
 
 object PresentationPresenterFactory {
 
-  def createPresentationPresenter(appWindow: java.awt.Window) : PresentationPresenter = {
+  def createPresentationPresenter(appWindow: java.awt.Window, sameWindow: Boolean = false) : PresentationPresenter = {
     val devices: List[GraphicsDevice] = (GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()).toList
     val screenConfigurations = devices map (_.getDefaultConfiguration())
     val secondaryCandidates = screenConfigurations.filter(g => g != appWindow.getGraphicsConfiguration())
 
-    val displayHandler = if (secondaryCandidates.isEmpty) SameMonitorProvider(appWindow)
+    val displayHandler = if (sameWindow || secondaryCandidates.isEmpty) SameMonitorProvider(appWindow)
     else SecondMonitorDisplayProvider(appWindow, secondaryCandidates(0)) // take first candidate
 
     //bind peresnter and view
@@ -34,10 +34,8 @@ case class SecondMonitorDisplayProvider(appWindow: java.awt.Window, gc: Graphics
 
 case class SameMonitorProvider(appWindow: java.awt.Window) extends DisplayProvider {
   override def createDisplay = {
-    // todo size of window
-    val bounds = appWindow.getGraphicsConfiguration.getBounds()
     val window = new java.awt.Window(appWindow, appWindow.getGraphicsConfiguration)
-    DesktopApplicationContext.createDisplay(bounds.width, bounds.height, window.getX, window.getY, false, false, false, appWindow, null)
+    DesktopApplicationContext.createDisplay(800,600, window.getX, window.getY, false, true, false, appWindow, null)
   }
 }
 
