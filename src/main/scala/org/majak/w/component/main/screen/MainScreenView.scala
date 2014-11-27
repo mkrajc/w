@@ -8,4 +8,5 @@ trait MainScreenView extends View {
   def setMenu(menu: MainMenuView)
 
   def setLiveScreen(liveScreen: LiveScreenView)
+
 }

@@ -8,7 +8,7 @@ import org.apache.pivot.wtk.Component
  * Binds this instance with BXML file
  *
  * ==Overview==
- * Name of xml is get through [[Binding#xmlName]] method.
+ * Name of xml is get through [[Binding# x m l N a m e]] method.
  *
  * All fields annotated with [[org.apache.pivot.beans.BXML]]
  * annotation are bound to instances from XML parsed object get from [[BXMLSerializer]].
@@ -21,17 +21,17 @@ import org.apache.pivot.wtk.Component
  *   //bind ui in constructor
  *   bindUi
  *
- *   @BXML
- *   var id: Label = _
+ * @BXML
+ * var id: Label = _
  *
- *   override protected def onBind(v: View) = ...
+ * override protected def onBind(v: View) = ...
  *
- *   ...
+ * ...
  * }}}
  *
  * In `example.xml`
  * {{{
- *  <Label xmlns:bxml="http://pivot.apache.org/bxml" xmlns="org.apache.pivot.wtk"  bxml:id="id" />
+ * <Label xmlns:bxml="http://pivot.apache.org/bxml" xmlns="org.apache.pivot.wtk"  bxml:id="id" />
  * }}}
  *
  */
@@ -44,8 +44,11 @@ trait Binding {
   /** Root component object read from xml */
   protected lazy val readXml: Option[Component] = {
     val url = getClass.getResource(xmlName)
-    if(url == null) None
-    else Some(serializer.readObject(url, resources).asInstanceOf[Component])
+    if (url == null) None
+    else {
+
+      Some(serializer.readObject(url, resources).asInstanceOf[Component])
+    }
   }
 
   /**
@@ -54,8 +57,13 @@ trait Binding {
    * @see Binding
    */
   lazy val bindUi = {
-    readXml
-    serializer.bind(this, getClass())
+    val option = readXml
+
+    if (option.isDefined) {
+      serializer.bind(this, getClass())
+      println("View [" + this + "] bind to [" + xmlName + "]")
+    }
+
     onUiBind
   }
 
@@ -68,7 +76,7 @@ trait Binding {
    * Returns resoures for localization
    * @return resources object for localization
    */
-  protected def  resources: Resources = null
+  protected def resources: Resources = null
 
   /**
    * Is called after binding.

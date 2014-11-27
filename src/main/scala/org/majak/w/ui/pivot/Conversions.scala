@@ -22,6 +22,6 @@ object Conversions {
     })
   }
 
-  def toPivotView[V >: View](v: V): PivotView = v.asInstanceOf[PivotView]
-  def toComponent[V >: View](v: V): Component = toPivotView(v).asComponent
+  def toPivotView[V <: View](v: V): PivotView = v.asInstanceOf[PivotView]
+  def toComponent[V <: View](v: V): Component = toPivotView(v).asComponent
 }

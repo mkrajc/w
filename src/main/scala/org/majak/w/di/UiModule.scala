@@ -1,28 +1,30 @@
 package org.majak.w.di
 
-import org.majak.w.component.live.screen.{LiveScreen, LiveScreenPresenter}
-import org.majak.w.component.main.menu.{MainMenu, MainMenuPresenter}
-import org.majak.w.component.main.screen.{MainScreen, MainScreenPresenter}
+import org.majak.w.component.live.screen.{LiveScreenView, LiveScreen, LiveScreenPresenter}
+import org.majak.w.component.main.menu.{MainMenuView, MainMenu, MainMenuPresenter}
+import org.majak.w.component.main.screen.{MainScreenView, MainScreenPresenter, MainScreen}
 import org.majak.w.component.songlist.SongListPresenter
 import org.majak.w.component.songlist.pivot.SongListComponent
-import org.majak.w.ui.mvp.{Presenter, View}
+import org.majak.w.component.songlist.view.SongListView
+import org.majak.w.ui.mvp.{View, Presenter}
 
 
 trait UiModule extends Module {
 
-  lazy val songListPresenter = bindPresenter(new SongListPresenter(bindView(new SongListComponent), songController, songService))
-  lazy val mainMenuPresenter = new MainMenuPresenter(bindView(new MainMenu))
-  lazy val mainScreenPresenter = bindPresenter(new MainScreenPresenter(bindView(new MainScreen), mainMenuPresenter, liveScreenPresenter))
-  lazy val liveScreenPresenter = new LiveScreenPresenter(bindView(new LiveScreen))
+  lazy val songListPresenter = doBind[SongListView, SongListPresenter](new SongListPresenter(new SongListComponent, songController, songService))
+  lazy val mainMenuPresenter = doBind[MainMenuView, MainMenuPresenter](new MainMenuPresenter(new MainMenu))
+  lazy val mainScreenPresenter = doBind[MainScreenView, MainScreenPresenter](new MainScreenPresenter(mainMenuPresenter, liveScreenPresenter), new MainScreen())
+  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(new LiveScreen))
 
-  private def bindView[V <: View](v: V): V = {
-    v.bindView
-    return v
+
+  private def doBind[V <: View, P <: Presenter[V]](p: P, view: V = null): P = {
+    val list = List(view, p.view)
+    val viewToBind = list.collectFirst {
+      case v if (v != null) => v
+    }
+
+    if (viewToBind.isEmpty) throw new IllegalArgumentException("cannot bind presenter with undefined view")
+    else p bind viewToBind.get
+    p
   }
-
-  private def bindPresenter[P <: Presenter[_]](p: P): P = {
-    p.bind
-    return p
-  }
-
 }

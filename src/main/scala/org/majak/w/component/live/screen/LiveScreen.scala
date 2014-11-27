@@ -28,18 +28,16 @@ class LiveScreen extends PivotComponent with LiveScreenView {
     show.setButtonData("show")
     hide.setButtonData("hide")
 
-    val p = PresentationPresenterFactory.createPresentationPresenter(button.getDisplay.getHostWindow)(true)
-
     button.getButtonPressListeners.add(new ButtonPressListener {
       override def buttonPressed(button: Button) = {
-          text.setText("defined")
-
-          show.getButtonPressListeners.add(new ButtonPressListener {
-            override def buttonPressed(button: Button) = p.view.show
-          })
-          hide.getButtonPressListeners.add(new ButtonPressListener {
-            override def buttonPressed(button: Button) = p.view.hide
-          })
+        text.setText("defined")
+        val p = PresentationPresenterFactory.createPresentationPresenter(button.getDisplay.getHostWindow)
+        show.getButtonPressListeners.add(new ButtonPressListener {
+          override def buttonPressed(button: Button) = p.view.show
+        })
+        hide.getButtonPressListeners.add(new ButtonPressListener {
+          override def buttonPressed(button: Button) = p.view.hide
+        })
       }
     })
 

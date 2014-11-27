@@ -17,9 +17,8 @@ object PresentationPresenterFactory {
 
     //bind peresnter and view
     val view = new Presentation(displayHandler)
-    view.bindView
     val presenter = new PresentationPresenter(view)
-    presenter.bind
+    presenter bind view
 
     presenter
   }

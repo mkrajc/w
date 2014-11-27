@@ -11,6 +11,7 @@ class WApplication extends Application.Adapter with UiModule {
     val window = new Window
     window setTitle "w"
     window setMaximized true
+
     window setContent toComponent(mainScreenPresenter.view)
     window open display
   }

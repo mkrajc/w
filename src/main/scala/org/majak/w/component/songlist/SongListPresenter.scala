@@ -15,6 +15,7 @@ class SongListPresenter(view: SongListView,
 
   var data: List[SongListItem] = _
 
+
   override protected def onBind(v: SongListView) = {
     songController addSongIndexChangeListener this
     view.addSearchHandler(new SearchHandler {
@@ -26,6 +27,7 @@ class SongListPresenter(view: SongListView,
 
       override def onSearchCancel(): Unit = view.showData(data)
     })
+
   }
 
   override def onSongIndexChanged: Unit = {
