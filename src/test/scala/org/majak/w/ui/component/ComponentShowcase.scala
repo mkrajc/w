@@ -4,6 +4,7 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
+import org.majak.w.component.live.slide.{Slide, TextContent}
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
@@ -23,11 +24,17 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   val compButton = new ListButton
 
 
+  val slide = new Slide
+  //slide.addContent(ImageContent(Image.load(getClass.getResource("/images/cloud.jpg"))))
+  slide.addContent(TextContent("hello"))
+
+
   val components = scala.collection.immutable.Map[String, Component](
 
     "SongList" -> toPivotView(songListPresenter.view).asComponent,
     "MainMenu" -> (new MainMenu).asComponent,
-    "LiveScreen" -> (new LiveScreen).asComponent
+    "LiveScreen" -> (new LiveScreen).asComponent,
+    "Slide" -> slide
 
   )
 
