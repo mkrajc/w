@@ -5,6 +5,7 @@ import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
 import org.majak.w.component.live.slide.{Slide, TextContent}
+import org.majak.w.component.live.smallslide.LiveSmallSlide
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
@@ -28,15 +29,20 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   //slide.addContent(ImageContent(Image.load(getClass.getResource("/images/cloud.jpg"))))
   slide.addContent(TextContent("hello"))
 
+  val liveSmallSlide = new LiveSmallSlide
+  liveSmallSlide.bindView
 
   val components = scala.collection.immutable.Map[String, Component](
 
     "SongList" -> toPivotView(songListPresenter.view).asComponent,
     "MainMenu" -> (new MainMenu).asComponent,
     "LiveScreen" -> (new LiveScreen).asComponent,
+    "LiveSmallSlide" -> liveSmallSlide.asComponent,
     "Slide" -> slide
 
   )
+
+
 
   val r = new Row
 
@@ -65,6 +71,11 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     }
   })
 
+  compButton setListData components.keys.toList
+  (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener.Adapter {
+    override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI
+  }
+
   setupUI
 
   private def setupUI: Unit = {
@@ -75,11 +86,6 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     compPanel removeAll()
     compPanel add current.getOrElse(NONE_LABEL)
 
-  }
-
-  compButton setListData components.keys.toList
-  (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener.Adapter {
-    override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI
   }
 
   override def startup(display: Display, properties: Map[String, String]): Unit = {

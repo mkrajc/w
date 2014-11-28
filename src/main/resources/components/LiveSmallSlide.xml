@@ -1,0 +1,23 @@
+<BoxPane xmlns:bxml="http://pivot.apache.org/bxml"
+         xmlns="org.apache.pivot.wtk"
+         xmlns:content="org.apache.pivot.wtk.content"
+         styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+    <BoxPane bxml:id="flowPane">
+        <FillPane bxml:id="slidePanel"/>
+        <BoxPane bxml:id="iconPanel" orientation="vertical"
+                 styles="{horizontalAlignment:'left', verticalAlignment:'top'}">
+            <PushButton bxml:id="showButton" tooltipText="%liveSmallSlide.button.show_t" >
+                <buttonData>
+                    <content:ButtonData icon="/images/screen-16.png" />
+                </buttonData>
+            </PushButton>
+            <PushButton bxml:id="hideButton" tooltipText="%liveSmallSlide.button.hide_t" >
+                <buttonData>
+                    <content:ButtonData icon="/images/screen-16-off.png"/>
+                </buttonData>
+            </PushButton>
+        </BoxPane>
+    </BoxPane>
+</BoxPane>
+
+

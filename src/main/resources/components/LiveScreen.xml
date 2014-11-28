@@ -14,12 +14,7 @@
                     <content:ButtonData text="%liveScreen.rightContent.tab.songs"/>
                 </TabPane.tabData>
                 <Border styles="{padding:2}">
-                    <FlowPane>
-                        <Label bxml:id="text" />
-                        <PushButton bxml:id="button" />
-                        <PushButton bxml:id="show" />
-                        <PushButton bxml:id="hide" />
-                    </FlowPane>
+                    <FillPane bxml:id="fillPane" />
                 </Border>
             </BoxPane>
 

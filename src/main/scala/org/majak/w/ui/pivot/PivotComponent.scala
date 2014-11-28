@@ -16,6 +16,7 @@ trait PivotComponent extends PivotView with Binding {
   override protected val resources = new Resources(null, "i18n/Application", Locale.getDefault)
 
   override def bindView = bindUi
+  override def unbindView = {}
 
   override def asComponent = readXml.getOrElse(new Label("<<UNDEFINED>>"))
 

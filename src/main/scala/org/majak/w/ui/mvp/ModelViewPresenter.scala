@@ -5,6 +5,7 @@ package org.majak.w.ui.mvp
  */
 trait View {
   def bindView
+  def unbindView
 }
 
 /**
@@ -15,6 +16,9 @@ trait View {
 abstract class Presenter[V <: View](var view: V = null) {
 
   protected def onBind(v: V) = {}
+  protected def onUnbind(v: V) = {}
+
+  protected var bound = false
 
   final def bind(view: V): Unit = {
     val start = System.currentTimeMillis()
@@ -25,7 +29,18 @@ abstract class Presenter[V <: View](var view: V = null) {
     val end = System.currentTimeMillis()
     println("Presenter [" + this + "] bind to view [" + view + "] in "
       + (endUi - start) + "/" + (end - start) + "ms")
+    bound = true
+  }
 
+  final def unbind: Unit = {
+    val start = System.currentTimeMillis()
+    view.unbindView
+    val endUi = System.currentTimeMillis()
+    onUnbind(view)
+    val end = System.currentTimeMillis()
+    println("Presenter [" + this + "] unbind view [" + view + "] in "
+      + (endUi - start) + "/" + (end - start) + "ms")
+    bound = false
   }
 
 }

@@ -4,16 +4,23 @@
       "live": "Live",
       "songs": "Songs"
     }
-  } ,
+  },
 
   "liveScreen": {
-    "rightContent" : {
+    "rightContent": {
       "tab": {
         "songs": "Songs",
         "quickText": "Quick Text"
       }
     }
+  },
 
+  "liveSmallSlide": {
+    "button": {
+      "show": "Show",
+      "show_t": "Show presentation screen",
+      "hide": "Hide",
+      "hide_t": "Hide presentation screen"
+    }
   }
-
 }
