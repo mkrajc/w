@@ -2,8 +2,8 @@ package org.majak.w
 
 import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk._
-import org.majak.w.component.live.monitor.PresentationPresenter
 import org.majak.w.component.live.screen.LiveScreenUiHandler
+import org.majak.w.component.presentation.PresentationPresenter
 import org.majak.w.di.UiModule
 import org.majak.w.ui.pivot.Conversions._
 

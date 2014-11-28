@@ -1,4 +1,4 @@
-package org.majak.w.component.live.monitor
+package org.majak.w.component.presentation
 
 import java.awt.{GraphicsConfiguration, GraphicsDevice, GraphicsEnvironment}
 

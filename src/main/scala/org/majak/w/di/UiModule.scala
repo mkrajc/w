@@ -2,10 +2,10 @@ package org.majak.w.di
 
 import java.awt.Window
 
-import org.majak.w.component.live.monitor.{PresentationPresenterFactory, PresentationPresenter}
 import org.majak.w.component.live.screen.{LiveScreenView, LiveScreen, LiveScreenPresenter}
 import org.majak.w.component.main.menu.{MainMenuView, MainMenu, MainMenuPresenter}
 import org.majak.w.component.main.screen.{MainScreenView, MainScreenPresenter, MainScreen}
+import org.majak.w.component.presentation.{PresentationPresenterFactory, PresentationPresenter}
 import org.majak.w.component.songlist.SongListPresenter
 import org.majak.w.component.songlist.pivot.SongListComponent
 import org.majak.w.component.songlist.view.SongListView
