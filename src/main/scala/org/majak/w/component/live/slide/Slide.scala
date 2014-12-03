@@ -4,91 +4,105 @@ import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.apache.pivot.wtk.media.Image
 import org.majak.w.ui.pivot.StylesUtils
-import test.CollapseTransition
+import org.majak.w.ui.pivot.effects.FadeInTransition
 
 
 /**
  * Represent slide on the screen that is able display content
  */
-class Slide extends Panel {
+class Slide(val effects: Boolean = false) extends Panel {
 
-  var imageView: ImageView = _
+  var imageView: Option[ImageView] = None
   var labels: List[Label] = Nil
   var fontSize: Int = _
   var textOffset: Int = _
   var horizontalAlignment = HorizontalAlignment.CENTER
   var verticalAlignment = VerticalAlignment.CENTER
 
-  var collapseTransition: CollapseTransition = null
+
 
   var textContent: TextContent = _
-  var imageContent: TextContent = _
+  var imageContent: ImageContent = _
 
   clearContent()
 
-  private def clearContent() = {
+  def clearContent() = {
     StylesUtils.setBackground(this, "#000000")
     clearTextContent()
     removeAll()
   }
 
-  private def clearTextContent() = {
+  def clearTextContent() = {
     labels.foreach(remove(_))
     labels = Nil
+  }
+
+  def clearImageContent() = {
+    imageView.foreach(remove(_))
+    imageView = None
   }
 
   private def showTextContent() = {
     clearTextContent()
     textContent.texts.foreach(addLabel)
-    labels = labels.reverse
     autosizeText()
-    labels.foreach(transition)
-  }
 
-  private def transition(comp: Component): Unit ={
-    if (collapseTransition == null) {
-      collapseTransition = new CollapseTransition(comp, 2000, 30)
-
-      val transitionListener = new TransitionListener() {
-        def transitionCompleted(transition: Transition) = {
-          val collapseTransition = transition.asInstanceOf[CollapseTransition]
-
-          Slide.this.collapseTransition = null
-          collapseTransition.end()
-        }
-      };
-
-      collapseTransition.start(transitionListener)
+    if(effects) {
+      labels.foreach(transition)
     }
   }
 
-  def addContent(c: Content) = {
+  private def showImageContent() = {
+    clearImageContent()
+    addImageView(new ImageView(imageContent.img))
+    autosizeImage()
+
+    if(effects) {
+      imageView.foreach(transition)
+    }
+  }
+
+  private def transition(comp: Component): Unit ={
+      val t = new FadeInTransition(comp, 2000, 30)
+
+      val transitionListener = new TransitionListener() {
+        def transitionCompleted(transition: Transition) = transition.end
+      }
+
+    t.start(transitionListener)
+
+  }
+
+  def showContent(c: Content) = {
     c match {
-      case i: ImageContent => addImageView(new ImageView(i.img))
-      case t: TextContent => textContent = t
+      case i: ImageContent => {
+        imageContent = i
+        showImageContent()
+        }
+      case t: TextContent => {
+        textContent = t
+        showTextContent()
+      }
     }
   }
 
   private def addImageView(iv: ImageView) = {
-    imageView = iv
-    // styles fill=true
-    // preserve aspect ratio
-    imageView.getStyles.put("fill", true)
-    imageView.getStyles.put("preserveAspectRatio", false)
+    imageView = Some(iv)
 
-    add(iv)
+    iv.getStyles.put("fill", true)
+    iv.getStyles.put("preserveAspectRatio", false)
+
+    insert(iv, 0)
   }
 
   private def addLabel(text: String) = {
     val label = new Label(text)
-    labels = label :: labels
+    labels = labels :+ label
 
     StylesUtils.setColor(label, "#ffffff")
     StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
     StylesUtils.applyVerticalAlignement(label, verticalAlignment)
     label.getStyles().put("wrapText", true)
-
-    println("adding label")
 
     add(label)
   }
@@ -98,15 +112,8 @@ class Slide extends Panel {
   }
 
   private def toAccumulatedSum(xs: List[Int]): List[Int] = {
-    /*xs.foldLeft((0, List[Int]())) { (pair, h) => {
-      (pair._1 + h, (pair._1 + h) :: pair._2)
-    }
-    }._2.reverse */
-
     (xs.foldLeft[List[Int]](Nil) { (list, x) => (list.headOption.getOrElse(0) + x) :: list}).reverse
-
   }
-
 
   private def autosizeText() = {
     computeFontSize()
@@ -115,10 +122,10 @@ class Slide extends Panel {
       val label = labels(i)
       //apply fontSize first
       StylesUtils.setFontSize(label, fontSize)
-      // size as size of slide so can be centered nicely
+      // size of label same as size of slide so can be centered nicely
       label.setWidth(getSize.width)
-      // set width limits so prefered height will be computed correctly
-      // otherwise it will consider infinite space and would be wrong
+      // set width limits so prefered height will be computed correctly on multilines
+      // otherwise it will consider infinite width and would be wrong
       label.setWidthLimits(0, getSize.width)
       label.setHeight(label.getPreferredHeight)
     }
@@ -132,7 +139,7 @@ class Slide extends Panel {
   }
 
   private def autosizeImage() = {
-    Option.apply(imageView).foreach(_.setSize(getSize))
+    imageView.foreach(_.setSize(getSize))
   }
 
   getComponentListeners.add(new ComponentListener.Adapter {
@@ -140,21 +147,7 @@ class Slide extends Panel {
       autosizeText()
       autosizeImage()
     }
-
-    override def visibleChanged(component: Component) = {
-      println(component.isVisible + " visible")
-      //showTextContent()
-      //transition()
-    }
-
-    override def parentChanged(component: Component, previousParent: Container) = {
-      println( " parent" + component.getParent)
-      if( component.getParent != null) {
-        showTextContent()
-      }
-    }
   })
-
 
 }
 

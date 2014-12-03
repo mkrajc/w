@@ -26,13 +26,69 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   val compButton = new ListButton
 
 
-  val slide = new Slide
-  slide.addContent(ImageContent(Image.load(getClass.getResource("/images/moon.jpg"))))
- // slide.addContent(TextContent(List("hello world testasdfasdfasdf")))
-  slide.addContent(TextContent(List("next","new line", "another day without linebreak","new line")))
-
   val liveSmallSlide = new LiveSmallSlide
   liveSmallSlide.bindView
+
+  private def createSlide(): Component = {
+    val slide = new Slide(true)
+    val slideRow = new Row()
+    slideRow.setHeight("1*")
+    val slidePane = new FillPane()
+    slidePane.add(slide)
+    slideRow.add(slidePane)
+
+    val buttonRow = new Row(40)
+
+    val buttonPanel = new BoxPane
+
+    val clearTextButton = new PushButton("Clear Text")
+    val clearImageButton = new PushButton("Clear Image")
+    val slideButton1 = new PushButton("Show Text 1")
+    val slideButton2 = new PushButton("Show Text 2")
+    val imageButton = new PushButton("Show Image")
+
+    slideButton1.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button) =
+        slide.showContent(TextContent(List("text 1", "new line", "another day without linebreak", "new line")))
+    })
+
+    slideButton2.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button) =
+        slide.showContent(TextContent(List("text 2", "text 2", "very long long logn long long long line")))
+    })
+
+    imageButton.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button) =
+        slide.showContent(ImageContent(Image.load(getClass.getResource("/images/moon.jpg"))))
+    })
+
+    clearTextButton.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button) =
+        slide.clearTextContent()
+    })
+
+    clearImageButton.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button) =
+        slide.clearImageContent()
+    })
+
+    buttonPanel.add(clearTextButton)
+    buttonPanel.add(slideButton1)
+    buttonPanel.add(slideButton2)
+    buttonPanel.add(clearImageButton)
+    buttonPanel.add(imageButton)
+
+    buttonRow.add(buttonPanel)
+
+    val slideTestPanel = new TablePane
+    val c = new Column
+    c.setWidth("1*")
+    slideTestPanel.getColumns.add(c)
+    slideTestPanel.getRows.add(buttonRow)
+    slideTestPanel.getRows.add(slideRow)
+
+    slideTestPanel
+  }
 
   val components = scala.collection.immutable.Map[String, Component](
 
@@ -40,10 +96,9 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     "MainMenu" -> (new MainMenu).asComponent,
     "LiveScreen" -> (new LiveScreen).asComponent,
     "LiveSmallSlide" -> liveSmallSlide.asComponent,
-    "Slide" -> slide
+    "Slide" -> createSlide()
 
   )
-
 
 
   val r = new Row
