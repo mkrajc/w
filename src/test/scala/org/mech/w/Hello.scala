@@ -101,4 +101,12 @@ class Hello extends Application {
   def resume(): Unit = ???
   def suspend(): Unit = ???
 
+
+
+}
+
+object Hello {
+  def main(args: Array[String]) {
+    DesktopApplicationContext.main(classOf[Hello], args)
+  }
 }

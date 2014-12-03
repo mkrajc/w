@@ -1,11 +1,11 @@
 package org.majak.w.component.live.slide
 
-import java.awt.{Font, Graphics2D}
-
 import org.apache.pivot.wtk._
+import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.apache.pivot.wtk.media.Image
-import org.apache.pivot.wtk.skin.LabelSkin
 import org.majak.w.ui.pivot.StylesUtils
+import test.CollapseTransition
+
 
 /**
  * Represent slide on the screen that is able display content
@@ -19,20 +19,53 @@ class Slide extends Panel {
   var horizontalAlignment = HorizontalAlignment.CENTER
   var verticalAlignment = VerticalAlignment.CENTER
 
-  StylesUtils.setBackground(this, "#000000")
+  var collapseTransition: CollapseTransition = null
 
+  var textContent: TextContent = _
+  var imageContent: TextContent = _
+
+  clearContent()
+
+  private def clearContent() = {
+    StylesUtils.setBackground(this, "#000000")
+    clearTextContent()
+    removeAll()
+  }
+
+  private def clearTextContent() = {
+    labels.foreach(remove(_))
+    labels = Nil
+  }
+
+  private def showTextContent() = {
+    clearTextContent()
+    textContent.texts.foreach(addLabel)
+    labels = labels.reverse
+    autosizeText()
+    labels.foreach(transition)
+  }
+
+  private def transition(comp: Component): Unit ={
+    if (collapseTransition == null) {
+      collapseTransition = new CollapseTransition(comp, 2000, 30)
+
+      val transitionListener = new TransitionListener() {
+        def transitionCompleted(transition: Transition) = {
+          val collapseTransition = transition.asInstanceOf[CollapseTransition]
+
+          Slide.this.collapseTransition = null
+          collapseTransition.end()
+        }
+      };
+
+      collapseTransition.start(transitionListener)
+    }
+  }
 
   def addContent(c: Content) = {
     c match {
       case i: ImageContent => addImageView(new ImageView(i.img))
-      case t: TextContent => {
-        t.texts.foreach(
-        { s =>
-          val label = new Label(s)
-          labels = label :: labels
-          add(label)
-        })
-      }
+      case t: TextContent => textContent = t
     }
   }
 
@@ -46,54 +79,83 @@ class Slide extends Panel {
     add(iv)
   }
 
-  private def setLabel(l: Label) = {
-    // ll = l
-    l.getStyles.put("horizontalAlignment", HorizontalAlignment.CENTER)
-    l.getStyles.put("verticalAlignment", VerticalAlignment.CENTER)
-    l.getStyles().put("font", new Font("Arial", Font.BOLD, 80))
+  private def addLabel(text: String) = {
+    val label = new Label(text)
+    labels = label :: labels
+
+    StylesUtils.setColor(label, "#ffffff")
+    StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
+    StylesUtils.applyVerticalAlignement(label, verticalAlignment)
+    label.getStyles().put("wrapText", true)
+
+    println("adding label")
+
+    add(label)
+  }
+
+  private def computeFontSize() = {
+    fontSize = getSize.height / 10
+  }
+
+  private def toAccumulatedSum(xs: List[Int]): List[Int] = {
+    /*xs.foldLeft((0, List[Int]())) { (pair, h) => {
+      (pair._1 + h, (pair._1 + h) :: pair._2)
+    }
+    }._2.reverse */
+
+    (xs.foldLeft[List[Int]](Nil) { (list, x) => (list.headOption.getOrElse(0) + x) :: list}).reverse
+
+  }
 
 
-    // l.getStyles().put("padding", "{top:40, left:30, bottom:40, right:30}")
-    //l.setSkin(new TestLabelSkin())
-    //l.getStyles.put("backgroundColor", "#343434")
-    add(l)
+  private def autosizeText() = {
+    computeFontSize()
+
+    for (i <- 0 until labels.size) {
+      val label = labels(i)
+      //apply fontSize first
+      StylesUtils.setFontSize(label, fontSize)
+      // size as size of slide so can be centered nicely
+      label.setWidth(getSize.width)
+      // set width limits so prefered height will be computed correctly
+      // otherwise it will consider infinite space and would be wrong
+      label.setWidthLimits(0, getSize.width)
+      label.setHeight(label.getPreferredHeight)
+    }
+
+    val heights = 0 :: labels.map(_.getPreferredHeight)
+    val liftedH = toAccumulatedSum(heights)
+
+    textOffset = (getSize.height - heights.sum) / 2
+    (liftedH, labels).zipped.map { (h, l) => l.setLocation(0, textOffset + h)}
+
+  }
+
+  private def autosizeImage() = {
+    Option.apply(imageView).foreach(_.setSize(getSize))
   }
 
   getComponentListeners.add(new ComponentListener.Adapter {
     override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
+      autosizeText()
+      autosizeImage()
+    }
 
-      fontSize = getSize.height / 10
+    override def visibleChanged(component: Component) = {
+      println(component.isVisible + " visible")
+      //showTextContent()
+      //transition()
+    }
 
-      for (i <- 0 until labels.size) {
-        val label = labels(i)
-
-        //apply styles first
-        StylesUtils.setColor(label, "#ffffff")
-        StylesUtils.setFontSize(label, fontSize)
-        StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
-        StylesUtils.applyVerticalAlignement(label, verticalAlignment)
-        label.getStyles().put("wrapText", true)
-
-        // size as size of slide so can be centered nicely
-        label.setWidth(getSize.width)
-        // set width limits so prefered height will be computed correctly
-        // otherwise it will consider infinite space and would be wrong
-        label.setWidthLimits(0, getSize.width)
-
-        label.setHeight(label.getPreferredHeight)
-
-        println("After:" + label.getSize)
+    override def parentChanged(component: Component, previousParent: Container) = {
+      println( " parent" + component.getParent)
+      if( component.getParent != null) {
+        showTextContent()
       }
-
-      val heights = 0 :: labels.map(_.getPreferredHeight)
-      val liftedH = heights.foldLeft(List[Int]()){
-        (list, h) => (list.sum + h) :: list
-      }
-
-      textOffset = (getSize.height - heights.sum) / 2
-      (liftedH.reverse, labels).zipped.map { (h, l) => l.setLocation(0, textOffset + h)}
     }
   })
+
+
 }
 
 trait Content
@@ -101,8 +163,3 @@ trait Content
 case class ImageContent(img: Image) extends Content
 
 case class TextContent(texts: List[String]) extends Content
-
-class ShadowLabelSkin extends LabelSkin {
-  override def paint(graphics: Graphics2D): Unit = super.paint(graphics)
-}
-

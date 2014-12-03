@@ -3,8 +3,9 @@ package org.majak.w.ui.component
 import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
+import org.apache.pivot.wtk.media.Image
 import org.majak.w.component.live.screen.LiveScreen
-import org.majak.w.component.live.slide.{Slide, TextContent}
+import org.majak.w.component.live.slide.{TextContent, ImageContent, Slide}
 import org.majak.w.component.live.smallslide.LiveSmallSlide
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
@@ -26,8 +27,9 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
 
   val slide = new Slide
-  //slide.addContent(ImageContent(Image.load(getClass.getResource("/images/cloud.jpg"))))
-  slide.addContent(TextContent(List("hello world testasdfasdfasdf","new line", "another")))
+  slide.addContent(ImageContent(Image.load(getClass.getResource("/images/moon.jpg"))))
+ // slide.addContent(TextContent(List("hello world testasdfasdfasdf")))
+  slide.addContent(TextContent(List("next","new line", "another day without linebreak","new line")))
 
   val liveSmallSlide = new LiveSmallSlide
   liveSmallSlide.bindView
