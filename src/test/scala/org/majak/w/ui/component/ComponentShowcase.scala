@@ -27,7 +27,7 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
   val slide = new Slide
   //slide.addContent(ImageContent(Image.load(getClass.getResource("/images/cloud.jpg"))))
-  slide.addContent(TextContent("hello"))
+  slide.addContent(TextContent(List("hello world testasdfasdfasdf","new line", "another")))
 
   val liveSmallSlide = new LiveSmallSlide
   liveSmallSlide.bindView

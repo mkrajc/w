@@ -13,6 +13,6 @@ public class TLabel extends Label {
 
     @Override
     protected void installSkin(Class<? extends Component> componentClass) {
-        setSkin(new TestLabelSkin());
+        setSkin(new SlideLabelSkin());
     }
 }

@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
-import java.awt.font.TextLayout;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -20,35 +19,22 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.text.StringCharacterIterator;
 
-/**
- * Label skin.
- */
-public class TestLabelSkin extends ComponentSkin implements LabelListener {
-    private Font font;
-    private Color color;
-    private Color disabledColor;
+public class SlideLabelSkin extends ComponentSkin implements LabelListener {
+
+    private Font font = Theme.getTheme().getFont();
+    private Color color = Color.BLACK;
+    private Color disabledColor= Color.GRAY;
     private Color backgroundColor;
     private TextDecoration textDecoration;
-    private HorizontalAlignment horizontalAlignment;
-    private VerticalAlignment verticalAlignment;
-    private Insets padding;
-    private boolean wrapText;
+    private HorizontalAlignment horizontalAlignment= HorizontalAlignment.LEFT;
+    private VerticalAlignment verticalAlignment= VerticalAlignment.TOP;
+    private Insets padding = Insets.NONE;
+    private boolean wrapText = false;
+    private boolean shadow = false;
+    private boolean outline = false;
 
     private ArrayList<GlyphVector> glyphVectors = null;
     private float textHeight = 0;
-
-    public TestLabelSkin() {
-        Theme theme = Theme.getTheme();
-        font = theme.getFont();
-        color = Color.BLACK;
-        disabledColor = Color.GRAY;
-        backgroundColor = null;
-        textDecoration = null;
-        horizontalAlignment = HorizontalAlignment.LEFT;
-        verticalAlignment = VerticalAlignment.TOP;
-        padding = Insets.NONE;
-        wrapText = false;
-    }
 
     @Override
     public void install(Component component) {
@@ -104,8 +90,8 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
 
             int n = text.length();
             if (n > 0
-                && wrapText
-                && widthUpdated != -1) {
+                    && wrapText
+                    && widthUpdated != -1) {
                 // Adjust width for padding
                 widthUpdated -= (padding.left + padding.right);
 
@@ -126,11 +112,11 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
                         }
 
                         Rectangle2D characterBounds = font.getStringBounds(text, i, i + 1,
-                            fontRenderContext);
+                                fontRenderContext);
                         lineWidth += characterBounds.getWidth();
 
                         if (lineWidth > widthUpdated
-                            && lastWhitespaceIndex != -1) {
+                                && lastWhitespaceIndex != -1) {
                             i = lastWhitespaceIndex;
 
                             lineWidth = 0;
@@ -190,6 +176,22 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
         preferredWidth += (padding.left + padding.right);
 
         return new Dimensions(preferredWidth, preferredHeight);
+    }
+
+    public void setShadow(boolean shadow) {
+        this.shadow = shadow;
+    }
+
+    public void setOutline(boolean outline) {
+        this.outline = outline;
+    }
+
+    public boolean isOutline() {
+        return outline;
+    }
+
+    public boolean isShadow() {
+        return shadow;
     }
 
     @Override
@@ -274,7 +276,7 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
                             lineWidth += characterBounds.getWidth();
 
                             if (lineWidth > width
-                                && lastWhitespaceIndex != -1) {
+                                    && lastWhitespaceIndex != -1) {
                                 appendLine(text, start, lastWhitespaceIndex, fontRenderContext);
 
                                 i = lastWhitespaceIndex;
@@ -387,23 +389,16 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
                     }
                 }
                 else {
-                   /* String text = label.getText();
-                    if (text != null && text.length() > 0) {
-                        graphics.drawString(text, x, y + ascent);
-                    }*/
-                   // graphics.drawGlyphVector(glyphVector, x, y + ascent);
 
-                    Font font = new Font("Georgia", Font.ITALIC, 50);
-                    setRenderingHints(graphics);
-                    TextLayout textLayout = new TextLayout(label.getText(), font, graphics.getFontRenderContext());
-                    graphics.setPaint(Color.WHITE);
-                    graphics.fillRect(0, 0, width, height);
+                    graphics.drawImage(createBlurredText(font, Color.GRAY, label.getText(), 12),0, 0, width, height, null);
 
-                    graphics.setPaint(new Color(150, 150, 150));
-                    textLayout.draw(graphics, x+3, y+3);
+                    //graphics.setPaint(Color.GRAY);
+                    //graphics.drawGlyphVector(glyphVector, x+3, y+3 + ascent);
+                    //graphics.drawGlyphVector(glyphVector, x-3, y+3 + ascent);
+                    //graphics.drawGlyphVector(glyphVector, x-3, y-3 + ascent);
+                    //graphics.drawGlyphVector(glyphVector, x+3, y-3 + ascent);
                     graphics.setPaint(Color.BLACK);
-                    textLayout.draw(graphics, x, y);
-
+                    graphics.drawGlyphVector(glyphVector, x, y + ascent);
                 }
 
                 // Draw the text decoration
@@ -435,13 +430,6 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
         }
     }
 
-    private void setRenderingHints(Graphics2D g) {
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-    }
-
     /**
      * @return
      * <tt>false</tt>; labels are not focusable.
@@ -454,7 +442,7 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
     @Override
     public boolean isOpaque() {
         return (backgroundColor != null
-            && backgroundColor.getTransparency() == Transparency.OPAQUE);
+                && backgroundColor.getTransparency() == Transparency.OPAQUE);
     }
 
     /**
@@ -717,6 +705,54 @@ public class TestLabelSkin extends ComponentSkin implements LabelListener {
     @Override
     public void maximumLengthChanged(Label label, int previousMaximumLength) {
         invalidateComponent();
+    }
+
+    public BufferedImage createBlurredText(Font f, Color col, String str, int blurIntensity){
+
+        //     Create a graphics object so we can get at the details in the font
+        BufferedImage bTemp = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+        Graphics gTemp = bTemp.createGraphics();
+        gTemp.setFont(f);
+        FontMetrics fm = gTemp.getFontMetrics();
+
+        //How much extra space is needed to accomidate the blurred String
+        int spread = 8;
+
+
+        BufferedImage bCBT = new BufferedImage(
+                fm.stringWidth(str)+spread,
+                fm.getFont().getSize()+spread,
+                BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D gCBT = (Graphics2D)bCBT.createGraphics();
+
+         /*Draws the string as centered as possible inside the buffer*/
+        gCBT.setColor(col);
+        gCBT.setFont(f);
+        gCBT.drawString(str,spread/2,spread/2+fm.getFont().getSize());
+
+        int blur = 30-blurIntensity;
+
+        float d = (((.10f/.09f)*(blur+132)/160)-1.0f);
+
+        float[] blurKernel = {
+                1/9f - d, 1/9f -d, 1/9f-d,    // low-pass filter kernel
+                1/9f-d, 1/9f+8*d, 1/9f-d,
+                1/9f-d, 1/9f-d, 1/9f-d
+        };
+
+        ConvolveOp cop = new ConvolveOp(new Kernel(3, 3, blurKernel),
+                ConvolveOp.EDGE_NO_OP,
+                null);
+
+        //Layer the blur effects
+        for(int x=0;x<5;x++)
+            gCBT.drawImage(bCBT, cop, 0, 0);
+
+
+        gTemp.dispose();//Get rid of any data in the 1x1 BF
+        return bCBT;
+
     }
 
 }

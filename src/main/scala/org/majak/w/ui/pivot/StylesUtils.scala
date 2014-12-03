@@ -1,6 +1,9 @@
 package org.majak.w.ui.pivot
 
+import java.awt.Font
+
 import org.apache.pivot.wtk.{VerticalAlignment, Component, HorizontalAlignment}
+import org.majak.w.utils.Utils
 
 
 object StylesUtils {
@@ -11,6 +14,10 @@ object StylesUtils {
 
   def centerVertical(comp: Component) = {
     applyVerticalAlignement(comp, VerticalAlignment.CENTER)
+  }
+
+  def setColor(comp: Component, color: String) = {
+    comp.getStyles.put("color", color)
   }
 
   def setBackground(comp: Component, color: String) = {
@@ -24,4 +31,13 @@ object StylesUtils {
   def applyVerticalAlignement(comp: Component, align: VerticalAlignment): Unit = {
     comp.getStyles.put("verticalAlignment", align)
   }
+
+  def setFontSize(comp: Component, size: Int): Unit = {
+    val fontOption = Utils.nullAsOption[Font](comp.getStyles.get("font"))
+    val f = fontOption.getOrElse(defaultFont)
+    comp.getStyles.put("font", new Font(f.getFamily, f.getStyle, size))
+  }
+
+  val defaultFont: Font = new Font("Arial", Font.BOLD, 12)
+
 }
