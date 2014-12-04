@@ -6,11 +6,14 @@ import java.util.UUID
 import org.apache.commons.io.FileUtils
 import org.junit.runner.RunWith
 import org.majak.w.TestUtils
+import org.mockito
+import org.mockito.Mockito
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
 
 @RunWith(classOf[JUnitRunner])
-class DirectoryWatchDogSpec extends FlatSpec with Matchers {
+class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
 
   "DirectoryWatchDog" should "initialize if directory exist" in {
     val wd = new DirectoryWatchDog(TestUtils.tempDir)
@@ -79,8 +82,68 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers {
     }
   }
 
+  it should "not notify on rescan when nothing changed" in {
+
+    testInTestDir { f =>
+      val h = mock[WatchDogHandler]
+
+      prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
+      val wd = new DirectoryWatchDog(f)
+      wd.addHandler(h)
+
+      val data = wd.scan()
+      val index = data.left.get
+
+      wd.rescan(index)
+
+      Mockito.verifyZeroInteractions(h)
+
+    }
+  }
+
+  it should "be notified when new files are added to directory" in {
+
+    testInTestDir { f =>
+      val h = mock[WatchDogHandler]
+
+      prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
+      val wd = new DirectoryWatchDog(f)
+      wd.addHandler(h)
+
+      val data = wd.scan()
+      val index = data.left.get
+
+      prepareFilesInDir(f, Map("c" -> "c", "d" -> "d"))
+      wd.rescan(index)
+
+      Mockito.verify(h, Mockito.times(1)).onFilesAdded(mockito.Matchers.any(classOf[Set[FileData]]))
+
+    }
+  }
+
+  it should "be notified when some files are deleted from directory" in {
+
+    testInTestDir { f =>
+      val h = mock[WatchDogHandler]
+
+      val files = prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
+      val wd = new DirectoryWatchDog(f)
+      wd.addHandler(h)
+
+      val data = wd.scan()
+      val index = data.left.get
+
+      files.foreach(FileUtils.deleteQuietly(_))
+
+      wd.rescan(index)
+
+      Mockito.verify(h, Mockito.times(1)).onFilesRemoved(mockito.Matchers.any(classOf[Set[FileData]]))
+
+    }
+  }
+
   def prepareFilesInDir(dir: File, map: Map[String, String]) = {
-    map.foreach(kv => createFile(dir, kv._1, kv._2))
+    map.map(kv => createFile(dir, kv._1, kv._2))
   }
 
   val tmpDir: File = TestUtils.tempDir
@@ -97,10 +160,11 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers {
     }
   }
 
-  def createFile(dir: File, name: String, content: String, ro: Boolean = false): Unit = {
+  def createFile(dir: File, name: String, content: String, ro: Boolean = false): File = {
     val f = new File(dir, name)
     FileUtils.writeStringToFile(f, content)
     f.setWritable(!ro)
+    f
     //      println("created file: " + f)
   }
 
