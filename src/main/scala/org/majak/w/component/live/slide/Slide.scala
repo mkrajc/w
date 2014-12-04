@@ -2,9 +2,11 @@ package org.majak.w.component.live.slide
 
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
-import org.apache.pivot.wtk.media.Image
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
+
+import scala.collection.immutable.List
+import scala.concurrent.duration._
 
 
 /**
@@ -12,86 +14,93 @@ import org.majak.w.ui.pivot.effects.FadeInTransition
  */
 class Slide(val effects: Boolean = false) extends Panel {
 
-  var imageView: Option[ImageView] = None
-  var labels: List[Label] = Nil
+  private var imageView: Option[ImageView] = None
+  private var labels: List[Label] = Nil
+
   var fontSize: Int = _
-  var textOffset: Int = _
-  var horizontalAlignment = HorizontalAlignment.CENTER
-  var verticalAlignment = VerticalAlignment.CENTER
+  private var textOffset: Int = _
+  private var horizontalAlignment = HorizontalAlignment.CENTER
+  private var verticalAlignment = VerticalAlignment.CENTER
 
+  var listeners: List[SlideListener] = Nil
 
-
-  var textContent: TextContent = _
-  var imageContent: ImageContent = _
-
+  StylesUtils.setBackground(this, "#000000")
   clearContent()
 
+  getComponentListeners.add(new ComponentListener.Adapter {
+    override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
+      autosizeText()
+      autosizeImage()
+    }
+  })
+
   def clearContent() = {
-    StylesUtils.setBackground(this, "#000000")
     clearTextContent()
+    clearImageContent()
     removeAll()
   }
 
-  def clearTextContent() = {
+  private def clearTextContent() = {
     labels.foreach(remove(_))
     labels = Nil
   }
 
-  def clearImageContent() = {
+  private def clearImageContent() = {
     imageView.foreach(remove(_))
     imageView = None
   }
 
-  private def showTextContent() = {
+  private def showTextContent(textContent: TextContent) = {
     clearTextContent()
     textContent.texts.foreach(addLabel)
     autosizeText()
 
-    if(effects) {
+    if (effects) {
       labels.foreach(transition)
     }
   }
 
-  private def showImageContent() = {
+  def showContent(c: Content) = {
+    System.out.println(s"DEBUG show content [${c}] on  slide [${this}]")
+    c match {
+      case i: ImageContent => showImageContent(i)
+      case t: TextContent => showTextContent(t)
+      case _: ClearTextContent => clearTextContent()
+      case _: ClearImageContent => clearImageContent()
+      case _: ClearContent => clearContent()
+    }
+    listeners.foreach(_.onContent(c))
+
+  }
+
+  private def showImageContent(imageContent: ImageContent) = {
     clearImageContent()
     addImageView(new ImageView(imageContent.img))
     autosizeImage()
 
-    if(effects) {
+    if (effects) {
       imageView.foreach(transition)
     }
   }
 
-  private def transition(comp: Component): Unit ={
-      val t = new FadeInTransition(comp, 2000, 30)
+  private def transition(comp: Component): Unit = {
+    val t = new FadeInTransition(comp, 1.second.toMillis.toInt, 30)
 
-      val transitionListener = new TransitionListener() {
-        def transitionCompleted(transition: Transition) = transition.end
-      }
+    val transitionListener = new TransitionListener() {
+      def transitionCompleted(transition: Transition) = transition.end
+    }
 
     t.start(transitionListener)
 
   }
 
-  def showContent(c: Content) = {
-    c match {
-      case i: ImageContent => {
-        imageContent = i
-        showImageContent()
-        }
-      case t: TextContent => {
-        textContent = t
-        showTextContent()
-      }
-    }
-  }
-
   private def addImageView(iv: ImageView) = {
     imageView = Some(iv)
 
-    iv.getStyles.put("fill", true)
+    iv.getStyles.put("fill", false)
     iv.getStyles.put("preserveAspectRatio", false)
 
+    // image must be first so it won't cover text
     insert(iv, 0)
   }
 
@@ -101,7 +110,6 @@ class Slide(val effects: Boolean = false) extends Panel {
 
     StylesUtils.setColor(label, "#ffffff")
     StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
-    StylesUtils.applyVerticalAlignement(label, verticalAlignment)
     label.getStyles().put("wrapText", true)
 
     add(label)
@@ -133,26 +141,37 @@ class Slide(val effects: Boolean = false) extends Panel {
     val heights = 0 :: labels.map(_.getPreferredHeight)
     val liftedH = toAccumulatedSum(heights)
 
-    textOffset = (getSize.height - heights.sum) / 2
+    textOffset = computeTextOffset(heights)
     (liftedH, labels).zipped.map { (h, l) => l.setLocation(0, textOffset + h)}
 
+  }
+
+  private def computeTextOffset(heights: List[Int]): Int ={
+    verticalAlignment match {
+      case VerticalAlignment.BOTTOM => (getSize.height - heights.sum)
+      case VerticalAlignment.CENTER => (getSize.height - heights.sum) / 2
+      case VerticalAlignment.TOP => 0
+    }
   }
 
   private def autosizeImage() = {
     imageView.foreach(_.setSize(getSize))
   }
 
-  getComponentListeners.add(new ComponentListener.Adapter {
-    override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
-      autosizeText()
-      autosizeImage()
-    }
-  })
+  def setHorizontalAlign(ha: HorizontalAlignment) = {
+    horizontalAlignment = ha
+    labels.foreach(StylesUtils.applyHorizontalAlignement(_, ha))
+  }
+
+  def setVerticalAlign(va: VerticalAlignment) = {
+    verticalAlignment = va
+    autosizeText()
+  }
+
+  def addSlideListener(l: SlideListener) = listeners = listeners :+ l
 
 }
 
-trait Content
-
-case class ImageContent(img: Image) extends Content
-
-case class TextContent(texts: List[String]) extends Content
+trait SlideListener {
+  def onContent(content: Content)
+}

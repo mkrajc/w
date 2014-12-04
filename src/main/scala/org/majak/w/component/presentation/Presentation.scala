@@ -1,8 +1,7 @@
 package org.majak.w.component.presentation
 
-import java.awt.Font
-
 import org.apache.pivot.wtk._
+import org.majak.w.component.live.slide.{TextContent, Slide}
 import org.majak.w.ui.pivot.PivotComponent
 
 class Presentation(val dp: DisplayProvider) extends PivotComponent with PresentationView {
@@ -20,14 +19,10 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
     window.setMaximized(true)
     window.setTitle("presentation")
 
-    val l = new Label("Presentation")
-    l.getStyles.put("horizontalAlignment", HorizontalAlignment.CENTER)
-    l.getStyles.put("verticalAlignment", VerticalAlignment.CENTER)
-    l.getStyles.put("backgroundColor", "#000000")
-    l.getStyles.put("color", "#ffffff")
-    l.getStyles().put("font", new Font("Arial", Font.BOLD, 80));
+    val presentationSlide = new Slide(true)
+    presentationSlide.showContent(TextContent(List("Presentation")))
 
-    window setContent (l)
+    window setContent (presentationSlide)
   }
 
   override def show = {
