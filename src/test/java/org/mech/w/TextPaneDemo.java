@@ -76,7 +76,7 @@ public class TextPaneDemo extends Application.Adapter {
         Font italicButtonFont = (Font) italicButton.getStyles().get("font");
         italicButton.getStyles().put("font", italicButtonFont.deriveFont(Font.ITALIC));
 
-        fontFamilyListButton.setListData(new ArrayList<>(
+        fontFamilyListButton.setListData(new ArrayList(
             GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
         fontSizeListButton.setSelectedItem(fontFamilyListButton.getListData().get(0));
         fontFamilyListButton.setItemRenderer(new ListViewItemRenderer() {
@@ -384,7 +384,7 @@ public class TextPaneDemo extends Application.Adapter {
         // I can't apply the styles while iterating over the tree, because I
         // need to update the tree.
         // So first collect a list of all the nodes in the tree.
-        List<Node> nodeList = new ArrayList<>();
+        List<Node> nodeList = new ArrayList();
         collectNodes(document, nodeList);
 
         final int selectionStart = textPane.getSelectionStart();
