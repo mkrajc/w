@@ -6,14 +6,12 @@ import java.util.UUID
 import org.apache.commons.io.FileUtils
 import org.junit.runner.RunWith
 import org.majak.w.TestUtils
-import org.mockito
-import org.mockito.Mockito
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
 
 @RunWith(classOf[JUnitRunner])
-class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
+class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   "DirectoryWatchDog" should "initialize if directory exist" in {
     val wd = new DirectoryWatchDog(TestUtils.tempDir)
@@ -83,32 +81,28 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
   }
 
   it should "not notify on rescan when nothing changed" in {
-
     testInTestDir { f =>
-      val h = mock[WatchDogHandler]
-
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
-      wd.addHandler(h)
-
       val data = wd.scan()
-      val index = data.left.get
-
-      wd.rescan(index)
-
-      Mockito.verifyZeroInteractions(h)
-
+      assert(data === wd.rescan(data.left.get))
     }
   }
 
   it should "be notified when new files are added to directory" in {
 
     testInTestDir { f =>
-      val h = mock[WatchDogHandler]
+
 
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
-      wd.addHandler(h)
+
+      var added = 0
+      val h = (fd: FileData) => {
+        added = added + 1
+        println("added " + fd.path)
+      }
+      wd.addAddFileDataHandler(h)
 
       val data = wd.scan()
       val index = data.left.get
@@ -116,7 +110,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
       prepareFilesInDir(f, Map("c" -> "c", "d" -> "d"))
       wd.rescan(index)
 
-      Mockito.verify(h, Mockito.times(1)).onFilesAdded(mockito.Matchers.any(classOf[Set[FileData]]))
+      assert(added === 2)
 
     }
   }
@@ -124,11 +118,15 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
   it should "be notified when some files are deleted from directory" in {
 
     testInTestDir { f =>
-      val h = mock[WatchDogHandler]
-
       val files = prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
-      wd.addHandler(h)
+
+      var deleted = 0
+      val h = (fd: FileData) => {
+        deleted = deleted + 1
+        println("deleted " + fd.path)
+      }
+      wd.addRemovedFileDataHandler(h)
 
       val data = wd.scan()
       val index = data.left.get
@@ -137,8 +135,37 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
 
       wd.rescan(index)
 
-      Mockito.verify(h, Mockito.times(1)).onFilesRemoved(mockito.Matchers.any(classOf[Set[FileData]]))
+      assert(deleted === 2)
+    }
+  }
 
+  it should "be notified when some files are changed in directory" in {
+
+    testInTestDir { f =>
+      val fileChanged = prepareFilesInDir(f, Map("a" -> "a"))
+      val fileRenamed = prepareFilesInDir(f, Map("b" -> "b"))
+      val fileRenAndChanged = prepareFilesInDir(f, Map("c" -> "c"))
+
+      val wd = new DirectoryWatchDog(f)
+
+      var changed = 0
+      val h = (fdCurrent: FileData, fdPrevious: FileData) => {
+        changed = changed + 1
+      }
+
+      wd.addChangedFileDataHandler(h)
+
+      val data = wd.scan()
+      val index = data.left.get
+
+      fileChanged.foreach(FileUtils.write(_, "+append", true))
+      fileRenamed.foreach(f => f.renameTo(new File(f.getParent, "renamed")))
+      fileRenAndChanged.foreach(FileUtils.write(_, "+append", true))
+      fileRenAndChanged.foreach(f => f.renameTo(new File(f.getParent, "new")))
+
+      wd.rescan(index)
+
+      assert(changed === 2)
     }
   }
 
@@ -150,13 +177,11 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
 
   def testInTestDir(test: File => Unit): Unit = {
     val dir = new File(tmpDir, UUID.randomUUID().toString)
-    //  println("creating dir [" + dir.getAbsolutePath + "]")
     dir.mkdir()
     try {
       test(dir)
     } finally {
       FileUtils.deleteDirectory(dir)
-      //    println("deleting dir  [" + dir.getAbsolutePath + "]")
     }
   }
 
@@ -165,7 +190,6 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar{
     FileUtils.writeStringToFile(f, content)
     f.setWritable(!ro)
     f
-    //      println("created file: " + f)
   }
 
 }
