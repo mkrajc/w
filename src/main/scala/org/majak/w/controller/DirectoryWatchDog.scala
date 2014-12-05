@@ -4,16 +4,25 @@ import java.io.{File, FileInputStream}
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.majak.w.controller.DirectoryWatchDog.IndexResult
+
+object DirectoryWatchDog {
+  type IndexResult = Either[Index, List[String]]
+}
 
 class DirectoryWatchDog(val directory: File) {
 
+
+
   require(directory.exists(), "Not existing directory: " + directory)
 
-  def scan(): Either[Index, List[String]] = {
+  var handlers: List[WatchDogHandler] = Nil
+
+  def scan(): IndexResult = {
     val fData = scanFiles(directory.listFiles.toList, Nil)
     val (validFData, hexCollisions) = fData.groupBy(_.md5hex).partition(_._2.length == 1)
 
-    if (hexCollisions.isEmpty) Left(new Index(validFData.flatMap(_._2).toList))
+    if (hexCollisions.isEmpty) Left(new Index(validFData.flatMap(_._2).toSet))
     else Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
   }
 
@@ -37,11 +46,46 @@ class DirectoryWatchDog(val directory: File) {
         }
       }
     }
+  }
 
+  def rescan(lastIndex: Index): IndexResult = {
+
+    def compareIndices(lastIndex: Index, currentIndex: Index): IndexResult = {
+      val added = currentIndex.fileData &~ lastIndex.fileData
+      println("added:" + added.mkString)
+      val deleted = lastIndex.fileData &~ currentIndex.fileData
+      println("deleted:" + deleted.mkString)
+
+      if(!added.isEmpty){
+        handlers.foreach(_.onFilesAdded(added))
+      }
+
+      if(!deleted.isEmpty){
+        handlers.foreach(_.onFilesRemoved(added))
+      }
+
+      Left(currentIndex)
+    }
+
+    val ir = scan()
+    ir match {
+      case Right(errors) => Right("Cannot scan directory." :: errors)
+      case Left(index) => compareIndices(lastIndex, index)
+    }
 
   }
+
+  def addHandler(h: WatchDogHandler) = handlers = h :: handlers
+}
+
+trait WatchDogHandler {
+  def onFilesRemoved(removed: Set[FileData])
+
+  def onFilesChanged(changed: Set[FileData])
+
+  def onFilesAdded(added: Set[FileData])
 }
 
 case class FileData(path: String, md5hex: String)
 
-case class Index(fileData: List[FileData])
+case class Index(fileData: Set[FileData])
