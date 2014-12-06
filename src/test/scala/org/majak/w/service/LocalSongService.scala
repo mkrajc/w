@@ -1,6 +1,6 @@
 package org.majak.w.service
 
-import org.majak.w.model.Song
+import org.majak.w.model.SongModel.Song
 
 import scala.io.Source
 
@@ -9,9 +9,9 @@ class LocalSongService extends SongService{
 
   def toSong(line: String): Song = {
     val sp = line.span(!_.isDigit)
-    try {
-      Song(sp._2.toInt, name = sp._1)
-    } catch {
+    try
+      Song(sp._2.toInt, name = sp._1, Nil)
+    catch {
       case e: Exception => println(line); throw e
     }
   }

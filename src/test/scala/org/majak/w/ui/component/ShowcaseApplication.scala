@@ -8,7 +8,7 @@ import org.majak.w.component.live.smallslide.LiveSmallSlide
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
-import org.majak.w.model.SongListItem
+import org.majak.w.model.SongModel.SongListItem
 import org.majak.w.service.LocalSongService
 import org.majak.w.ui.pivot.Conversions._
 
@@ -66,12 +66,12 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
   compButton setListData components.keys.toList
   (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener.Adapter {
-    override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI
+    override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI()
   }
 
-  setupUI
+  setupUI()
 
-  private def setupUI: Unit = {
+  private def setupUI(): Unit = {
     val current: Option[Component] =
       if (compButton.getSelectedItem == null) None
       else components.get(compButton.getSelectedItem.asInstanceOf[String])

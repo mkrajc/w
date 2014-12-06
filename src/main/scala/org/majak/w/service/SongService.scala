@@ -1,6 +1,6 @@
 package org.majak.w.service
 
-import org.majak.w.model.Song
+import org.majak.w.model.SongModel.Song
 
 trait SongService {
 
