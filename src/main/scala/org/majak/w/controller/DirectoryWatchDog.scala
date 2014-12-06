@@ -4,19 +4,20 @@ import java.io.{File, FileInputStream}
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
-import org.majak.w.controller.DirectoryWatchDog.IndexResult
 
-object DirectoryWatchDog {
-  type IndexResult = Either[Index, List[String]]
-}
 
 class DirectoryWatchDog(val directory: File) {
 
-
+  type IndexResult = Either[Index, List[String]]
+  type AddFileDataHandler = FileData => Unit
+  type RemoveFileDataHandler = FileData => Unit
+  type ChangeFileDataHandler = (FileData, FileData) => Unit
 
   require(directory.exists(), "Not existing directory: " + directory)
 
-  var handlers: List[WatchDogHandler] = Nil
+  var addHandlers: List[AddFileDataHandler] = Nil
+  var removedHandlers: List[RemoveFileDataHandler] = Nil
+  var changedHandlers: List[ChangeFileDataHandler] = Nil
 
   def scan(): IndexResult = {
     val fData = scanFiles(directory.listFiles.toList, Nil)
@@ -51,18 +52,30 @@ class DirectoryWatchDog(val directory: File) {
   def rescan(lastIndex: Index): IndexResult = {
 
     def compareIndices(lastIndex: Index, currentIndex: Index): IndexResult = {
-      val added = currentIndex.fileData &~ lastIndex.fileData
-      println("added:" + added.mkString)
-      val deleted = lastIndex.fileData &~ currentIndex.fileData
-      println("deleted:" + deleted.mkString)
+      val addedOrChanged = currentIndex.fileData &~ lastIndex.fileData
+      val deletedOrChanged = lastIndex.fileData &~ currentIndex.fileData
 
-      if(!added.isEmpty){
-        handlers.foreach(_.onFilesAdded(added))
-      }
+      val (changedA, added) = addedOrChanged.partition(
+        fd => deletedOrChanged.exists(e => e.path == fd.path || e.md5hex == fd.md5hex))
+      val (changedD, deleted) = deletedOrChanged.partition(
+        fd => addedOrChanged.exists(e => e.path == fd.path || e.md5hex == fd.md5hex))
 
-      if(!deleted.isEmpty){
-        handlers.foreach(_.onFilesRemoved(added))
-      }
+      /*
+      println("added   = " + added)
+      println("changed = " + changedA)
+      println("deleted = " + deleted)
+      println("changed = " + changedD)
+      */
+
+      val changedStates = for {
+        a <- changedA
+        d <- changedD
+        if(a.path == d.path || a.md5hex == d.md5hex)
+      } yield (a,d)
+
+      added.foreach(f => addHandlers.foreach(_(f)))
+      deleted.foreach(f => removedHandlers.foreach(_(f)))
+      changedStates.foreach(p => changedHandlers.foreach(_(p._1,p._2)))
 
       Left(currentIndex)
     }
@@ -75,7 +88,10 @@ class DirectoryWatchDog(val directory: File) {
 
   }
 
-  def addHandler(h: WatchDogHandler) = handlers = h :: handlers
+  def addAddFileDataHandler(h: AddFileDataHandler) = addHandlers = h :: addHandlers
+  def addRemovedFileDataHandler(h: RemoveFileDataHandler) = removedHandlers = h :: removedHandlers
+  def addChangedFileDataHandler(h: ChangeFileDataHandler) = changedHandlers = h :: changedHandlers
+
 }
 
 trait WatchDogHandler {
