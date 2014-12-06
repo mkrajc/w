@@ -1,7 +1,7 @@
 package org.majak.w.component.presentation
 
 import org.apache.pivot.wtk._
-import org.majak.w.component.live.slide.{TextContent, Slide}
+import org.majak.w.component.live.slide.{Content, SlideListener, TextContent, Slide}
 import org.majak.w.ui.pivot.PivotComponent
 
 class Presentation(val dp: DisplayProvider) extends PivotComponent with PresentationView {
@@ -9,6 +9,8 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
   require(dp != null)
 
   val window = new Window()
+
+  val presentationSlide = new Slide(true)
 
   var display: Display = _
 
@@ -19,27 +21,28 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
     window.setMaximized(true)
     window.setTitle("presentation")
 
-    val presentationSlide = new Slide(true)
     presentationSlide.showContent(TextContent(List("Presentation")))
 
-    window setContent (presentationSlide)
+    window setContent presentationSlide
   }
 
   override def show = {
-    if(window.isClosed) {
+    if (window.isClosed) {
       display = dp.createDisplay
       window open display
     }
   }
 
   override def hide = {
-    if(window.isOpen) {
+    if (window.isOpen) {
       window close()
       display.getHostWindow.dispose()
     }
   }
 
   override val asComponent: Component = window
+
+  override def onContent(content: Content) = presentationSlide showContent content
 }
 
 trait DisplayProvider {

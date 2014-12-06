@@ -7,6 +7,7 @@ class LiveSmallSlidePresenter(pp: PresentationPresenter) extends Presenter[LiveS
 
   override protected def onBind(v: LiveSmallSlideView) = {
     v.addUiHandler(pp)
+    v.addSlideListener(pp)
   }
 
 }

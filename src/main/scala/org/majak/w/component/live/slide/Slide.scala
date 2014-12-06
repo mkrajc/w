@@ -61,7 +61,7 @@ class Slide(val effects: Boolean = false) extends Panel {
   }
 
   def showContent(c: Content) = {
-    System.out.println(s"DEBUG show content [${c}] on  slide [${this}]")
+    System.out.println(s"DEBUG show content [$c] on slide [${this}]")
     c match {
       case i: ImageContent => showImageContent(i)
       case t: TextContent => showTextContent(t)
@@ -87,7 +87,7 @@ class Slide(val effects: Boolean = false) extends Panel {
     val t = new FadeInTransition(comp, 1.second.toMillis.toInt, 30)
 
     val transitionListener = new TransitionListener() {
-      def transitionCompleted(transition: Transition) = transition.end
+      def transitionCompleted(transition: Transition) = transition.end()
     }
 
     t.start(transitionListener)
@@ -110,7 +110,7 @@ class Slide(val effects: Boolean = false) extends Panel {
 
     StylesUtils.setColor(label, "#ffffff")
     StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
-    label.getStyles().put("wrapText", true)
+    label.getStyles.put("wrapText", true)
 
     add(label)
   }
@@ -120,7 +120,7 @@ class Slide(val effects: Boolean = false) extends Panel {
   }
 
   private def toAccumulatedSum(xs: List[Int]): List[Int] = {
-    (xs.foldLeft[List[Int]](Nil) { (list, x) => (list.headOption.getOrElse(0) + x) :: list}).reverse
+    xs.foldLeft[List[Int]](Nil) { (list, x) => (list.headOption.getOrElse(0) + x) :: list}.reverse
   }
 
   private def autosizeText() = {
@@ -148,7 +148,7 @@ class Slide(val effects: Boolean = false) extends Panel {
 
   private def computeTextOffset(heights: List[Int]): Int ={
     verticalAlignment match {
-      case VerticalAlignment.BOTTOM => (getSize.height - heights.sum)
+      case VerticalAlignment.BOTTOM => getSize.height - heights.sum
       case VerticalAlignment.CENTER => (getSize.height - heights.sum) / 2
       case VerticalAlignment.TOP => 0
     }
