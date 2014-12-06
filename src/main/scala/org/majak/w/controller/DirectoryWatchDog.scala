@@ -1,6 +1,7 @@
 package org.majak.w.controller
 
 import java.io.{File, FileInputStream}
+import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
@@ -23,7 +24,7 @@ class DirectoryWatchDog(val directory: File) {
     val fData = scanFiles(directory.listFiles.toList, Nil)
     val (validFData, hexCollisions) = fData.groupBy(_.md5hex).partition(_._2.length == 1)
 
-    if (hexCollisions.isEmpty) Left(new Index(validFData.flatMap(_._2).toSet))
+    if (hexCollisions.isEmpty) Left(new Index(validFData.flatMap(_._2).toSet, new Date))
     else Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
   }
 
@@ -60,17 +61,10 @@ class DirectoryWatchDog(val directory: File) {
       val (changedD, deleted) = deletedOrChanged.partition(
         fd => addedOrChanged.exists(e => e.path == fd.path || e.md5hex == fd.md5hex))
 
-      /*
-      println("added   = " + added)
-      println("changed = " + changedA)
-      println("deleted = " + deleted)
-      println("changed = " + changedD)
-      */
-
       val changedStates = for {
         a <- changedA
         d <- changedD
-        if(a.path == d.path || a.md5hex == d.md5hex)
+        if a.path == d.path || a.md5hex == d.md5hex
       } yield (a,d)
 
       added.foreach(f => addHandlers.foreach(_(f)))
@@ -94,14 +88,6 @@ class DirectoryWatchDog(val directory: File) {
 
 }
 
-trait WatchDogHandler {
-  def onFilesRemoved(removed: Set[FileData])
-
-  def onFilesChanged(changed: Set[FileData])
-
-  def onFilesAdded(added: Set[FileData])
-}
-
 case class FileData(path: String, md5hex: String)
 
-case class Index(fileData: Set[FileData])
+case class Index(fileData: Set[FileData], createdAt: Date)

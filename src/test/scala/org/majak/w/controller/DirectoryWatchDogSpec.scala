@@ -180,6 +180,8 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     dir.mkdir()
     try {
       test(dir)
+    }catch {
+      case e:Exception => println(e.getMessage)
     } finally {
       FileUtils.deleteDirectory(dir)
     }
