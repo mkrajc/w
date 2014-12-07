@@ -4,10 +4,11 @@ import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.slide.TextContent
 import org.majak.w.component.live.smallslide.{LiveSmallSlide, LiveSmallSlideView}
+import org.majak.w.component.presentation.PresentationPresenter
 import org.majak.w.ui.pivot.PivotComponent
 
 
-class LiveScreen extends PivotComponent with LiveScreenView {
+class LiveScreen(p: PresentationPresenter) extends PivotComponent with LiveScreenView {
 
   @BXML
   protected var fillPane: FillPane = _
@@ -24,7 +25,7 @@ class LiveScreen extends PivotComponent with LiveScreenView {
     button.setButtonData("show time")
     button.getButtonPressListeners.add(new ButtonPressListener {
       override def buttonPressed(button: Button) =
-        lss.slide.showContent(TextContent(List(System.currentTimeMillis() + "")))
+        p.showSlide(TextContent(List(System.currentTimeMillis() + "")))
     })
 
   }

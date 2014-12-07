@@ -45,6 +45,8 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
   override def onContent(content: Content) = presentationSlide showContent content
 
   override def addSlideListener(slideListener: SlideListener) = presentationSlide.addSlideListener(slideListener)
+
+  override def showSlide(content: Content) = presentationSlide.showContent(content)
 }
 
 trait DisplayProvider {

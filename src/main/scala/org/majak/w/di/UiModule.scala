@@ -21,7 +21,7 @@ trait UiModule extends Module {
   lazy val liveSmallSlideView = new LiveSmallSlide()
   lazy val liveSmallSlidePresenter = doBind[LiveSmallSlideView, LiveSmallSlidePresenter](new LiveSmallSlidePresenter(presentationPresenter), liveSmallSlideView)
 
-  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(new LiveScreen, liveSmallSlidePresenter))
+  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(new LiveScreen(presentationPresenter), liveSmallSlidePresenter))
   lazy val presentationPresenter = new PresentationPresenter(liveSmallSlideView)
 
   lazy val songDetailPresenter = doBind[SongDetailView, SongDetailPresenter](new SongDetailPresenter, new SongDetail)
