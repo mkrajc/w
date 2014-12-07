@@ -9,4 +9,6 @@ trait PresentationView extends View with SlideListener {
 
   def hide()
 
+  def addSlideListener(slideListener: SlideListener)
+
 }

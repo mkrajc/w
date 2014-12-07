@@ -7,7 +7,7 @@ import org.majak.w.component.live.slide._
 
 object SlideComponentProvider {
   def createSlideTestComponent: Component = {
-    val slide = new Slide(false)
+    val slide = new Slide(true)
     val slideRow = new Row()
     slideRow.setHeight("1*")
     val slidePane = new FillPane()

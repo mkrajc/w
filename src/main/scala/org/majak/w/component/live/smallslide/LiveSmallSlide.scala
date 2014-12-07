@@ -2,22 +2,20 @@ package org.majak.w.component.live.smallslide
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
-import org.majak.w.component.live.slide.SlideListener
+import org.majak.w.component.live.slide.Content
 import org.majak.w.component.presentation.PivotPresentationViewProvider
 
 import scala.collection.mutable.ListBuffer
 
 class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
+
   val uiHandlers = new ListBuffer[LiveSmallSlideUiHandler]
 
-  @BXML
-  var slidePanel: FillPane = _
+  @BXML var slidePanel: FillPane = _
 
-  @BXML
-  var showButton: PushButton = _
+  @BXML var showButton: PushButton = _
 
-  @BXML
-  var hideButton: PushButton = _
+  @BXML var hideButton: PushButton = _
 
   override protected def onUiBind = {
 
@@ -29,7 +27,7 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
     })
 
     hideButton.getButtonPressListeners.add(new ButtonPressListener {
-      override def buttonPressed(button: Button) = uiHandlers foreach (_.onHidePresentation)
+      override def buttonPressed(button: Button) = uiHandlers foreach (_.onHidePresentation())
     })
 
     slide.setPreferredSize(120, 90)
@@ -43,5 +41,7 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 
   override def addUiHandler(h: LiveSmallSlideUiHandler) = uiHandlers += h
 
-  override def addSlideListener(sl: SlideListener) = slide addSlideListener sl
+  override def onContent(content: Content) = {
+    slide.showContent(content)
+  }
 }

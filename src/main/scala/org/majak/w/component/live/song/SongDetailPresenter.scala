@@ -6,8 +6,12 @@ import org.majak.w.ui.mvp.Presenter
 /**
  * Represents whole song on screen
  */
-class SongDetailPresenter(var song: Song) extends Presenter[SongDetailView]{
+class SongDetailPresenter extends Presenter[SongDetailView]{
 
+   def song(s:Song) = {
+    view.showSongName(s.name)
+    view.showSongParts(s.parts)
+  }
 
 
 }

@@ -26,14 +26,14 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
     window setContent presentationSlide
   }
 
-  override def show = {
+  override def show() = {
     if (window.isClosed) {
       display = dp.createDisplay
       window open display
     }
   }
 
-  override def hide = {
+  override def hide() = {
     if (window.isOpen) {
       window close()
       display.getHostWindow.dispose()
@@ -43,6 +43,8 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
   override val asComponent: Component = window
 
   override def onContent(content: Content) = presentationSlide showContent content
+
+  override def addSlideListener(slideListener: SlideListener) = presentationSlide.addSlideListener(slideListener)
 }
 
 trait DisplayProvider {

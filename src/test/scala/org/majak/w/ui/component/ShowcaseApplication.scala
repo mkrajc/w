@@ -33,7 +33,8 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     "MainMenu" -> (new MainMenu).asComponent,
     "LiveScreen" -> (new LiveScreen).asComponent,
     "LiveSmallSlide" -> liveSmallSlide.asComponent,
-    "Slide" -> SlideComponentProvider.createSlideTestComponent
+    "Slide" -> SlideComponentProvider.createSlideTestComponent,
+    "SongDetail" -> SongDetailProvider.createSongDetailTest
 
   )
 
