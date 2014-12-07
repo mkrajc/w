@@ -9,17 +9,36 @@
     </left>
     <right>
         <TabPane>
-            <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+            <FillPane>
                 <TabPane.tabData>
                     <content:ButtonData text="%liveScreen.rightContent.tab.songs"/>
                 </TabPane.tabData>
-                <Border styles="{padding:2}">
-                    <BoxPane>
-                        <FillPane bxml:id="fillPane" />
-                        <PushButton bxml:id="button" />
-                    </BoxPane>
-                </Border>
-            </BoxPane>
+
+                <TablePane
+                        styles="{verticalSpacing:0, horizontalSpacing:0, showHorizontalGridLines:true, showVerticalGridLines:true, padding:0}">
+                    <columns>
+                        <TablePane.Column width="1*"/>
+                    </columns>
+
+                    <TablePane.Row height="1*">
+                        <FillPane bxml:id="songDetailPanels">
+
+
+                        </FillPane>
+                    </TablePane.Row>
+
+                    <TablePane.Row height="1*">
+                        <FillPane bxml:id="slidePanels">
+                            <BoxPane>
+                                <FillPane bxml:id="fillPane"/>
+                                <PushButton bxml:id="button"/>
+                            </BoxPane>
+                        </FillPane>
+                    </TablePane.Row>
+                </TablePane>
+
+
+            </FillPane>
 
             <BoxPane styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
                 <TabPane.tabData>
