@@ -1,11 +1,13 @@
 package org.majak.w.component.live.screen
 
-import org.majak.w.component.live.smallslide.LiveSmallSlidePresenter
+import org.majak.w.component.live.song.SongPanelPresenter
 import org.majak.w.ui.mvp.Presenter
 
 
-class LiveScreenPresenter(v: LiveScreenView, smSlide: LiveSmallSlidePresenter) extends Presenter[LiveScreenView](v) {
+class LiveScreenPresenter(val songPanelPresenter: SongPanelPresenter) extends Presenter[LiveScreenView] {
+
   override protected def onBind(v: LiveScreenView) = {
-    view.setLiveSmallSlideView(smSlide.view)
+    v.setSongPanel(songPanelPresenter.view)
   }
+
 }

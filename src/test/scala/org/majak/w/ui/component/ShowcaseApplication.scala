@@ -31,7 +31,7 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
     "SongList" -> toPivotView(songListPresenter.view).asComponent,
     "MainMenu" -> (new MainMenu).asComponent,
-    "LiveScreen" -> (new LiveScreen(presentationPresenter)).asComponent,
+    "LiveScreen" -> (new LiveScreen).asComponent,
     "LiveSmallSlide" -> liveSmallSlide.asComponent,
     "Slide" -> SlideComponentProvider.createSlideTestComponent,
     "SongDetail" -> SongDetailProvider.createSongDetailTest

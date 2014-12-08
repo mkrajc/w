@@ -44,4 +44,6 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
   override def onContent(content: Content) = {
     slide.showContent(content)
   }
+
+  override def showContent(content: Content): Unit = slide.showContent(content)
 }

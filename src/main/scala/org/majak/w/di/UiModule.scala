@@ -2,7 +2,7 @@ package org.majak.w.di
 
 import org.majak.w.component.live.screen.{LiveScreen, LiveScreenPresenter, LiveScreenView}
 import org.majak.w.component.live.smallslide.{LiveSmallSlide, LiveSmallSlidePresenter, LiveSmallSlideView}
-import org.majak.w.component.live.song.{SongDetail, SongDetailPresenter, SongDetailView}
+import org.majak.w.component.live.song._
 import org.majak.w.component.main.menu.{MainMenu, MainMenuPresenter, MainMenuView}
 import org.majak.w.component.main.screen.{MainScreen, MainScreenPresenter, MainScreenView}
 import org.majak.w.component.presentation.PresentationPresenter
@@ -21,10 +21,11 @@ trait UiModule extends Module {
   lazy val liveSmallSlideView = new LiveSmallSlide()
   lazy val liveSmallSlidePresenter = doBind[LiveSmallSlideView, LiveSmallSlidePresenter](new LiveSmallSlidePresenter(presentationPresenter), liveSmallSlideView)
 
-  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(new LiveScreen(presentationPresenter), liveSmallSlidePresenter))
+  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(songPanelPresenter), new LiveScreen)
   lazy val presentationPresenter = new PresentationPresenter(liveSmallSlideView)
 
   lazy val songDetailPresenter = doBind[SongDetailView, SongDetailPresenter](new SongDetailPresenter, new SongDetail)
+  lazy val songPanelPresenter = doBind[SongPanelView, SongPanelPresenter](new SongPanelPresenter(liveSmallSlidePresenter, songDetailPresenter), new SongPanel)
 
   private def doBind[V <: View, P <: Presenter[V]](p: P, view: V = null): P = {
     val list = List(view, p.view)

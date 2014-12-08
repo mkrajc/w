@@ -1,6 +1,7 @@
 <BoxPane xmlns:bxml="http://pivot.apache.org/bxml"
          xmlns="org.apache.pivot.wtk"
          xmlns:content="org.apache.pivot.wtk.content"
+         bxml:id="liveSmallSlide"
          styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
     <BoxPane bxml:id="flowPane">
         <FillPane bxml:id="slidePanel"/>
