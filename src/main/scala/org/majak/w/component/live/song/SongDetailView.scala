@@ -14,8 +14,10 @@ trait SongDetailView extends View {
 
   def showSongParts(parts: List[SongPart])
 
+  def clearSong()
+
   def addSongPartSelectedHandler(h: SongPartSelectedHandler)
 
-  def clearSong()
+  def removeSongPartSelectedHandler(h: SongPartSelectedHandler)
 
 }

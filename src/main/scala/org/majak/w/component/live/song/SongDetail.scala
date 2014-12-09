@@ -5,6 +5,7 @@ import org.apache.pivot.wtk.Keyboard.{KeyCode, KeyLocation}
 import org.apache.pivot.wtk._
 import org.majak.w.model.SongModel.SongPart
 import org.majak.w.ui.pivot.{StylesUtils, PivotComponent}
+import org.majak.w.utils.ListsUtils
 
 class SongDetail extends PivotComponent with SongDetailView {
 
@@ -59,7 +60,8 @@ class SongDetail extends PivotComponent with SongDetailView {
     }
   }
 
-  override def addSongPartSelectedHandler(h: SongPartSelectedHandler) = spHandlers = h :: spHandlers
+  override def addSongPartSelectedHandler(h: SongPartSelectedHandler) = spHandlers = ListsUtils.add(h,spHandlers)
+  override def removeSongPartSelectedHandler(h: SongPartSelectedHandler) = spHandlers = ListsUtils.delete(h,spHandlers)
 }
 
 class SongPartTextArea(val songPart: SongPart) extends TextArea {

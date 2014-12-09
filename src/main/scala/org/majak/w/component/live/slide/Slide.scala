@@ -24,6 +24,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   private var verticalAlignment = VerticalAlignment.CENTER
 
   var listeners: List[SlideContentListener] = Nil
+  var textContent: Option[TextContent] = None
+  var imgContent: Option[ImageContent] = None
 
   StylesUtils.setBackground(this, "#000000")
   clearContent()
@@ -42,11 +44,13 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def clearTextContent() = {
+    textContent = None
     labels.foreach(remove(_))
     labels = Nil
   }
 
   private def clearImageContent() = {
+    imgContent = None
     imageView.foreach(remove(_))
     imageView = None
   }
@@ -55,6 +59,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     clearTextContent()
     textContent.texts.foreach(addLabel)
     autosizeText()
+
+    this.textContent = Some(textContent)
 
     if (effects) {
       labels.foreach(transition)
@@ -78,6 +84,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     clearImageContent()
     addImageView(new ImageView(imageContent.img))
     autosizeImage()
+
+    imgContent = Some(imageContent)
 
     if (effects) {
       imageView.foreach(transition)
@@ -133,7 +141,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
       StylesUtils.setFontSize(label, fontSize)
       // size of label same as size of slide so can be centered nicely
       label.setWidth(getSize.width)
-      // set width limits so prefered height will be computed correctly on multilines
+      // set width limits so preferred height will be computed correctly on multilines
       // otherwise it will consider infinite width and would be wrong
       label.setWidthLimits(0, getSize.width)
       label.setHeight(label.getPreferredHeight)
@@ -174,4 +182,9 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   def removeSlideContentListener(l: SlideContentListener) = listeners = ListsUtils.delete(l, listeners)
 
   override def toString: String = "Slide@" + hashCode()
+
+  override def contents: scala.List[Content] = {
+    val zero = textContent.foldLeft(List[Content]())((list,content)=> content :: list)
+    imgContent.foldLeft(zero)((list,content)=> content :: list)
+  }
 }
