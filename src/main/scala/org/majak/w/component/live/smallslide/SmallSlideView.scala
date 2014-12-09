@@ -1,15 +1,20 @@
 package org.majak.w.component.live.smallslide
 
-import org.majak.w.component.live.slide.{Content, SlideListener}
+import org.majak.w.component.live.slide.SlideView
 import org.majak.w.component.presentation.PresentationViewProvider
+import org.majak.w.ui.component.Size
 import org.majak.w.ui.mvp.View
 
 trait SmallSlideView extends View {
-  def showContent(content: Content)
+  def slideView: SlideView
+
+  def autoSizeSlideView(size: Size)
 }
 
-trait LiveSmallSlideView extends SmallSlideView with SlideListener {
+trait LiveSmallSlideView extends SmallSlideView {
   def addUiHandler(h: LiveSmallSlideUiHandler)
+
+  def removeUiHandler(h: LiveSmallSlideUiHandler)
 }
 
 trait LiveSmallSlideUiHandler {

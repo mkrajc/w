@@ -1,22 +1,22 @@
 package org.majak.w.component.presentation
 
-import org.apache.pivot.wtk.Dimensions
-import org.majak.w.component.live.slide.{Content, SlideListener}
+import org.majak.w.component.live.slide.SlideView
+import org.majak.w.ui.component.Size
 import org.majak.w.ui.mvp.View
 
-trait PresentationView extends View with SlideListener {
+trait PresentationView extends View {
 
-  type SizeChangedListener = (Dimensions) => Unit
+  type SizeChangedListener = (Size) => Unit
 
   def show()
+
   def hide()
 
+  def slideView: SlideView
+
   def addSizeChangedListener(l: SizeChangedListener)
+
   def removeSizeChangedListener(l: SizeChangedListener)
-
-  def addSlideListener(slideListener: SlideListener)
-
-  def showSlide(content: Content)
 
 }
 

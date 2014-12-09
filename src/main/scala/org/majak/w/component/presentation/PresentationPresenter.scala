@@ -1,13 +1,12 @@
 package org.majak.w.component.presentation
 
-import org.majak.w.component.live.slide.{Content, SlideListener}
 import org.majak.w.component.live.smallslide.LiveSmallSlideUiHandler
 import org.majak.w.ui.mvp.Presenter
 
 /**
  * Managed presentation screen
  */
-class PresentationPresenter(sl: SlideListener) extends Presenter[PresentationView] with LiveSmallSlideUiHandler {
+class PresentationPresenter extends Presenter[PresentationView] with LiveSmallSlideUiHandler {
 
   override def onHidePresentation = {
     if (bound) {
@@ -19,14 +18,13 @@ class PresentationPresenter(sl: SlideListener) extends Presenter[PresentationVie
   override def onStartPresentation(source: PresentationViewProvider) = {
     if (!bound) {
       this bind source.create
-      view.addSlideListener(sl)
       view.show()
     }
   }
 
-  def showSlide(content: Content) =
+/**  def showxSlide(content: Content) =
     if (bound) {
-      view.showSlide(content)
-    }
+      view.slideView.showContent(content)
+    } **/
 
 }

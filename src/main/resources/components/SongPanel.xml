@@ -2,15 +2,15 @@
            xmlns:content="org.apache.pivot.wtk.content"
            xmlns="org.apache.pivot.wtk"
            orientation="vertical"
-           resizeMode="primary_region" >
+           resizeMode="primary_region">
     <TabPane.tabData>
         <content:ButtonData text="%liveScreen.rightContent.tab.songs"/>
     </TabPane.tabData>
     <primaryRegion>bottom_right</primaryRegion>
     <left>
-        <FillPane bxml:id="songDetailPanels" />
+        <FillPane bxml:id="songDetailPanels"/>
     </left>
     <right>
-        <FillPane bxml:id="slidePanels" minimumHeight="200" />
+        <FillPane bxml:id="slidePanels" minimumHeight="200"/>
     </right>
 </SplitPane>

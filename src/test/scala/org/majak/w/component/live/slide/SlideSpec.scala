@@ -4,13 +4,11 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers, PrivateMethodTester}
-import org.mockito.Mockito._
-import org.mockito.Matchers._
 
 @RunWith(classOf[JUnitRunner])
 class SlideSpec extends FlatSpec with Matchers with MockitoSugar {
 
-  "Slide" should "compute font size relativly to slide size" in {
+  "Slide" should "compute font size relatively to slide size" in {
     new PrivateMethodTester {
       val slide = new Slide
       slide.setSize(0, 100)
@@ -20,7 +18,7 @@ class SlideSpec extends FlatSpec with Matchers with MockitoSugar {
     }
   }
 
-  it should "partialy lift int array to array of accumulated sums" in {
+  it should "partially lift int array to array of accumulated sums" in {
     new PrivateMethodTester {
       val slide = new Slide
       val list = List(0, 2, 1, 2, 1)
@@ -31,10 +29,10 @@ class SlideSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "notify listener when content changed" in {
     val slide = new Slide
-    val m = mock[SlideListener]
-    slide.addSlideListener(m)
+    var slideContentChangedCalled = 0
+    slide.addSlideContentListener(_ => slideContentChangedCalled = slideContentChangedCalled + 1)
     slide.showContent(TextContent(Nil))
     slide.showContent(ClearTextContent())
-    verify(m, times(2)).onContent(any(classOf[Content]))
+    slideContentChangedCalled shouldEqual 2
   }
 }

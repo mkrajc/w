@@ -4,6 +4,7 @@ import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
+import org.majak.w.utils.ListsUtils
 
 import scala.collection.immutable.List
 import scala.concurrent.duration._
@@ -12,7 +13,7 @@ import scala.concurrent.duration._
 /**
  * Represent slide on the screen that is able display content
  */
-class Slide(val effects: Boolean = false) extends Panel {
+class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   private var imageView: Option[ImageView] = None
   private var labels: List[Label] = Nil
@@ -22,7 +23,7 @@ class Slide(val effects: Boolean = false) extends Panel {
   private var horizontalAlignment = HorizontalAlignment.CENTER
   private var verticalAlignment = VerticalAlignment.CENTER
 
-  var listeners: List[SlideListener] = Nil
+  var listeners: List[SlideContentListener] = Nil
 
   StylesUtils.setBackground(this, "#000000")
   clearContent()
@@ -69,7 +70,7 @@ class Slide(val effects: Boolean = false) extends Panel {
       case _: ClearImageContent => clearImageContent()
       case _: ClearContent => clearContent()
     }
-    listeners.foreach(_.onContent(c))
+    listeners.foreach(listener => listener(c))
 
   }
 
@@ -146,7 +147,7 @@ class Slide(val effects: Boolean = false) extends Panel {
 
   }
 
-  private def computeTextOffset(heights: List[Int]): Int ={
+  private def computeTextOffset(heights: List[Int]): Int = {
     verticalAlignment match {
       case VerticalAlignment.BOTTOM => getSize.height - heights.sum
       case VerticalAlignment.CENTER => (getSize.height - heights.sum) / 2
@@ -168,10 +169,9 @@ class Slide(val effects: Boolean = false) extends Panel {
     autosizeText()
   }
 
-  def addSlideListener(l: SlideListener) = listeners = listeners :+ l
+  def addSlideContentListener(l: SlideContentListener) = listeners = ListsUtils.add(l, listeners)
 
-}
+  def removeSlideContentListener(l: SlideContentListener) = listeners = ListsUtils.delete(l, listeners)
 
-trait SlideListener {
-  def onContent(content: Content)
+  override def toString: String = "Slide@" + hashCode()
 }

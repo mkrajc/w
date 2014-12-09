@@ -1,24 +1,29 @@
-<BoxPane xmlns:bxml="http://pivot.apache.org/bxml"
-         xmlns="org.apache.pivot.wtk"
-         xmlns:content="org.apache.pivot.wtk.content"
-         bxml:id="liveSmallSlide"
-         styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
-    <BoxPane bxml:id="flowPane">
-        <FillPane bxml:id="slidePanel"/>
+<TablePane xmlns:bxml="http://pivot.apache.org/bxml"
+           xmlns="org.apache.pivot.wtk"
+           xmlns:content="org.apache.pivot.wtk.content"
+           styles="{verticalSpacing:0, horizontalSpacing:0, showHorizontalGridLines:false, showVerticalGridLines:false, padding:0}">
+    <columns>
+        <TablePane.Column width="1*"/>
+        <TablePane.Column width="30"/>
+    </columns>
+
+    <TablePane.Row height="1*">
+        <Border styles="{backgroundColor:'#ffffff'}">
+            <BoxPane bxml:id="slidePanel"
+                     styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
+        </Border>
         <BoxPane bxml:id="iconPanel" orientation="vertical"
-                 styles="{horizontalAlignment:'left', verticalAlignment:'top'}">
-            <PushButton bxml:id="showButton" tooltipText="%liveSmallSlide.button.show_t" >
+                 styles="{horizontalAlignment:'center', verticalAlignment:'top'}">
+            <PushButton bxml:id="showButton" tooltipText="%liveSmallSlide.button.show_t">
                 <buttonData>
-                    <content:ButtonData icon="/images/screen-16.png" />
+                    <content:ButtonData icon="/images/screen-16.png"/>
                 </buttonData>
             </PushButton>
-            <PushButton bxml:id="hideButton" tooltipText="%liveSmallSlide.button.hide_t" >
+            <PushButton bxml:id="hideButton" tooltipText="%liveSmallSlide.button.hide_t">
                 <buttonData>
                     <content:ButtonData icon="/images/screen-16-off.png"/>
                 </buttonData>
             </PushButton>
         </BoxPane>
-    </BoxPane>
-</BoxPane>
-
-
+    </TablePane.Row>
+</TablePane>

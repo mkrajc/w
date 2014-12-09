@@ -2,16 +2,14 @@ package org.majak.w.component.live.smallslide
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
-import org.majak.w.component.live.slide.Content
 import org.majak.w.component.presentation.PivotPresentationViewProvider
-
-import scala.collection.mutable.ListBuffer
+import org.majak.w.utils.ListsUtils
 
 class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 
-  val uiHandlers = new ListBuffer[LiveSmallSlideUiHandler]
+  var uiHandlers:List[LiveSmallSlideUiHandler] = Nil
 
-  @BXML var slidePanel: FillPane = _
+  @BXML var slidePanel: BoxPane = _
 
   @BXML var showButton: PushButton = _
 
@@ -30,7 +28,7 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
       override def buttonPressed(button: Button) = uiHandlers foreach (_.onHidePresentation())
     })
 
-    slide.setPreferredSize(120, 90)
+//    slide.setPreferredSize(120, 90)
 
     showButton.setPreferredWidth(25)
     hideButton.setPreferredWidth(25)
@@ -39,11 +37,8 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 
   }
 
-  override def addUiHandler(h: LiveSmallSlideUiHandler) = uiHandlers += h
+  override def addUiHandler(h: LiveSmallSlideUiHandler) = uiHandlers = ListsUtils.add(h, uiHandlers)
+  override def removeUiHandler(h: LiveSmallSlideUiHandler) = uiHandlers = ListsUtils.delete(h, uiHandlers)
 
-  override def onContent(content: Content) = {
-    slide.showContent(content)
-  }
 
-  override def showContent(content: Content): Unit = slide.showContent(content)
 }

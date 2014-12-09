@@ -1,6 +1,6 @@
 <TablePane xmlns:bxml="http://pivot.apache.org/bxml"
            xmlns="org.apache.pivot.wtk"
-           styles="{verticalSpacing:3, horizontalSpacing:3, showHorizontalGridLines:false, showVerticalGridLines:false, padding:3}">
+           styles="{verticalSpacing:0, horizontalSpacing:0, showHorizontalGridLines:false, showVerticalGridLines:false, padding:0}">
     <columns>
         <TablePane.Column width="1*"/>
     </columns>

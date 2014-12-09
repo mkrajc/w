@@ -1,7 +1,8 @@
 package org.majak.w.component.presentation
 
 import org.apache.pivot.wtk._
-import org.majak.w.component.live.slide.{Content, Slide, SlideListener, TextContent}
+import org.majak.w.component.live.slide.{Slide, SlideView, TextContent}
+import org.majak.w.ui.component.Size
 import org.majak.w.ui.pivot.PivotComponent
 import org.majak.w.utils.ListsUtils
 
@@ -25,12 +26,14 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
 
     window.getComponentListeners.add(new ComponentListener.Adapter {
       override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
-        sizeChangeListeners.map(_(component.getSize))
+        sizeChangeListeners.map(_(Size(component.getWidth, component.getHeight)))
       }
     })
 
     window setContent presentationSlide
   }
+
+  override val slideView: SlideView = presentationSlide
 
   override def show() = {
     if (window.isClosed) {
@@ -43,20 +46,17 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
     if (window.isOpen) {
       window close()
       display.getHostWindow.dispose()
+
+      sizeChangeListeners.map(f => f(Size(0,0)))
     }
   }
 
   override val asComponent: Component = window
 
-  override def onContent(content: Content) = presentationSlide showContent content
-
-  override def addSlideListener(slideListener: SlideListener) = presentationSlide.addSlideListener(slideListener)
-
-  override def showSlide(content: Content) = presentationSlide.showContent(content)
-
   override def addSizeChangedListener(l: SizeChangedListener) = sizeChangeListeners = ListsUtils.add(l, sizeChangeListeners)
 
   override def removeSizeChangedListener(l: SizeChangedListener) = sizeChangeListeners = ListsUtils.delete(l, sizeChangeListeners)
+
 }
 
 trait DisplayProvider {
