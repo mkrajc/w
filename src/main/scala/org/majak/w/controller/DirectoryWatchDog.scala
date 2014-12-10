@@ -5,9 +5,11 @@ import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.slf4j.LoggerFactory
 
 
 class DirectoryWatchDog(val directory: File) {
+  val logger = LoggerFactory.getLogger(getClass)
 
   type IndexResult = Either[Index, List[String]]
   type AddFileDataHandler = FileData => Unit
@@ -37,7 +39,7 @@ class DirectoryWatchDog(val directory: File) {
       if (f.isDirectory) {
         fd ::: scanFiles(f.listFiles.toList, Nil)
       } else {
-        println("TRACE: scanning file [" + f.getAbsolutePath + "]")
+        logger.trace("scanning file [" + f.getAbsolutePath + "]")
         var fis: FileInputStream = null
         try {
           fis = new FileInputStream(f)

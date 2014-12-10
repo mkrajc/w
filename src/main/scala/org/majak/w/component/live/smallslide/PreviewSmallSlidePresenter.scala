@@ -12,7 +12,7 @@ class PreviewSmallSlidePresenter(val pp: PresentationPresenter,
 
   override protected def onBind(v: PreviewSmallSlideView) = {
     pp.addBindListener(presentationView => {
-      println(s"Delayed binding [$presentationView}] with view [${this}}]")
+      logger.debug("Delayed binding [{}] with view [{}]", presentationView, this, None)
       presentationView.addSizeChangedListener(dim => view.autoSizeSlideView(dim))
     })
 
@@ -21,7 +21,6 @@ class PreviewSmallSlidePresenter(val pp: PresentationPresenter,
     )
 
     v.addConfirmListener(contents => {
-      println("contents confirmed = " + contents)
       contents.foreach(c => pp.view.slideView.showContent(c))})
   }
 

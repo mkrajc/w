@@ -1,6 +1,7 @@
 package org.majak.w.ui.mvp
 
 import org.majak.w.utils.ListsUtils
+import org.slf4j.LoggerFactory
 
 /**
  * Is marker trait to identify hierarchy of views
@@ -17,6 +18,8 @@ trait View {
  * @tparam V [[View]] class that is managed by presenter
  */
 abstract class Presenter[V <: View] {
+
+  val logger = LoggerFactory.getLogger(getClass)
 
   protected def onBind(v: V) = {}
 
@@ -40,7 +43,7 @@ abstract class Presenter[V <: View] {
     onBind(view)
 
     val end = System.currentTimeMillis()
-    println("Presenter [" + this + "] bind to view [" + view + "] in "
+    logger.info("Presenter [" + this + "] binds view [" + view + "] in "
       + (endUi - start) + "/" + (end - start) + "ms")
 
     bindListeners.map(listener => listener(view))
@@ -56,7 +59,7 @@ abstract class Presenter[V <: View] {
       onUnbind(v)
 
       val end = System.currentTimeMillis()
-      println("Presenter [" + this + "] unbind view [" + v + "] in "
+      logger.info("Presenter [" + this + "] unbinds view [" + v + "] in "
         + (endUi - start) + "/" + (end - start) + "ms")
     }
 

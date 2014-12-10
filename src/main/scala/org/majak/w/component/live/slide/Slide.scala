@@ -5,6 +5,7 @@ import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
 import org.majak.w.utils.ListsUtils
+import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.List
 import scala.concurrent.duration._
@@ -14,6 +15,8 @@ import scala.concurrent.duration._
  * Represent slide on the screen that is able display content
  */
 class Slide(val effects: Boolean = false) extends Panel with SlideView {
+
+  val logger = LoggerFactory.getLogger(getClass)
 
   private var imageView: Option[ImageView] = None
   private var labels: List[Label] = Nil
@@ -68,7 +71,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   def showContent(c: Content) = {
-    System.out.println(s"DEBUG show content [$c] on slide [${this}]")
+
+    logger.debug("show content [{}] on slide [{}]", c , this, None)
     c match {
       case i: ImageContent => showImageContent(i)
       case t: TextContent => showTextContent(t)

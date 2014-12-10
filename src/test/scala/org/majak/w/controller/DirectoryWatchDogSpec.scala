@@ -9,9 +9,11 @@ import org.majak.w.TestUtils
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
+import org.slf4j.LoggerFactory
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
+  val logger = LoggerFactory.getLogger(getClass)
 
   "DirectoryWatchDog" should "initialize if directory exist" in {
     val wd = new DirectoryWatchDog(TestUtils.tempDir)
@@ -100,7 +102,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       var added = 0
       val h = (fd: FileData) => {
         added = added + 1
-        println("added " + fd.path)
+        logger.info("added " + fd.path)
       }
       wd.addAddFileDataHandler(h)
 
@@ -124,7 +126,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       var deleted = 0
       val h = (fd: FileData) => {
         deleted = deleted + 1
-        println("deleted " + fd.path)
+        logger.info("deleted " + fd.path)
       }
       wd.addRemovedFileDataHandler(h)
 
@@ -181,7 +183,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     try {
       test(dir)
     }catch {
-      case e:Exception => println(e.getMessage)
+      case e:Exception => logger.error("erorr occured", e)
     } finally {
       FileUtils.deleteDirectory(dir)
     }

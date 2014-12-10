@@ -3,6 +3,7 @@ package org.majak.w.ui.pivot
 import org.apache.pivot.beans.BXMLSerializer
 import org.apache.pivot.util.Resources
 import org.apache.pivot.wtk.Component
+import org.slf4j.LoggerFactory
 
 /**
  * Binds this instance with BXML file
@@ -36,9 +37,10 @@ import org.apache.pivot.wtk.Component
  *
  */
 trait Binding {
+  val logger = LoggerFactory.getLogger(getClass)
 
   /** default xml name - lowercased classname with '.xml' suffix **/
-  private lazy val xmlNameDefault: String = getClass().getSimpleName().toLowerCase() + ".xml"
+  private lazy val xmlNameDefault: String = getClass.getSimpleName.toLowerCase + ".xml"
   protected lazy val serializer = new BXMLSerializer
 
   /** Root component object read from xml */
@@ -46,7 +48,7 @@ trait Binding {
     val url = getClass.getResource(xmlName)
     if (url == null) None
     else {
-
+      logger.debug("Reading xml from [{}]", url)
       Some(serializer.readObject(url, resources).asInstanceOf[Component])
     }
   }
@@ -60,11 +62,11 @@ trait Binding {
     val option = readXml
 
     if (option.isDefined) {
-      serializer.bind(this, getClass())
-      println("View [" + this + "] bind to [" + xmlName + "]")
+      serializer.bind(this, getClass)
+      logger.info("Binding [{}] to instance [{}]", xmlName, this, None)
     }
 
-    onUiBind
+    onUiBind()
   }
 
   /**
@@ -81,6 +83,6 @@ trait Binding {
   /**
    * Is called after binding.
    */
-  protected def onUiBind = {}
+  protected def onUiBind() = {}
 
 }

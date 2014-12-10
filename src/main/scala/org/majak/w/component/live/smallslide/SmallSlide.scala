@@ -48,8 +48,9 @@ class SmallSlide extends PivotComponent with SmallSlideView {
         else finalWidth = finalHeight * sizeRatio
       })
 
-      println(s"TRACE Autoscaled size for slide [${finalWidth}x${finalHeight}] for slide [$slide]")
+      logger.trace(s"Autoscaled size [${finalWidth}x${finalHeight}] for slide [$slide]")
       slide.setPreferredSize(finalWidth.toInt, finalHeight.toInt)
+      slide.repaint(true)
     }
   }
 }
