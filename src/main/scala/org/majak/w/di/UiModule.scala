@@ -19,12 +19,13 @@ trait UiModule extends Module {
   lazy val mainMenuPresenter = doBind[MainMenuView, MainMenuPresenter](new MainMenuPresenter, new MainMenu)
   lazy val mainScreenPresenter = doBind[MainScreenView, MainScreenPresenter](new MainScreenPresenter(mainMenuPresenter, liveScreenPresenter), new MainScreen())
 
+  lazy val presentationPresenter = new PresentationPresenter(liveSmallSlideView.observable, previewSmallSlideView.observable)
 
   lazy val liveSmallSlideView = new LiveSmallSlide
-  lazy val presentationPresenter = new PresentationPresenter(liveSmallSlideView.observable)
-
   lazy val liveSmallSlidePresenter = doBind[LiveSmallSlideView, LiveSmallSlidePresenter](new LiveSmallSlidePresenter(presentationPresenter), liveSmallSlideView)
-  lazy val previewSmallSlidePresenter = doBind[PreviewSmallSlideView, PreviewSmallSlidePresenter](new PreviewSmallSlidePresenter(presentationPresenter, songDetailView), new PreviewSmallSlide())
+
+  lazy val previewSmallSlideView = new PreviewSmallSlide
+  lazy val previewSmallSlidePresenter = doBind[PreviewSmallSlideView, PreviewSmallSlidePresenter](new PreviewSmallSlidePresenter(presentationPresenter), previewSmallSlideView)
 
   lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(songPanelPresenter), new LiveScreen)
 

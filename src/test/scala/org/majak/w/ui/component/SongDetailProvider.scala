@@ -1,7 +1,7 @@
 package org.majak.w.ui.component
 
 import org.apache.pivot.wtk.Component
-import org.majak.w.component.live.song.SongDetail
+import org.majak.w.component.live.song.{SongPartSelected, SongDetail}
 import org.majak.w.model.SongModel.SongPart
 
 
@@ -39,7 +39,7 @@ object SongDetailProvider {
     songDetail.showSongName("God Of Wonders")
     songDetail.showSongParts(list)
 
-    songDetail.addSongPartSelectedHandler((s: SongPart) => println(s"Selected part [$s]"))
+    songDetail.observable.subscribe((sp: SongPartSelected) => println(s"Selected part [${sp.songPart}}]"))
 
     songDetail.asComponent
   }

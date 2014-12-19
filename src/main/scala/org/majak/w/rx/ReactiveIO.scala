@@ -9,8 +9,10 @@ trait UiEvent
 trait ObservableView extends View {
   protected def createUiEventSubject[E <: UiEvent] = Subject[E]()
 
-  protected def preventDoubleClicks[O <: Observable[UiEvent]](eo: O): Observable[UiEvent] = eo.throttleFirst(750
+  protected def preventDoubleClicks[T <: UiEvent](observable: Observable[T]): Observable[T] = observable.throttleFirst(750
     .millis)
+
+  def observable: Observable[UiEvent]
 }
 
 trait ObserverPresenter[V <: View] extends Presenter[V] with Observer[UiEvent]

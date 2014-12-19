@@ -1,16 +1,16 @@
 package org.majak.w.component.live.smallslide
 
 import org.majak.w.component.live.slide.Content
+import org.majak.w.rx.{UiEvent, ObservableView}
+import rx.lang.scala.Observable
 
-trait PreviewSmallSlideView  extends SmallSlideView {
-  // def addUiHandler(h: PreviewSmallSlideUiHandler)
-  // def removeUiHandler(h: PreviewSmallSlideUiHandler)
-  type ConfirmListener = List[Content] => Unit
+case class PreviewSlideConfirmed(contents: List[Content]) extends UiEvent
 
-  def addConfirmListener(l:ConfirmListener)
-  def removeConfirmListener(l:ConfirmListener)
+trait PreviewSmallSlideView extends SmallSlideView with ObservableView {
+  private lazy val subjConfirmed = createUiEventSubject[PreviewSlideConfirmed]
 
-}
+  protected def confirm(c: List[Content]) = subjConfirmed.onNext(PreviewSlideConfirmed(c))
 
-trait PreviewSmallSlideUiHandler {
+  lazy val observable: Observable[PreviewSlideConfirmed] = preventDoubleClicks(subjConfirmed)
+
 }

@@ -19,7 +19,7 @@ trait LiveSmallSlideView extends SmallSlideView with ObservableView {
 
   protected def handleHidePresentation() = subjEndPresentation.onNext(HidePresentation)
 
-  lazy val observable: Observable[UiEvent] =
+  lazy val observable: Observable[LiveSmallSlideUiEvent] =
     preventDoubleClicks(subjStartPresentation).merge(preventDoubleClicks(subjEndPresentation))
 
 
