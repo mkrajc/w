@@ -1,30 +1,36 @@
 package org.majak.w.component.presentation
 
-import org.majak.w.component.live.smallslide.LiveSmallSlideUiHandler
-import org.majak.w.ui.mvp.Presenter
+import org.majak.w.component.live.smallslide.{HidePresentation, StartPresentation}
+import org.majak.w.rx.{ObserverPresenter, UiEvent}
+import rx.lang.scala.Observable
 
 /**
  * Managed presentation screen
  */
-class PresentationPresenter extends Presenter[PresentationView] with LiveSmallSlideUiHandler {
+class PresentationPresenter(liveSmallSlideEvents: Observable[UiEvent]) extends
+ObserverPresenter[PresentationView] {
 
-  override def onHidePresentation = {
-    if (bound) {
-      view.hide()
-      unbind
+  liveSmallSlideEvents.subscribe(this)
+
+  override def onNext(value: UiEvent): Unit = {
+    value match {
+      case StartPresentation(source) => startPresentation(source)
+      case HidePresentation => hidePresentation()
     }
   }
 
-  override def onStartPresentation(source: PresentationViewProvider) = {
+  def hidePresentation() = {
+    if (bound) {
+      view.hide()
+      unbind()
+    }
+  }
+
+  def startPresentation(source: PresentationViewProvider) = {
     if (!bound) {
       this bind source.create
       view.show()
     }
   }
-
-/**  def showxSlide(content: Content) =
-    if (bound) {
-      view.slideView.showContent(content)
-    } **/
 
 }
