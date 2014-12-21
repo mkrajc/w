@@ -82,20 +82,8 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     }
   }
 
-  it should "not notify on rescan when nothing changed" in {
+  it should "notify on first scan everything as added" in {
     testInTestDir { f =>
-      prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
-      val wd = new DirectoryWatchDog(f)
-      val data = wd.scan()
-      assert(data === wd.rescan(data.left.get))
-    }
-  }
-
-  it should "be notified when new files are added to directory" in {
-
-    testInTestDir { f =>
-
-
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
 
@@ -107,6 +95,36 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       wd.addAddFileDataHandler(h)
 
       val data = wd.scan()
+
+      assert(added === 2)
+    }
+  }
+
+  it should "not notify on rescan when nothing changed" in {
+    testInTestDir { f =>
+      prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
+      val wd = new DirectoryWatchDog(f)
+      val data = wd.scan()
+      assert(data.left.get.fileData === wd.rescan(data.left.get).left.get.fileData)
+    }
+  }
+
+  it should "be notified when new files are added to directory" in {
+
+    testInTestDir { f =>
+
+
+      prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
+      val wd = new DirectoryWatchDog(f)
+      val data = wd.scan()
+
+      var added = 0
+      val h = (fd: FileData) => {
+        added = added + 1
+        logger.info("added " + fd.path)
+      }
+      wd.addAddFileDataHandler(h)
+
       val index = data.left.get
 
       prepareFilesInDir(f, Map("c" -> "c", "d" -> "d"))
@@ -182,8 +200,11 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     dir.mkdir()
     try {
       test(dir)
-    }catch {
-      case e:Exception => logger.error("erorr occured", e)
+    } catch {
+      case e: Exception => {
+        logger.error("erorr occured", e)
+        throw e
+      }
     } finally {
       FileUtils.deleteDirectory(dir)
     }

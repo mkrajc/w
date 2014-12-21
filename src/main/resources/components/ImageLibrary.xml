@@ -1,0 +1,8 @@
+<ScrollPane xmlns:bxml="http://pivot.apache.org/bxml"
+            xmlns="org.apache.pivot.wtk"
+            verticalScrollBarPolicy="FILL_TO_CAPACITY"
+            horizontalScrollBarPolicy="FILL">
+    <FlowPane bxml:id="imagePanel"
+              styles="{horizontalSpacing:7, verticalSpacing:7, padding:7}"/>
+
+</ScrollPane>

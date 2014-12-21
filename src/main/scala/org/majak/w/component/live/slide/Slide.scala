@@ -2,10 +2,12 @@ package org.majak.w.component.live.slide
 
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
+import org.majak.w.rx.UiEvent
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
 import org.majak.w.utils.ListsUtils
 import org.slf4j.LoggerFactory
+import rx.lang.scala.Observable
 
 import scala.collection.immutable.List
 import scala.concurrent.duration._
@@ -191,4 +193,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     val zero = textContent.foldLeft(List[Content]())((list,content)=> content :: list)
     imgContent.foldLeft(zero)((list,content)=> content :: list)
   }
+
+  override def bindView(): Unit = ???
+
+  override def unbindView(): Unit = ???
 }

@@ -22,12 +22,27 @@ class DirectoryWatchDog(val directory: File) {
   var removedHandlers: List[RemoveFileDataHandler] = Nil
   var changedHandlers: List[ChangeFileDataHandler] = Nil
 
-  def scan(): IndexResult = {
+  private def scanIntern(): IndexResult = {
     val fData = scanFiles(directory.listFiles.toList, Nil)
     val (validFData, hexCollisions) = fData.groupBy(_.md5hex).partition(_._2.length == 1)
 
-    if (hexCollisions.isEmpty) Left(new Index(validFData.flatMap(_._2).toSet, new Date))
-    else Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
+    if (hexCollisions.isEmpty) {
+      val fileSet = validFData.flatMap(_._2).toSet
+      Left(new Index(fileSet, new Date))
+    } else {
+      Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
+    }
+  }
+
+  def scan(): IndexResult = {
+    val ir = scanIntern()
+    ir match {
+      case Right(errors) => Right("Cannot scan directory." :: errors)
+      case Left(index) => {
+        index.fileData.foreach(f => addHandlers.foreach(_(f)))
+      }
+    }
+    ir
   }
 
   def scanFiles(files: List[File], fd: List[FileData]): List[FileData] = {
@@ -67,16 +82,16 @@ class DirectoryWatchDog(val directory: File) {
         a <- changedA
         d <- changedD
         if a.path == d.path || a.md5hex == d.md5hex
-      } yield (a,d)
+      } yield (a, d)
 
       added.foreach(f => addHandlers.foreach(_(f)))
       deleted.foreach(f => removedHandlers.foreach(_(f)))
-      changedStates.foreach(p => changedHandlers.foreach(_(p._1,p._2)))
+      changedStates.foreach(p => changedHandlers.foreach(_(p._1, p._2)))
 
       Left(currentIndex)
     }
 
-    val ir = scan()
+    val ir = scanIntern()
     ir match {
       case Right(errors) => Right("Cannot scan directory." :: errors)
       case Left(index) => compareIndices(lastIndex, index)
@@ -85,7 +100,9 @@ class DirectoryWatchDog(val directory: File) {
   }
 
   def addAddFileDataHandler(h: AddFileDataHandler) = addHandlers = h :: addHandlers
+
   def addRemovedFileDataHandler(h: RemoveFileDataHandler) = removedHandlers = h :: removedHandlers
+
   def addChangedFileDataHandler(h: ChangeFileDataHandler) = changedHandlers = h :: changedHandlers
 
 }
