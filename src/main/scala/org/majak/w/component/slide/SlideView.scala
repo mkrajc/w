@@ -16,6 +16,6 @@ trait SlideView extends ObservableView {
 
   def snapshot: SlideSnapshot
 
-  def refresh(slideSnapshot: SlideSnapshot)
+  def adapt(slideSnapshot: SlideSnapshot)
 
 }

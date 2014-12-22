@@ -4,7 +4,6 @@ package org.majak.w.component.slide
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.majak.w.ui.component.Size
-import org.majak.w.ui.component.pivot.label
 import org.majak.w.ui.component.pivot.label.WLabel
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
@@ -192,7 +191,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   override def snapshot: SlideSnapshot = SlideSnapshot(front, back,
     fontSettings, Size(getSize.width, getSize.height))
 
-  override def refresh(slideSnapshot: SlideSnapshot): Unit = {
+  override def adapt(slideSnapshot: SlideSnapshot): Unit = {
     if (slideSnapshot != snapshot) {
 
       showContentInner(slideSnapshot.front)

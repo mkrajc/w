@@ -8,7 +8,7 @@ class LiveSmallSlidePresenter(pp: PresentationPresenter) extends Presenter[LiveS
   override protected def onBind(v: LiveSmallSlideView) = {
     pp.addBindListener(presentationView => {
       logger.debug("Delayed binding [{}] with view [{}]", presentationView, this, None)
-      presentationView.slideView.observable.subscribe(slideChange => view.slideView.refresh(slideChange.snapshot))
+      presentationView.slideView.observable.subscribe(slideChange => view.slideView.adapt(slideChange.snapshot))
       presentationView.addSizeChangedListener(dim => view.autoSizeSlideView(dim))
     })
   }

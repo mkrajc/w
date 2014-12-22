@@ -1,8 +1,7 @@
 package org.majak.w.ui.component.pivot.label
 
-import java.awt.font.{FontRenderContext, GlyphVector, LineMetrics, TextLayout}
+import java.awt.font.{FontRenderContext, GlyphVector}
 import java.awt.geom.{Line2D, Rectangle2D}
-import java.awt.image.{BufferedImage, ConvolveOp, Kernel}
 import java.awt.{List => AwtList, _}
 import java.text.StringCharacterIterator
 
@@ -28,16 +27,15 @@ class WLabelSkin extends ComponentSkin with LabelListener {
 
   private var glyphVectors: List[GlyphVector] = Nil
 
-  private def getLabel(): WLabel = getComponent.asInstanceOf[WLabel]
+  private def label: WLabel = getComponent.asInstanceOf[WLabel]
 
   override def install(component: Component): Unit = {
     super.install(component)
-    getLabel().getLabelListeners.add(this)
+    label.getLabelListeners.add(this)
   }
 
   def getPreferredWidth(height: Int): Int = {
-    val label = getLabel()
-    val text: String = label.getText
+    val text = label.getText
     var preferredWidth: Int = 0
 
     if (text != null && text.length > 0) {
@@ -59,18 +57,22 @@ class WLabelSkin extends ComponentSkin with LabelListener {
   }
 
   def getPreferredHeight(width: Int): Int = {
-    val label = getLabel()
-    val text: String = label.getText
+    val text = label.getText
     var preferredHeight: Float = 0
     if (text != null) {
+
       var widthUpdated: Int = width
-      val fontRenderContext: FontRenderContext = Platform.getFontRenderContext
-      val lm: LineMetrics = font.getLineMetrics("", fontRenderContext)
-      val lineHeight: Float = lm.getHeight
+
+      val fontRenderContext = Platform.getFontRenderContext
+      val lineHeight = font.getLineMetrics("", fontRenderContext).getHeight
+
       preferredHeight = lineHeight
+
       val n: Int = text.length
       if (n > 0 && wrapText && widthUpdated != -1) {
+
         widthUpdated -= (padding.left + padding.right)
+
         var lineWidth: Float = 0
         var lastWhitespaceIndex: Int = -1
         var i: Int = 0
@@ -97,43 +99,44 @@ class WLabelSkin extends ComponentSkin with LabelListener {
           i += 1
         }
       }
-    }
-    else {
+    } else {
       preferredHeight = 0
     }
+
     preferredHeight += (padding.top + padding.bottom)
 
-    Math.ceil(preferredHeight).toInt
+    math.ceil(preferredHeight).toInt
   }
 
   override def getPreferredSize: Dimensions = {
-    val label = getLabel()
-    val text: String = label.getText
-    val fontRenderContext: FontRenderContext = Platform.getFontRenderContext
-    val lm: LineMetrics = font.getLineMetrics("", fontRenderContext)
-    val lineHeight: Int = Math.ceil(lm.getHeight).toInt
-    var preferredHeight: Int = 0
-    var preferredWidth: Int = 0
+    val text = label.getText
+
+    val fontRenderContext = Platform.getFontRenderContext
+    val lineHeight: Int = Math.ceil(font.getLineMetrics("", fontRenderContext).getHeight).toInt
+
+    var preferredHeight = 0
+    var preferredWidth = 0
+
     if (text != null && text.length > 0) {
-      var str: Array[String] = null
-      if (wrapText) {
-        str = text.split("\n")
+      val str = if (wrapText) {
+        text.split("\n")
+      } else {
+        Array[String](text)
       }
-      else {
-        str = Array[String](text)
-      }
+
       for (line <- str) {
-        val stringBounds: Rectangle2D = font.getStringBounds(line, fontRenderContext)
-        val w: Int = Math.ceil(stringBounds.getWidth).toInt
+        val stringBounds = font.getStringBounds(line, fontRenderContext)
+        val w = math.ceil(stringBounds.getWidth).toInt
+
         if (w > preferredWidth) {
           preferredWidth = w
         }
         preferredHeight += lineHeight
       }
-    }
-    else {
+    } else {
       preferredHeight += lineHeight
     }
+
     preferredHeight += (padding.top + padding.bottom)
     preferredWidth += (padding.left + padding.right)
 
@@ -157,7 +160,6 @@ class WLabelSkin extends ComponentSkin with LabelListener {
   }
 
   def layout(): Unit = {
-    val label = getLabel()
     val text: String = label.getText
     textHeight = 0
 
@@ -209,11 +211,11 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     val line = new StringCharacterIterator(text, start, end, start)
     val glyphVector = font.createGlyphVector(fontRenderContext, line)
     glyphVectors = glyphVector :: glyphVectors
-    textHeight +=  glyphVector.getLogicalBounds.getHeight.toFloat
+    textHeight += glyphVector.getLogicalBounds.getHeight.toFloat
   }
 
   def paint(graphics: Graphics2D) {
-    val label = getLabel()
+
     val width: Int = getWidth
     val height: Int = getHeight
 
@@ -256,25 +258,18 @@ class WLabelSkin extends ComponentSkin with LabelListener {
             graphics.drawString(text, x, y + ascent)
           }
         } else {
-          /*
-          val image = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB)
-          val g = image.createGraphics()
 
-          g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-          g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+          graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+          graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+          graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
 
-          val textLayout = new TextLayout(label.getText, font,g.getFontRenderContext)
-          g.setPaint(new Color(128,128,255))
-          textLayout.draw(g, x, y + ascent)
-          g.dispose()
+          graphics.setPaint(Color.WHITE)
+          val shape = glyphVector.getOutline(x, y + ascent)
+          graphics.fill(shape)
+          graphics.setPaint(Color.BLACK)
+          graphics.draw(shape)
 
-          val ninth = 1.0f / 9.0f;
-          val kernel = Array(ninth, ninth, ninth, ninth, ninth, ninth, ninth, ninth, ninth)
-          val op = new ConvolveOp(new Kernel(3, 3, kernel), ConvolveOp.EDGE_NO_OP, null);
-          val image2 = op.filter(image,null);
-
-          */
-          graphics.drawGlyphVector(glyphVector, x, y + ascent)
+          //graphics.drawGlyphVector(glyphVector, x, y + ascent)
         }
 
         if (textDecoration != null) {
@@ -443,38 +438,6 @@ class WLabelSkin extends ComponentSkin with LabelListener {
   override def textChanged(label: wtk.Label, previousText: String): Unit = invalidateComponent()
 
   override def maximumLengthChanged(label: wtk.Label, previousMaximumLength: Int): Unit = invalidateComponent()
-
-  def createBlurredText(f: Font, col: Color, str: String, blurIntensity: Int): BufferedImage = {
-
-    val bTemp = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-    val gTemp = bTemp.createGraphics
-
-    gTemp.setFont(f)
-
-    val fm = gTemp.getFontMetrics
-    val spread: Int = 8
-
-    val bCBT = new BufferedImage(fm.stringWidth(str) + spread, fm.getFont.getSize + spread, BufferedImage.TYPE_INT_ARGB)
-    val gCBT = bCBT.createGraphics.asInstanceOf[Graphics2D]
-
-    gCBT.setColor(col)
-    gCBT.setFont(f)
-    gCBT.drawString(str, spread / 2, spread / 2 + fm.getFont.getSize)
-
-    val blur: Int = 30 - blurIntensity
-    val d: Float = ((.10f / .09f) * (blur + 132) / 160) - 1.0f
-    val blurKernel: Array[Float] = Array(1 / 9f - d, 1 / 9f - d, 1 / 9f - d, 1 / 9f - d, 1 / 9f + 8 * d, 1 / 9f - d, 1 / 9f - d, 1 / 9f - d, 1 / 9f - d)
-    val cop: ConvolveOp = new ConvolveOp(new Kernel(3, 3, blurKernel), ConvolveOp.EDGE_NO_OP, null)
-
-    gCBT.drawImage(bCBT, cop, 0, 0)
-
-    gTemp.dispose
-    return bCBT
-  }
-
-
-
-
 }
 
 object LabelSkin {
