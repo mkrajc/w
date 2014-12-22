@@ -1,7 +1,7 @@
 package org.majak.w.component.presentation
 
 import org.apache.pivot.wtk._
-import org.majak.w.component.live.slide.{Slide, SlideView, TextContent}
+import org.majak.w.component.slide.{TextContent, SlideView, Slide}
 import org.majak.w.ui.component.Size
 import org.majak.w.ui.pivot.PivotComponent
 import org.majak.w.utils.ListsUtils

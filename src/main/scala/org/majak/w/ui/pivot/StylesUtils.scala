@@ -38,6 +38,12 @@ object StylesUtils {
     comp.getStyles.put("font", new Font(f.getFamily, f.getStyle, size))
   }
 
+  def setFontFamily(comp: Component, family: String): Unit = {
+    val fontOption = Utils.nullAsOption[Font](comp.getStyles.get("font"))
+    val f = fontOption.getOrElse(defaultFont)
+    comp.getStyles.put("font", new Font(family, f.getStyle, f.getSize))
+  }
+
   val defaultFont: Font = new Font("Arial", Font.BOLD, 12)
 
 }

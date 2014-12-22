@@ -34,7 +34,6 @@ trait UiModule extends Module {
   lazy val songPanelPresenter = doBind[SongPanelView, SongPanelPresenter](new SongPanelPresenter(liveSmallSlidePresenter, previewSmallSlidePresenter, songDetailPresenter), new SongPanel)
 
 
-
   private def doBind[V <: View, P <: Presenter[V]](p: P, view: V): P = {
     if (view == null) throw new IllegalArgumentException("cannot bind presenter with undefined view")
     else p bind view

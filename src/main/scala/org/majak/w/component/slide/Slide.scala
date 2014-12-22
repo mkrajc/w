@@ -1,10 +1,10 @@
-package org.majak.w.component.live.slide
+package org.majak.w.component.slide
 
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
+import org.majak.w.ui.component.Size
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
-import org.majak.w.utils.ListsUtils
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.List
@@ -21,14 +21,13 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   private var imageView: Option[ImageView] = None
   private var labels: List[Label] = Nil
 
-  var fontSize: Int = _
   private var textOffset: Int = _
   private var horizontalAlignment = HorizontalAlignment.CENTER
   private var verticalAlignment = VerticalAlignment.CENTER
 
-  var listeners: List[SlideContentListener] = Nil
-  var textContent: Option[TextContent] = None
-  var imgContent: Option[ImageContent] = None
+  var front: Front = EmptyFront
+  var back: Back = EmptyBack
+  var fontSettings = FontSettings(10, "Arial")
 
   StylesUtils.setBackground(this, "#000000")
   clearContent()
@@ -47,13 +46,13 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def clearTextContent() = {
-    textContent = None
+    front = EmptyFront
     labels.foreach(remove(_))
     labels = Nil
   }
 
   private def clearImageContent() = {
-    imgContent = None
+    back = EmptyBack
     imageView.foreach(remove(_))
     imageView = None
   }
@@ -63,7 +62,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     textContent.texts.foreach(addLabel)
     autosizeText()
 
-    this.textContent = Some(textContent)
+    front = textContent
 
     if (effects) {
       labels.foreach(transition)
@@ -71,17 +70,19 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   def showContent(c: Content) = {
+    showContentInner(c)
+    slideChanged()
+  }
 
-    logger.debug("show content [{}] on slide [{}]", c , this, None)
+  private def showContentInner(c: Content) = {
+    logger.debug("show content [{}] on slide [{}]", c, this, None)
     c match {
       case i: ImageContent => showImageContent(i)
       case t: TextContent => showTextContent(t)
-      case _: ClearTextContent => clearTextContent()
-      case _: ClearImageContent => clearImageContent()
-      case _: ClearContent => clearContent()
+      case EmptyFront => clearTextContent()
+      case EmptyBack => clearImageContent()
+      case Empty => clearContent()
     }
-    listeners.foreach(listener => listener(c))
-
   }
 
   private def showImageContent(imageContent: ImageContent) = {
@@ -89,7 +90,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     addImageView(new ImageView(imageContent.img))
     autosizeImage()
 
-    imgContent = Some(imageContent)
+    back = imageContent
 
     if (effects) {
       imageView.foreach(transition)
@@ -129,7 +130,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def computeFontSize() = {
-    fontSize = getSize.height / 10
+    fontSettings = fontSettings.setSize(getSize.height / 10)
   }
 
   private def toAccumulatedSum(xs: List[Int]): List[Int] = {
@@ -142,7 +143,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     for (i <- 0 until labels.size) {
       val label = labels(i)
       //apply fontSize first
-      StylesUtils.setFontSize(label, fontSize)
+      applyFontSettings(label)
+
       // size of label same as size of slide so can be centered nicely
       label.setWidth(getSize.width)
       // set width limits so preferred height will be computed correctly on multilines
@@ -181,14 +183,35 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     autosizeText()
   }
 
-  def addSlideContentListener(l: SlideContentListener) = listeners = ListsUtils.add(l, listeners)
 
-  def removeSlideContentListener(l: SlideContentListener) = listeners = ListsUtils.delete(l, listeners)
+  override def toString: String = "slide@" + hashCode() + " effects=" + effects
 
-  override def toString: String = "Slide@" + hashCode()
+  override def snapshot: SlideSnapshot = SlideSnapshot(front, back,
+    fontSettings, Size(getSize.width, getSize.height))
 
-  override def contents: scala.List[Content] = {
-    val zero = textContent.foldLeft(List[Content]())((list,content)=> content :: list)
-    imgContent.foldLeft(zero)((list,content)=> content :: list)
+  override def refresh(slideSnapshot: SlideSnapshot): Unit = {
+    if (slideSnapshot != snapshot) {
+
+      showContentInner(slideSnapshot.front)
+      showContentInner(slideSnapshot.back)
+      adaptFontSettings(slideSnapshot.fontSettings, slideSnapshot.size)
+
+      labels.foreach(applyFontSettings)
+
+      slideChanged()
+    }
   }
+
+  private def applyFontSettings(label: Label): Unit = {
+    StylesUtils.setFontFamily(label, fontSettings.family)
+    StylesUtils.setFontSize(label, fontSettings.size)
+  }
+
+  private def adaptFontSettings(fontSettings: FontSettings, size: Size): Unit = {
+    val ratio: Float = size.height.toFloat / fontSettings.size
+    val adaptedSize = math.round(getSize.height / ratio)
+    this.fontSettings = FontSettings(adaptedSize.toInt, fontSettings.family)
+  }
+
+
 }

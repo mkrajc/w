@@ -1,0 +1,9 @@
+package org.majak.w.component.slide
+
+import org.majak.w.ui.component.Size
+
+case class FontSettings(size: Int, family: String) {
+  def setSize(s: Int): FontSettings = FontSettings(s, family)
+}
+
+case class SlideSnapshot(front: Front, back: Back, fontSettings: FontSettings, size: Size)

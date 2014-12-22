@@ -18,7 +18,7 @@ ObserverPresenter[PresentationView] {
     value match {
       case StartPresentation(source) => startPresentation(source)
       case HidePresentation => hidePresentation()
-      case PreviewSlideConfirmed(cts) => cts.foreach(view.slideView.showContent)
+      case PreviewSlideConfirmed(slide) => view.slideView.refresh(slide)
     }
   }
 

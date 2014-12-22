@@ -11,7 +11,7 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
     slide.getComponentMouseButtonListeners.add(new ComponentMouseButtonListener.Adapter {
       override def mouseClick(component: Component, button: Mouse.Button, x: Int, y: Int, count: Int): Boolean = {
         if(count >= 2){
-          confirm(slideView.contents)
+          confirm()
         }
         false
       }
