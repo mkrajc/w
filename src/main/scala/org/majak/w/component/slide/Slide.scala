@@ -1,8 +1,11 @@
 package org.majak.w.component.slide
 
+
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.majak.w.ui.component.Size
+import org.majak.w.ui.component.pivot.label
+import org.majak.w.ui.component.pivot.label.WLabel
 import org.majak.w.ui.pivot.StylesUtils
 import org.majak.w.ui.pivot.effects.FadeInTransition
 import org.slf4j.LoggerFactory
@@ -19,7 +22,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   val logger = LoggerFactory.getLogger(getClass)
 
   private var imageView: Option[ImageView] = None
-  private var labels: List[Label] = Nil
+  private var labels: List[WLabel] = Nil
 
   private var textOffset: Int = _
   private var horizontalAlignment = HorizontalAlignment.CENTER
@@ -119,7 +122,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def addLabel(text: String) = {
-    val label = new Label(text)
+    val label = new WLabel(text)
     labels = labels :+ label
 
     StylesUtils.setColor(label, "#ffffff")

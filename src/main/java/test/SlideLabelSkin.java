@@ -746,7 +746,7 @@ public class SlideLabelSkin extends ComponentSkin implements LabelListener {
                 null);
 
         //Layer the blur effects
-        for(int x=0;x<5;x++)
+
             gCBT.drawImage(bCBT, cop, 0, 0);
 
 
