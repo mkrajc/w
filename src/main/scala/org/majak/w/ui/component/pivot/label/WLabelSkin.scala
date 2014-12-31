@@ -1,8 +1,9 @@
 package org.majak.w.ui.component.pivot.label
 
+import java.awt._
 import java.awt.font.{FontRenderContext, GlyphVector}
-import java.awt.geom.{Line2D, Rectangle2D}
-import java.awt.{List => AwtList, _}
+import java.awt.geom.Rectangle2D
+import java.awt.image.BufferedImage
 import java.text.StringCharacterIterator
 
 import org.apache.pivot.collections.Dictionary
@@ -10,22 +11,30 @@ import org.apache.pivot.json.JSONSerializer
 import org.apache.pivot.serialization.SerializationException
 import org.apache.pivot.wtk
 import org.apache.pivot.wtk.skin.ComponentSkin
-import org.apache.pivot.wtk.{Component, Dimensions, GraphicsUtilities, HorizontalAlignment, Insets, LabelListener, Platform, TextDecoration, Theme, VerticalAlignment}
+import org.apache.pivot.wtk.{Component, Dimensions, GraphicsUtilities, HorizontalAlignment, Insets, LabelListener, Platform, Theme, VerticalAlignment}
+import test.ShadowEffect
 
 class WLabelSkin extends ComponentSkin with LabelListener {
+  val NUM_KERNELS = 16
+  //val GAUSSIAN_BLUR_KERNELS = generateGaussianBlurKernels(NUM_KERNELS)
+
+
   val theme: Theme = Theme.getTheme
+
   private var font = theme.getFont
-  private var color = Color.BLACK
-  private var disabledColor = Color.GRAY
-  private var backgroundColor: Color = null
-  private var textDecoration: TextDecoration = null
+  private var color = Color.WHITE
+
   private var horizontalAlignment = HorizontalAlignment.LEFT
   private var verticalAlignment = VerticalAlignment.TOP
+
   private var padding = Insets.NONE
   private var wrapText: Boolean = false
   private var textHeight: Float = 0
 
-  private var glyphVectors: List[GlyphVector] = Nil
+  private val outlineStrokeWidth = 2
+  private val outlineColor = Color.BLACK
+
+  private var glyphVectors: scala.collection.immutable.List[GlyphVector] = scala.collection.immutable.Nil
 
   private def label: WLabel = getComponent.asInstanceOf[WLabel]
 
@@ -219,21 +228,12 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     val width: Int = getWidth
     val height: Int = getHeight
 
-    if (backgroundColor != null) {
-      graphics.setPaint(backgroundColor)
-      graphics.fillRect(0, 0, width, height)
-    }
-
     if (glyphVectors.nonEmpty) {
       graphics.setFont(font)
-
-      if (label.isEnabled) graphics.setPaint(color)
-      else graphics.setPaint(disabledColor)
 
       val fontRenderContext = Platform.getFontRenderContext
       val lm = font.getLineMetrics("", fontRenderContext)
       val ascent = lm.getAscent
-      val lineHeight = lm.getHeight
 
       var y = verticalAlignment match {
         case VerticalAlignment.TOP => padding.top
@@ -263,26 +263,15 @@ class WLabelSkin extends ComponentSkin with LabelListener {
           graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
           graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
 
-          graphics.setPaint(Color.WHITE)
           val shape = glyphVector.getOutline(x, y + ascent)
+
+          drawOutline(graphics, shape)
+          //drawShadow(graphics, shape)
+
+          graphics.setPaint(color)
           graphics.fill(shape)
-          graphics.setPaint(Color.BLACK)
-          graphics.draw(shape)
 
           //graphics.drawGlyphVector(glyphVector, x, y + ascent)
-        }
-
-        if (textDecoration != null) {
-          graphics.setStroke(new BasicStroke)
-          val offset = textDecoration match {
-            case TextDecoration.UNDERLINE => y + ascent + 2
-            case TextDecoration.STRIKETHROUGH => y + lineHeight / 2 + 1
-            case _ => 0
-          }
-
-          val line = new Line2D.Float(x, offset, x + lineWidth, offset)
-
-          graphics.draw(line)
         }
 
         y += textBounds.getHeight.toFloat
@@ -290,10 +279,93 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     }
   }
 
+  private def drawOutline(graphics: Graphics2D, shape: Shape): Unit = {
+    graphics.setComposite(AlphaComposite.Src)
+    graphics.setStroke(new BasicStroke(outlineStrokeWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL))
+    graphics.setPaint(outlineColor)
+    graphics.draw(shape)
+  }
+
+  private def drawShadow(graphics: Graphics2D, shape: Shape): Unit = {
+    val shadow = new ShadowEffect(Color.red, 3, 3, 0.8.toFloat)
+    val image = new BufferedImage(shape.getBounds.width, shape.getBounds.height,
+      BufferedImage.TYPE_INT_RGB)
+    shadow.setBlurKernelSize(15)
+    shadow.setBlurPasses(10)
+    shadow.draw(image, graphics, shape)
+    graphics.drawRenderedImage(image, null)
+    //val blurKernelSize = 0
+    //if (blurKernelSize > 1 && blurKernelSize < NUM_KERNELS /*&& blurPasses > 0*/ ) {
+    /* val image = new BufferedImage(shape.getBounds.width, shape.getBounds.height,
+       BufferedImage.TYPE_INT_RGB)
+
+     val kernel = scala.collection.immutable.List(
+       1f / 9f, 1f / 9f, 1f / 9f,
+       1f / 9f, 1f / 9f, 1f / 9f,
+       1f / 9f, 1f / 9f, 1f / 9f
+     )
+
+     val op = new ConvolveOp(new Kernel(3, 3, kernel.toArray),
+       ConvolveOp.EDGE_NO_OP, null)
+
+     val shadow = op.filter(image, null)
+     graphics.setColor(Color.red)
+     val id = new AffineTransform()
+     id.setToIdentity()
+
+     graphics.drawRenderedImage(shadow, id)*/
+
+    // }
+  }
+
+  /*
+  private def generateGaussianBlurKernels(level: Int): Array[Array[Float]] = {
+    val pascalsTriangle = generatePascalsTriangle(level);
+    val gaussianTriangle = new float[pascalsTriangle.length][];
+    for (int i = 0;
+    i < gaussianTriangle.length;
+    i ++)
+    {
+      float total = 0.0f;
+      gaussianTriangle[i] = new float[pascalsTriangle[i].length];
+      for (int j = 0;
+      j < pascalsTriangle[i].length;
+      j ++)
+      total += pascal(i,j)
+      float coefficient = 1 / total;
+      for (int j = 0;
+      j < pascalsTriangle[i].length;
+      j ++)
+      gaussianTriangle[i][j] = coefficient * pascalsTriangle[i][j];
+    }
+    return gaussianTriangle;
+  }
+
+  private def generatePascalsTriangle(lvl: Int): List[List[Float]] = {
+
+    val level = math.max(2, lvl)
+    var triangle = Nil
+
+    for (i <- 0 to level) {
+      triangle =
+    }
+
+    triangle
+  }*/
+
+  def pascal(c: Int, r: Int): Int = {
+    require(c >= 0 && r >= 0 && c <= r, "Not coordinates in pascal triangle")
+
+    (c, r) match {
+      case (0, _) => 1
+      case (a, b) if a == b => 1
+      case _ => pascal(c - 1, r - 1) + pascal(c, r - 1)
+    }
+  }
+
   override def isFocusable: Boolean = false
 
-  override def isOpaque: Boolean =
-    backgroundColor != null && backgroundColor.getTransparency == Transparency.OPAQUE
+  override def isOpaque: Boolean = true
 
   def getFont: Font = font
 
@@ -305,19 +377,9 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     invalidateComponent()
   }
 
-  final def setFont(font: String) {
-    if (font == null) {
-      throw new IllegalArgumentException("font is null.")
-    }
-    setFont(LabelSkin.decodeFont(font))
-  }
+  final def setFont(font: String): Unit = setFont(LabelSkin.decodeFont(font))
 
-  final def setFont(font: Dictionary[String, _]) {
-    if (font == null) {
-      throw new IllegalArgumentException("font is null.")
-    }
-    setFont(Theme.deriveFont(font))
-  }
+  final def setFont(font: Dictionary[String, _]): Unit = setFont(Theme.deriveFont(font))
 
   def getColor: Color = color
 
@@ -329,50 +391,7 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     repaintComponent()
   }
 
-  final def setColor(color: String) {
-    if (color == null) {
-      throw new IllegalArgumentException("color is null.")
-    }
-    setColor(GraphicsUtilities.decodeColor(color))
-  }
-
-  def getDisabledColor: Color = disabledColor
-
-  def setDisabledColor(color: Color) {
-    if (color == null) {
-      throw new IllegalArgumentException("color is null.")
-    }
-    this.disabledColor = color
-    repaintComponent()
-  }
-
-  final def setDisabledColor(color: String) {
-    if (color == null) {
-      throw new IllegalArgumentException("color is null.")
-    }
-    setDisabledColor(GraphicsUtilities.decodeColor(color))
-  }
-
-  def getBackgroundColor: Color = backgroundColor
-
-  def setBackgroundColor(backgroundColor: Color) {
-    this.backgroundColor = backgroundColor
-    repaintComponent()
-  }
-
-  final def setBackgroundColor(backgroundColor: String) {
-    if (backgroundColor == null) {
-      throw new IllegalArgumentException("backgroundColor is null")
-    }
-    setBackgroundColor(GraphicsUtilities.decodeColor(backgroundColor))
-  }
-
-  def getTextDecoration: TextDecoration = textDecoration
-
-  def setTextDecoration(textDecoration: TextDecoration) {
-    this.textDecoration = textDecoration
-    repaintComponent()
-  }
+  final def setColor(color: String): Unit = setColor(GraphicsUtilities.decodeColor(color))
 
   def getHorizontalAlignment: HorizontalAlignment = horizontalAlignment
 
@@ -404,13 +423,7 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     invalidateComponent()
   }
 
-  final def setPadding(padding: Dictionary[String, _]) {
-    if (padding == null) {
-      throw new IllegalArgumentException("padding is null.")
-    }
-    setPadding(new Insets(padding))
-  }
-
+  final def setPadding(padding: Dictionary[String, _]): Unit = setPadding(new Insets(padding))
 
   final def setPadding(padding: Int): Unit = setPadding(new Insets(padding))
 
@@ -421,12 +434,7 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     setPadding(padding.intValue)
   }
 
-  final def setPadding(padding: String) {
-    if (padding == null) {
-      throw new IllegalArgumentException("padding is null.")
-    }
-    setPadding(Insets.decode(padding))
-  }
+  final def setPadding(padding: String): Unit = setPadding(Insets.decode(padding))
 
   def getWrapText: Boolean = wrapText
 
