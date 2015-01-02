@@ -1,10 +1,9 @@
 package org.majak.w.ui.component
 
-import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.TablePane.{Column, Row}
+import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.media.Image
-import org.majak.w.component.live.slide._
-import org.majak.w.component.slide.{TextContent, ImageContent, EmptyFront, Slide}
+import org.majak.w.component.slide._
 
 object SlideComponentProvider {
   def createSlideTestComponent: Component = {
@@ -54,7 +53,7 @@ object SlideComponentProvider {
 
     clearImageButton.getButtonPressListeners.add(new ButtonPressListener {
       override def buttonPressed(button: Button) =
-        slide.showContent(EmptyFront)
+        slide.showContent(EmptyBack)
     })
 
     left.getButtonPressListeners.add(new ButtonPressListener {

@@ -16,6 +16,16 @@ trait SlideView extends ObservableView {
 
   def snapshot: SlideSnapshot
 
+  /**
+   * Adapting snapshot to current slide. It means that font will be sized proportionally to current size of slide
+   * @param slideSnapshot
+   */
   def adapt(slideSnapshot: SlideSnapshot)
+
+  /**
+   * Apply snapshot to current slide. Slide will setup according to snapshot values
+   * @param slideSnapshot
+   */
+  def apply(slideSnapshot: SlideSnapshot)
 
 }

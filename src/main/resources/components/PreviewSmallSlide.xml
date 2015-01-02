@@ -9,11 +9,15 @@
 
     <TablePane.Row height="1*">
         <Border styles="{backgroundColor:'#ffffff'}">
-            <BoxPane bxml:id="slidePanel"
-                     styles="{horizontalAlignment:'center', verticalAlignment:'center'}"/>
+            <Panel bxml:id="slidePanel" />
         </Border>
         <BoxPane bxml:id="iconPanel" orientation="vertical"
-                 styles="{horizontalAlignment:'center', verticalAlignment:'top'}">
+                 styles="{horizontalAlignment:'center', verticalAlignment:'top', fill: true}">
+            <PushButton bxml:id="fontSettingsButton" tooltipText="%previewSmallSlide.button.format_t" >
+                <buttonData>
+                    <content:ButtonData icon="/images/font-size-16.png"/>
+                </buttonData>
+            </PushButton>
         </BoxPane>
     </TablePane.Row>
 </TablePane>

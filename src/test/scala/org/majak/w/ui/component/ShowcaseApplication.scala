@@ -4,7 +4,7 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
-import org.majak.w.component.live.smallslide.LiveSmallSlide
+import org.majak.w.component.smallslide.LiveSmallSlide
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
@@ -33,6 +33,7 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     "MainMenu" -> (new MainMenu).asComponent,
     "LiveScreen" -> (new LiveScreen).asComponent,
     "LiveSmallSlide" -> liveSmallSlide.asComponent,
+    "PreviewSmallSlide" -> toPivotView(previewSmallSlidePresenter.view).asComponent,
     "Slide" -> SlideComponentProvider.createSlideTestComponent,
     "SongDetail" -> SongDetailProvider.createSongDetailTest
 
