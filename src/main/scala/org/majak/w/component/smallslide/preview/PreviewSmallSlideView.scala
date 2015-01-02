@@ -1,6 +1,7 @@
-package org.majak.w.component.live.smallslide
+package org.majak.w.component.smallslide.preview
 
 import org.majak.w.component.slide.SlideSnapshot
+import org.majak.w.component.smallslide.SmallSlideView
 import org.majak.w.rx.{ObservableView, UiEvent}
 import rx.lang.scala.Observable
 

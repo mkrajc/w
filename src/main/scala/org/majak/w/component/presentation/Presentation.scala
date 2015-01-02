@@ -1,7 +1,7 @@
 package org.majak.w.component.presentation
 
 import org.apache.pivot.wtk._
-import org.majak.w.component.slide.{TextContent, SlideView, Slide}
+import org.majak.w.component.slide.{Slide, SlideView}
 import org.majak.w.ui.component.Size
 import org.majak.w.ui.pivot.PivotComponent
 import org.majak.w.utils.ListsUtils
@@ -21,8 +21,6 @@ class Presentation(val dp: DisplayProvider) extends PivotComponent with Presenta
   override protected def onUiBind = {
     window.setMaximized(true)
     window.setTitle("presentation")
-
-    presentationSlide.showContent(TextContent(List("Presentation")))
 
     window.getComponentListeners.add(new ComponentListener.Adapter {
       override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {

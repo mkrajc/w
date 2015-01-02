@@ -2,7 +2,6 @@ package org.majak.w.component.slide
 
 
 import org.apache.pivot.wtk._
-import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 import org.majak.w.ui.component.Size
 import org.majak.w.ui.component.pivot.label.WLabel
 import org.majak.w.ui.pivot.StylesUtils
@@ -24,19 +23,26 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   private var labels: List[WLabel] = Nil
 
   private var textOffset: Int = _
+
   private var horizontalAlignment = HorizontalAlignment.CENTER
   private var verticalAlignment = VerticalAlignment.CENTER
 
+  private val MINIMUM_FONT_SIZE = 1
+  private val MINIMUM_PADDING = 10
+  private val MAXIMUM_PADDING = 50
+
+  private val DEFAULT_FONT_SIZE = 10
+
   var front: Front = EmptyFront
   var back: Back = EmptyBack
-  var fontSettings = FontSettings(10, "Arial")
+  var fontSettings = FontSettings(DEFAULT_FONT_SIZE, "Arial")
 
-  StylesUtils.setBackground(this, "#000000")
+  StylesUtils.setBackground(this, "#f3f3f3")
   clearContent()
 
   getComponentListeners.add(new ComponentListener.Adapter {
     override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
-      autosizeText()
+      refreshTextLayout()
       autosizeImage()
     }
   })
@@ -62,7 +68,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   private def showTextContent(textContent: TextContent) = {
     clearTextContent()
     textContent.texts.foreach(addLabel)
-    autosizeText()
+    refreshTextLayout()
 
     front = textContent
 
@@ -100,14 +106,8 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def transition(comp: Component): Unit = {
-    val t = new FadeInTransition(comp, 1.second.toMillis.toInt, 30)
-
-    val transitionListener = new TransitionListener() {
-      def transitionCompleted(transition: Transition) = transition.end()
-    }
-
-    t.start(transitionListener)
-
+    val t = new FadeInTransition(comp, 1.second.toMillis.toInt)
+    t.startAndRemove()
   }
 
   private def addImageView(iv: ImageView) = {
@@ -126,21 +126,18 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
     StylesUtils.setColor(label, "#ffffff")
     StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
+    StylesUtils.applyPadding(label, fontPadding(fontSettings.size), 0)
+
     label.getStyles.put("wrapText", true)
 
     add(label)
-  }
-
-  private def computeFontSize() = {
-    fontSettings = fontSettings.setSize(getSize.height / 10)
   }
 
   private def toAccumulatedSum(xs: List[Int]): List[Int] = {
     xs.foldLeft[List[Int]](Nil) { (list, x) => (list.headOption.getOrElse(0) + x) :: list}.reverse
   }
 
-  private def autosizeText() = {
-    computeFontSize()
+  private def refreshTextLayout() = {
 
     for (i <- 0 until labels.size) {
       val label = labels(i)
@@ -182,14 +179,14 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   def setVerticalAlign(va: VerticalAlignment) = {
     verticalAlignment = va
-    autosizeText()
+    refreshTextLayout()
   }
 
 
   override def toString: String = "slide@" + hashCode() + " effects=" + effects
 
   override def snapshot: SlideSnapshot = SlideSnapshot(front, back,
-    fontSettings, Size(getSize.width, getSize.height))
+    fontSettings, Size(getSize.width, getSize.height), horizontalAlignment, verticalAlignment)
 
   override def adapt(slideSnapshot: SlideSnapshot): Unit = {
     if (slideSnapshot != snapshot) {
@@ -198,10 +195,59 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
       showContentInner(slideSnapshot.back)
       adaptFontSettings(slideSnapshot.fontSettings, slideSnapshot.size)
 
-      labels.foreach(applyFontSettings)
+      setHorizontalAlign(slideSnapshot.horizontalAlignment)
+      setVerticalAlign(slideSnapshot.verticalAlignment)
 
+      refreshTextLayout()
       slideChanged()
     }
+  }
+
+  override def apply(slideSnapshot: SlideSnapshot): Unit = {
+    if (slideSnapshot != snapshot) {
+
+      showContentInner(slideSnapshot.front)
+      showContentInner(slideSnapshot.back)
+      fontSettings = slideSnapshot.fontSettings
+      setSize(slideSnapshot.size.width, slideSnapshot.size.height)
+
+      setHorizontalAlign(slideSnapshot.horizontalAlignment)
+      setVerticalAlign(slideSnapshot.verticalAlignment)
+
+      refreshTextLayout()
+      slideChanged()
+    }
+  }
+
+  def increaseFont(): Unit = {
+    val size = fontSettings.size
+    val newSize = size + fontStep(size)
+    fontSettings = fontSettings.setSize(newSize)
+
+    logger.debug("font size increased to " + newSize)
+
+    refreshTextLayout()
+    slideChanged()
+  }
+
+  def decreaseFont(): Unit = {
+    val size = fontSettings.size
+    val newSize = math.max(size - fontStep(size), 1)
+    fontSettings = fontSettings.setSize(newSize)
+
+    logger.debug("font size decreased to " + newSize)
+
+    refreshTextLayout()
+    slideChanged()
+  }
+
+  private def fontStep(size: Int): Int = {
+    math.max(MINIMUM_FONT_SIZE, size / 5)
+  }
+
+  private def fontPadding(size: Int): Int = {
+    val t = math.max(size, MINIMUM_PADDING)
+    math.min(t, MAXIMUM_PADDING)
   }
 
   private def applyFontSettings(label: Label): Unit = {
@@ -214,6 +260,5 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     val adaptedSize = math.round(getSize.height / ratio)
     this.fontSettings = FontSettings(adaptedSize.toInt, fontSettings.family)
   }
-
 
 }

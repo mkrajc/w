@@ -1,4 +1,4 @@
-package org.majak.w.component.live.smallslide
+package org.majak.w.component.smallslide
 
 import org.apache.pivot.wtk.{Container, Component, ComponentListener}
 import org.majak.w.component.slide.{SlideView, Slide}
@@ -6,7 +6,7 @@ import org.majak.w.ui.component.Size
 import org.majak.w.ui.pivot.PivotComponent
 
 
-class SmallSlide extends PivotComponent with SmallSlideView {
+abstract class SmallSlide extends PivotComponent with SmallSlideView {
   val slide = new Slide
   override val slideView: SlideView = slide
   var sourceSize: Option[Size] = None
@@ -21,6 +21,12 @@ class SmallSlide extends PivotComponent with SmallSlideView {
       })
     }
   })
+
+  protected def setupSlide(slide: Slide)
+
+  override protected def onUiBind(): Unit = {
+    setupSlide(slide)
+  }
 
   override def autoSizeSlideView(size: Size): Unit = {
     sourceSize = size match {

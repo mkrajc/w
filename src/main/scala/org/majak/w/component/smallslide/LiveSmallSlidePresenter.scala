@@ -1,15 +1,14 @@
-package org.majak.w.component.live.smallslide
+package org.majak.w.component.smallslide
 
 import org.majak.w.component.presentation.PresentationPresenter
 import org.majak.w.ui.mvp.Presenter
 
-class PreviewSmallSlidePresenter(val pp: PresentationPresenter
-                                  ) extends Presenter[PreviewSmallSlideView] {
+class LiveSmallSlidePresenter(pp: PresentationPresenter) extends Presenter[LiveSmallSlideView] {
 
-
-  override protected def onBind(v: PreviewSmallSlideView) = {
+  override protected def onBind(v: LiveSmallSlideView) = {
     pp.addBindListener(presentationView => {
       logger.debug("Delayed binding [{}] with view [{}]", presentationView, this, None)
+      presentationView.slideView.observable.subscribe(slideChange => view.slideView.adapt(slideChange.snapshot))
       presentationView.addSizeChangedListener(dim => view.autoSizeSlideView(dim))
     })
   }

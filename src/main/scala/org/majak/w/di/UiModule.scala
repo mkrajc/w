@@ -1,11 +1,12 @@
 package org.majak.w.di
 
 import org.majak.w.component.live.screen.{LiveScreen, LiveScreenPresenter, LiveScreenView}
-import org.majak.w.component.live.smallslide._
+import org.majak.w.component.smallslide._
 import org.majak.w.component.live.song._
 import org.majak.w.component.main.menu.{MainMenu, MainMenuPresenter, MainMenuView}
 import org.majak.w.component.main.screen.{MainScreen, MainScreenPresenter, MainScreenView}
 import org.majak.w.component.presentation.PresentationPresenter
+import org.majak.w.component.smallslide.preview.{PreviewSmallSlideView, PreviewSmallSlidePresenter, PreviewSmallSlide}
 import org.majak.w.component.songlist.SongListPresenter
 import org.majak.w.component.songlist.pivot.SongListComponent
 import org.majak.w.component.songlist.view.SongListView

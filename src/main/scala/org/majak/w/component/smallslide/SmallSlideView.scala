@@ -1,4 +1,4 @@
-package org.majak.w.component.live.smallslide
+package org.majak.w.component.smallslide
 
 import org.majak.w.component.slide.SlideView
 import org.majak.w.ui.component.Size

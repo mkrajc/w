@@ -22,5 +22,11 @@
       "hide": "Hide",
       "hide_t": "Hide presentation screen"
     }
+  },
+
+  "previewSmallSlide": {
+    "button": {
+      "format_t": "Formatting options"
+    }
   }
 }
