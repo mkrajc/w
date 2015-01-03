@@ -219,7 +219,7 @@ class WLabelSkin extends ComponentSkin with LabelListener {
   private def appendLine(text: String, start: Int, end: Int, fontRenderContext: FontRenderContext) {
     val line = new StringCharacterIterator(text, start, end, start)
     val glyphVector = font.createGlyphVector(fontRenderContext, line)
-    glyphVectors = glyphVector :: glyphVectors
+    glyphVectors = glyphVectors :+ glyphVector
     textHeight += glyphVector.getLogicalBounds.getHeight.toFloat
   }
 
