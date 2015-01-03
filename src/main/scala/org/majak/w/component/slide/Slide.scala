@@ -126,7 +126,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
     StylesUtils.setColor(label, "#ffffff")
     StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
-    StylesUtils.applyPadding(label, fontPadding(fontSettings.size), 0)
+    StylesUtils.applyPadding(label, fontLeftRightPadding, 0)
 
     label.getStyles.put("wrapText", true)
 
@@ -162,9 +162,9 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   private def computeTextOffset(heights: List[Int]): Int = {
     verticalAlignment match {
-      case VerticalAlignment.BOTTOM => getSize.height - heights.sum
+      case VerticalAlignment.BOTTOM => getSize.height - heights.sum - fontTopBottomPadding
       case VerticalAlignment.CENTER => (getSize.height - heights.sum) / 2
-      case VerticalAlignment.TOP => 0
+      case VerticalAlignment.TOP => fontTopBottomPadding
     }
   }
 
@@ -245,10 +245,12 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     math.max(MINIMUM_FONT_SIZE, size / 5)
   }
 
-  private def fontPadding(size: Int): Int = {
-    val t = math.max(size, MINIMUM_PADDING)
+  private def fontLeftRightPadding: Int = {
+    val t = math.max(fontSettings.size, MINIMUM_PADDING)
     math.min(t, MAXIMUM_PADDING)
   }
+
+  private def fontTopBottomPadding: Int = fontSettings.size / 2
 
   private def applyFontSettings(label: Label): Unit = {
     StylesUtils.setFontFamily(label, fontSettings.family)

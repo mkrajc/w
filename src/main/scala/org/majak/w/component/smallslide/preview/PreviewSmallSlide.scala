@@ -18,7 +18,7 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
   private val fontPanel: FontSettingsPanel = new FontSettingsPanel
 
   def handleEvent(e: UiEvent): Unit = {
-     e match {
+    e match {
       case IncreaseFont => slide.increaseFont()
       case DecreaseFont => slide.decreaseFont()
       case AlignCenter => slide.setHorizontalAlign(HorizontalAlignment.CENTER)
@@ -35,7 +35,7 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
     super.onUiBind()
 
     fontPanel.bindView
-    fontPanel.observable.subscribe(handleEvent(_))
+    fontPanel.observable.subscribe(e => handleEvent(e))
 
     slide.getComponentMouseButtonListeners.add(new ComponentMouseButtonListener.Adapter {
       override def mouseClick(component: Component, button: Mouse.Button, x: Int, y: Int, count: Int): Boolean = {
@@ -47,7 +47,13 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
     })
 
     slidePanel.getComponentListeners.add(new ComponentListener.Adapter {
-      override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = layoutSlide()
+      override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
+        layoutSlide()
+        fontPanel.compressToWidth(slidePanel.getWidth)
+        fontPanel.asComponent.setSize(slidePanel.getWidth, PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT)
+
+
+      }
     })
 
     fontSettingsButton.setPreferredHeight(PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT)
