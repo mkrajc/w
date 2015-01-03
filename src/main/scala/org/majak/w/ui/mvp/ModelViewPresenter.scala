@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
  * Is marker trait to identify hierarchy of views
  */
 trait View {
-  def bindView()
+  def bindView() = {}
 
-  def unbindView()
+  def unbindView() = {}
 }
 
 /**

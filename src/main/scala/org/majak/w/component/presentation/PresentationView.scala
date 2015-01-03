@@ -1,6 +1,6 @@
 package org.majak.w.component.presentation
 
-import org.majak.w.component.live.slide.SlideView
+import org.majak.w.component.slide.SlideView
 import org.majak.w.ui.component.Size
 import org.majak.w.ui.mvp.View
 

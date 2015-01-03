@@ -1,8 +1,9 @@
-package org.majak.w.component.live.smallslide
+package org.majak.w.component.smallslide
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
 import org.majak.w.component.presentation.PivotPresentationViewProvider
+import org.majak.w.component.slide.Slide
 
 class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 
@@ -12,7 +13,8 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 
   @BXML var hideButton: PushButton = _
 
-  override protected def onUiBind = {
+  override protected def onUiBind() = {
+    super.onUiBind()
 
     showButton.getButtonPressListeners.add(new ButtonPressListener {
       override def buttonPressed(button: Button) = {
@@ -22,7 +24,7 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
     })
 
     hideButton.getButtonPressListeners.add(new ButtonPressListener {
-      override def buttonPressed(button: Button) = handleHidePresentation
+      override def buttonPressed(button: Button) = handleHidePresentation()
     })
 
 //    slide.setPreferredSize(120, 90)
@@ -30,10 +32,7 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
     showButton.setPreferredWidth(25)
     hideButton.setPreferredWidth(25)
 
-    slidePanel add slide
-
   }
 
-
-
+  override protected def setupSlide(slide: Slide): Unit = slidePanel add slide
 }

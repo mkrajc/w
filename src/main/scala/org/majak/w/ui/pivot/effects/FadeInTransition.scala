@@ -4,10 +4,12 @@ import org.apache.pivot.wtk.Component
 import org.apache.pivot.wtk.effects.{FadeDecorator, Transition, TransitionListener}
 import org.slf4j.LoggerFactory
 
-class FadeInTransition(val component: Component, val duration: Int, val rate: Int) extends Transition(duration, rate, false) {
-  val logger = LoggerFactory.getLogger(getClass)
+class FadeInTransition(val component: Component, val duration: Int)
+  extends Transition(duration, 30, false) with TransitionAutoRemove {
 
-  private val fadeDecorator = new FadeDecorator
+  private val logger = LoggerFactory.getLogger(getClass)
+
+  protected val fadeDecorator = new FadeDecorator
 
   override def stop() = {
     component.getDecorators().remove(fadeDecorator)
@@ -24,9 +26,12 @@ class FadeInTransition(val component: Component, val duration: Int, val rate: In
   override def update() = {
     val percentComplete = getPercentComplete
     if (percentComplete < 1.0f) {
-      val d = getDuration
-      fadeDecorator.setOpacity(percentComplete)
+      applyPercentage(percentComplete)
       component.repaint
     }
   }
+
+  protected def applyPercentage(percentage: Float): Unit = fadeDecorator.setOpacity(percentage)
+
+  override def transition: Transition = this
 }

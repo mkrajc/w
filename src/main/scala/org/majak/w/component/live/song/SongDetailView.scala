@@ -20,7 +20,7 @@ trait SongDetailView extends ObservableView {
 
   def clearSong()
 
-  lazy val observable: Observable[SongPartSelected] = preventDoubleClicks(subjSongPartSelected)
+  lazy val observable: Observable[SongPartSelected] = subjSongPartSelected
 
 
 }

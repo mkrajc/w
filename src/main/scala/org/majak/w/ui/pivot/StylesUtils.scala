@@ -2,11 +2,19 @@ package org.majak.w.ui.pivot
 
 import java.awt.Font
 
-import org.apache.pivot.wtk.{VerticalAlignment, Component, HorizontalAlignment}
+import org.apache.pivot.wtk.{Component, HorizontalAlignment, VerticalAlignment}
 import org.majak.w.utils.Utils
 
 
 object StylesUtils {
+  def applyPadding(comp: Component, leftRight: Int, topBottom: Int): Unit = {
+    applyPadding(comp, leftRight, leftRight, topBottom, topBottom)
+  }
+
+  def applyPadding(comp: Component,left:Int,right: Int, top:Int, bottom: Int): Unit = {
+    comp.getStyles.put("padding", s"{top:$top,bottom:$bottom,left:$left,right:$right}}")
+  }
+
 
   def centerHorizontal(comp: Component) = {
     applyHorizontalAlignement(comp, HorizontalAlignment.CENTER)
@@ -36,6 +44,12 @@ object StylesUtils {
     val fontOption = Utils.nullAsOption[Font](comp.getStyles.get("font"))
     val f = fontOption.getOrElse(defaultFont)
     comp.getStyles.put("font", new Font(f.getFamily, f.getStyle, size))
+  }
+
+  def setFontFamily(comp: Component, family: String): Unit = {
+    val fontOption = Utils.nullAsOption[Font](comp.getStyles.get("font"))
+    val f = fontOption.getOrElse(defaultFont)
+    comp.getStyles.put("font", new Font(family, f.getStyle, f.getSize))
   }
 
   val defaultFont: Font = new Font("Arial", Font.BOLD, 12)

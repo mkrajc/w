@@ -1,7 +1,8 @@
 package org.majak.w.component.live.song
 
-import org.majak.w.component.live.slide.{Content, TextContent}
-import org.majak.w.component.live.smallslide.{PreviewSmallSlidePresenter, LiveSmallSlidePresenter}
+import org.majak.w.component.smallslide.LiveSmallSlidePresenter
+import org.majak.w.component.slide.{Content, TextContent}
+import org.majak.w.component.smallslide.preview.PreviewSmallSlidePresenter
 import org.majak.w.ui.mvp.Presenter
 import rx.lang.scala.Observable
 
