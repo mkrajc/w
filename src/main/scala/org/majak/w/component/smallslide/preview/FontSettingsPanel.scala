@@ -1,9 +1,12 @@
 package org.majak.w.component.smallslide.preview
 
+import java.awt.Font
+
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.Menu.{Item, Section}
 import org.apache.pivot.wtk._
 import org.majak.w.rx.{ObservableView, UiEvent}
+import org.majak.w.ui.component.pivot.FontListButton
 import org.majak.w.ui.pivot.PivotComponent
 import rx.lang.scala.Observable
 
@@ -25,9 +28,13 @@ case object VAlignTop extends UiEvent
 
 case object VAlignBottom extends UiEvent
 
+case class FontFamilyChanged(family: String) extends UiEvent
+
 class FontSettingsPanel extends PivotComponent with ObservableView {
 
   @BXML var fontPanel: BoxPane = _
+
+  @BXML var fontButton: FontListButton = _
 
   @BXML var biggerSizeButton: PushButton = _
   @BXML var smallerSizeButton: PushButton = _
@@ -47,6 +54,15 @@ class FontSettingsPanel extends PivotComponent with ObservableView {
 
     fontPanel.iterator.foreach(_.setPreferredWidth(PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT))
 
+    fontButton.setPreferredWidth(150)
+    fontButton.getListButtonSelectionListeners.add(new ListButtonSelectionListener {
+      override def selectedIndexChanged(listButton: ListButton, previousSelectedIndex: Int): Unit = ()
+
+      override def selectedItemChanged(listButton: ListButton, previousSelectedItem: scala.Any): Unit = {
+        fontSettingSubject.onNext(FontFamilyChanged(listButton.getSelectedItem.asInstanceOf[Font].getFamily))
+      }
+    })
+
     biggerSizeButton.getButtonPressListeners.add(UiEventButtonPressListener(IncreaseFont))
     smallerSizeButton.getButtonPressListeners.add(UiEventButtonPressListener(DecreaseFont))
 
@@ -60,16 +76,20 @@ class FontSettingsPanel extends PivotComponent with ObservableView {
 
     arrow.setMenu(new Menu)
     arrow.getMenu.getSections.add(new Section)
- }
+  }
 
 
   def compressToWidth(width: Int): Unit = {
     def removeUntilFit(currentWidth: Int, removed: List[PushButton]): List[PushButton] = {
       if (currentWidth > width) {
         val lastIndex = fontPanel.getLength - 1
-        val comp = fontPanel.get(lastIndex).asInstanceOf[PushButton]
-        fontPanel.remove(comp)
-        removeUntilFit(currentWidth - comp.getPreferredWidth, comp :: removed)
+        val comp = fontPanel.get(lastIndex)
+        comp match {
+          case pb: PushButton =>
+            fontPanel.remove(pb)
+            removeUntilFit(currentWidth - pb.getPreferredWidth, pb :: removed)
+          case _ => removed
+        }
       } else {
         removed
       }
@@ -102,7 +122,7 @@ class FontSettingsPanel extends PivotComponent with ObservableView {
       val section = arrow.getMenu.getSections.get(0)
       section.remove(0, section.getLength)
 
-      arrow.setPreferredWidth(width - fontPanel.getPreferredWidth)
+      arrow.setPreferredWidth(math.max(width - fontPanel.getPreferredWidth, 0))
       fontPanel.add(arrow)
       removed.map(d => {
         val item = new Item(d.getButtonData)
@@ -112,12 +132,14 @@ class FontSettingsPanel extends PivotComponent with ObservableView {
     }
   }
 
-  lazy val fontSizeSubject = createUiEventSubject[UiEvent]
+  lazy val fontSettingSubject = createUiEventSubject[UiEvent]
 
-  override def observable: Observable[UiEvent] = fontSizeSubject
+  override def observable: Observable[UiEvent] = fontSettingSubject
 
   case class UiEventButtonPressListener(event: UiEvent) extends ButtonPressListener {
-    override def buttonPressed(button: Button): Unit = fontSizeSubject.onNext(event)
+    override def buttonPressed(button: Button): Unit = fontSettingSubject.onNext(event)
   }
 
 }
+
+

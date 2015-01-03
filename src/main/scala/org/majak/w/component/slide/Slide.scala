@@ -224,7 +224,17 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     val newSize = size + fontStep(size)
     fontSettings = fontSettings.setSize(newSize)
 
-    logger.debug("font size increased to " + newSize)
+    logger.info("font size increased to " + newSize)
+
+    refreshTextLayout()
+    slideChanged()
+  }
+
+  def setFontFamily(family: String): Unit = {
+
+    fontSettings = fontSettings.setFamily(family)
+
+    logger.info("font family changed to to " + family)
 
     refreshTextLayout()
     slideChanged()
@@ -235,7 +245,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     val newSize = math.max(size - fontStep(size), 1)
     fontSettings = fontSettings.setSize(newSize)
 
-    logger.debug("font size decreased to " + newSize)
+    logger.info("font size decreased to " + newSize)
 
     refreshTextLayout()
     slideChanged()

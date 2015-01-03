@@ -27,6 +27,7 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
       case VAlignCenter => slide.setVerticalAlign(VerticalAlignment.CENTER)
       case VAlignTop => slide.setVerticalAlign(VerticalAlignment.TOP)
       case VAlignBottom => slide.setVerticalAlign(VerticalAlignment.BOTTOM)
+      case FontFamilyChanged(family) => slide.setFontFamily(family)
       case _ => ()
     }
   }
@@ -68,6 +69,8 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
         }
       }
     })
+
+    fontPanel.fontButton.selectFamily(slide.fontSettings.family)
 
   }
 
