@@ -3,6 +3,8 @@ package org.majak.w.controller
 
 import java.io.File
 
+import org.apache.pivot.util.concurrent.{TaskListener, Task}
+import org.apache.pivot.wtk.TaskAdapter
 import org.apache.pivot.wtk.media.Image
 import rx.lang.scala.Subject
 
@@ -10,16 +12,20 @@ class ImageDirectoryWatchDog(file: File) {
   val observable = Subject[Image]()
 
   private val dirWd = new DirectoryWatchDog(file)
-  dirWd.addAddFileDataHandler(checkFileData(_).map(i => observable.onNext(i)))
+  //dirWd.addAddFileDataHandler(checkFileData)
 
-  println("file: " + file)
+  def checkFileData(fileData: FileData): Unit = {
 
-  def checkFileData(fileData: FileData): Option[Image] = {
-    try {
-      Some(Image.load(new File(fileData.path).toURI.toURL))
-    } catch {
-      case e: Throwable => println(s"filedata ${fileData.path} " + e.getMessage); None
-    }
+    val task = new LoadImageTask(fileData)
+
+    task.execute(new TaskAdapter[Image](new TaskListener[Image] {
+      override def executeFailed(task: Task[Image]): Unit = { }
+
+      override def taskExecuted(task: Task[Image]): Unit = {
+        println("done loading:" + fileData.path)
+        observable.onNext(task.getResult)
+      }
+    }))
 
   }
 
@@ -27,4 +33,13 @@ class ImageDirectoryWatchDog(file: File) {
     dirWd.scan()
   }
 
+}
+
+
+class LoadImageTask(fileData: FileData) extends Task[Image] {
+
+  override def execute(): Image = {
+    println("start loading:" + fileData.path)
+    Image.load(new File(fileData.path).toURI.toURL)
+  }
 }

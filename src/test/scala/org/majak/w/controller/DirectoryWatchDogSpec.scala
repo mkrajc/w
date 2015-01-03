@@ -92,7 +92,10 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
         added = added + 1
         logger.info("added " + fd.path)
       }
-      wd.addAddFileDataHandler(h)
+      wd.observable.subscribe(onNext = e => e match {
+        case FileAdded(f) => h(f)
+        case _ => ()
+      })
 
       val data = wd.scan()
 
@@ -123,7 +126,10 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
         added = added + 1
         logger.info("added " + fd.path)
       }
-      wd.addAddFileDataHandler(h)
+      wd.observable.subscribe(onNext = e => e match {
+        case FileAdded(f) => h(f)
+        case _ => ()
+      })
 
       val index = data.left.get
 
@@ -146,12 +152,15 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
         deleted = deleted + 1
         logger.info("deleted " + fd.path)
       }
-      wd.addRemovedFileDataHandler(h)
+      wd.observable.subscribe(onNext = _ match {
+        case FileRemoved(f) => h(f)
+        case _ => ()
+      })
 
       val data = wd.scan()
       val index = data.left.get
 
-      files.foreach(FileUtils.deleteQuietly(_))
+      files.foreach(FileUtils.deleteQuietly)
 
       wd.rescan(index)
 
@@ -173,7 +182,10 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
         changed = changed + 1
       }
 
-      wd.addChangedFileDataHandler(h)
+      wd.observable.subscribe(onNext = _ match {
+        case changed: FileChanged => h(changed.before, changed.after)
+        case _ => ()
+      })
 
       val data = wd.scan()
       val index = data.left.get

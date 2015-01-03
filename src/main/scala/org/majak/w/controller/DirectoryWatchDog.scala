@@ -5,22 +5,26 @@ import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.majak.w.rx.{ObservableObject, Event}
 import org.slf4j.LoggerFactory
+import rx.lang.scala.Observable
 
+sealed class WatchDogEvent extends  Event
+case class FileAdded(fileData: FileData) extends WatchDogEvent
 
-class DirectoryWatchDog(val directory: File) {
+case class FileRemoved(fileData: FileData) extends WatchDogEvent
+
+case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
+
+class DirectoryWatchDog(val directory: File) extends ObservableObject {
   val logger = LoggerFactory.getLogger(getClass)
 
+  private lazy val subject = createUiEventSubject[WatchDogEvent]
+  override def observable: Observable[WatchDogEvent] = subject
+
   type IndexResult = Either[Index, List[String]]
-  type AddFileDataHandler = FileData => Unit
-  type RemoveFileDataHandler = FileData => Unit
-  type ChangeFileDataHandler = (FileData, FileData) => Unit
 
   require(directory.exists(), "Not existing directory: " + directory)
-
-  var addHandlers: List[AddFileDataHandler] = Nil
-  var removedHandlers: List[RemoveFileDataHandler] = Nil
-  var changedHandlers: List[ChangeFileDataHandler] = Nil
 
   private def scanIntern(): IndexResult = {
     val fData = scanFiles(directory.listFiles.toList, Nil)
@@ -39,7 +43,7 @@ class DirectoryWatchDog(val directory: File) {
     ir match {
       case Right(errors) => Right("Cannot scan directory." :: errors)
       case Left(index) => {
-        index.fileData.foreach(f => addHandlers.foreach(_(f)))
+        index.fileData.foreach(f => subject.onNext(FileAdded(f)))
       }
     }
     ir
@@ -84,9 +88,9 @@ class DirectoryWatchDog(val directory: File) {
         if a.path == d.path || a.md5hex == d.md5hex
       } yield (a, d)
 
-      added.foreach(f => addHandlers.foreach(_(f)))
-      deleted.foreach(f => removedHandlers.foreach(_(f)))
-      changedStates.foreach(p => changedHandlers.foreach(_(p._1, p._2)))
+      added.foreach(f => subject.onNext(FileAdded(f)))
+      deleted.foreach(f => subject.onNext(FileRemoved(f)))
+      changedStates.foreach(p => subject.onNext(FileChanged(p._1, p._2)))
 
       Left(currentIndex)
     }
@@ -98,12 +102,6 @@ class DirectoryWatchDog(val directory: File) {
     }
 
   }
-
-  def addAddFileDataHandler(h: AddFileDataHandler) = addHandlers = h :: addHandlers
-
-  def addRemovedFileDataHandler(h: RemoveFileDataHandler) = removedHandlers = h :: removedHandlers
-
-  def addChangedFileDataHandler(h: ChangeFileDataHandler) = changedHandlers = h :: changedHandlers
 
 }
 
