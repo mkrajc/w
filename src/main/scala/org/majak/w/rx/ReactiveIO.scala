@@ -6,6 +6,8 @@ import scala.concurrent.duration._
 
 trait Event
 
+case object Done extends Event
+
 trait UiEvent extends Event
 
 trait ObservableObject {

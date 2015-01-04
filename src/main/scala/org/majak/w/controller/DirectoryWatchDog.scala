@@ -5,11 +5,12 @@ import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
-import org.majak.w.rx.{ObservableObject, Event}
+import org.majak.w.rx.{Done, Event, ObservableObject}
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
-sealed class WatchDogEvent extends  Event
+sealed class WatchDogEvent extends Event
+
 case class FileAdded(fileData: FileData) extends WatchDogEvent
 
 case class FileRemoved(fileData: FileData) extends WatchDogEvent
@@ -19,8 +20,13 @@ case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
 class DirectoryWatchDog(val directory: File) extends ObservableObject {
   val logger = LoggerFactory.getLogger(getClass)
 
-  private lazy val subject = createUiEventSubject[WatchDogEvent]
-  override def observable: Observable[WatchDogEvent] = subject
+  protected lazy val addSubject = createUiEventSubject[FileAdded]
+  protected lazy val removedSubject = createUiEventSubject[FileRemoved]
+  protected lazy val changedSubject = createUiEventSubject[FileChanged]
+  protected lazy val doneNotifier = createUiEventSubject[Done.type]
+
+  override def observable: Observable[WatchDogEvent] = addSubject.merge(removedSubject).merge(changedSubject)
+
 
   type IndexResult = Either[Index, List[String]]
 
@@ -42,9 +48,9 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject {
     val ir = scanIntern()
     ir match {
       case Right(errors) => Right("Cannot scan directory." :: errors)
-      case Left(index) => {
-        index.fileData.foreach(f => subject.onNext(FileAdded(f)))
-      }
+      case Left(index) =>
+        index.fileData.foreach(f => addSubject.onNext(FileAdded(f)))
+        doneNotifier.onNext(Done)
     }
     ir
   }
@@ -88,9 +94,10 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject {
         if a.path == d.path || a.md5hex == d.md5hex
       } yield (a, d)
 
-      added.foreach(f => subject.onNext(FileAdded(f)))
-      deleted.foreach(f => subject.onNext(FileRemoved(f)))
-      changedStates.foreach(p => subject.onNext(FileChanged(p._1, p._2)))
+      added.foreach(f => addSubject.onNext(FileAdded(f)))
+      deleted.foreach(f => removedSubject.onNext(FileRemoved(f)))
+      changedStates.foreach(p => changedSubject.onNext(FileChanged(p._1, p._2)))
+      doneNotifier.onNext(Done)
 
       Left(currentIndex)
     }
