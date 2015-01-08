@@ -1,4 +1,4 @@
-package org.majak.w.controller
+package org.majak.w.controller.watchdog
 
 import java.io.File
 import java.util.UUID

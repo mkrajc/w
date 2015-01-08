@@ -1,15 +1,16 @@
 
-package org.majak.w.controller
+package org.majak.w.controller.watchdog
 
 import java.io.File
 
 import org.junit.runner.RunWith
+import org.majak.w.di.Module
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
 
 @RunWith(classOf[JUnitRunner])
-class ImageDirectoryWatchDogSpec extends FlatSpec with Matchers {
+class ImageDirectoryWatchDogSpec extends FlatSpec with Matchers with Module{
   val logger = LoggerFactory.getLogger(getClass)
 
   "ImageDirectoryWatchDog" should "initialize if directory exist" in {
@@ -18,5 +19,11 @@ class ImageDirectoryWatchDogSpec extends FlatSpec with Matchers {
     wd.observable.subscribe(println(_))
 
     wd.scan()
+  }
+
+  it should "test mapdb" in {
+    val wd = new ImageDirectoryWatchDog(new File("""c:\Users\Martin\Pictures\"""))
+    val i = wd.index(createIndexProvider)
+    i.fileData.foreach(println)
   }
 }

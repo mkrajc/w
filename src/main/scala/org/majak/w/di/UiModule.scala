@@ -13,7 +13,7 @@ import org.majak.w.component.smallslide.preview.{PreviewSmallSlideView, PreviewS
 import org.majak.w.component.songlist.SongListPresenter
 import org.majak.w.component.songlist.pivot.SongListComponent
 import org.majak.w.component.songlist.view.SongListView
-import org.majak.w.controller.ImageDirectoryWatchDog
+import org.majak.w.controller.watchdog.ImageDirectoryWatchDog
 import org.majak.w.ui.mvp.{Presenter, View}
 
 

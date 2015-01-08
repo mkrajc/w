@@ -1,10 +1,11 @@
-package org.majak.w.controller
+package org.majak.w.controller.watchdog
 
 import java.io.{File, FileInputStream}
 import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.majak.w.controller.watchdog.DirectoryWatchDog.IndexResult
 import org.majak.w.rx.{Done, Event, ObservableObject}
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
@@ -17,7 +18,7 @@ case class FileRemoved(fileData: FileData) extends WatchDogEvent
 
 case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
 
-class DirectoryWatchDog(val directory: File) extends ObservableObject {
+class DirectoryWatchDog(val directory: File) extends ObservableObject with IndexPersistance {
   val logger = LoggerFactory.getLogger(getClass)
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
@@ -26,9 +27,6 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject {
   protected lazy val doneNotifier = createUiEventSubject[Done.type]
 
   override def observable: Observable[WatchDogEvent] = addSubject.merge(removedSubject).merge(changedSubject)
-
-
-  type IndexResult = Either[Index, List[String]]
 
   require(directory.exists(), "Not existing directory: " + directory)
 
@@ -77,6 +75,8 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject {
     }
   }
 
+
+
   def rescan(lastIndex: Index): IndexResult = {
 
     def compareIndices(lastIndex: Index, currentIndex: Index): IndexResult = {
@@ -110,6 +110,11 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject {
 
   }
 
+}
+
+object DirectoryWatchDog {
+
+  type IndexResult = Either[Index, List[String]]
 }
 
 case class FileData(path: String, md5hex: String)

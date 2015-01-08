@@ -1,6 +1,5 @@
 
-package org.majak.w.controller
-
+package org.majak.w.controller.watchdog
 
 import java.io.File
 import java.net.URL
@@ -16,6 +15,8 @@ case class ImageAdded(fileData: FileData, fullImage: Image, thumbnail: Image) ex
 class ImageDirectoryWatchDog(file: File) extends DirectoryWatchDog(file) {
   val imagesLoaded = Subject[Seq[Image]]()
   val imageLoaded = Subject[Image]()
+
+  override val indexName: String = "images_dir"
 
   val addImageSubject = addSubject.filter(hasImageExtension)
 
