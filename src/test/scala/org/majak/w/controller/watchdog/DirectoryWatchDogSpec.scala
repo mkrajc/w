@@ -63,7 +63,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       val wd = new DirectoryWatchDog(f)
       val data = wd.scan()
       val errors = data.right.get
-      errors shouldBe a[List[String]]
+      errors shouldBe a[List[_]]
       assert(errors.size === 1)
       assert(errors(0).contains("one"))
       assert(errors(0).contains("two"))
