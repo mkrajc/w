@@ -20,11 +20,7 @@ trait WatchDog extends ObservableObject {
    */
   def scan(): IndexResult
 
-  def rescan(index: IndexResult): IndexResult = {
-      val newIdx = scan()
-      notifyChanges(index, newIdx)
-      newIdx
-  }
+  def rescan(index: IndexResult): IndexResult
 
   /**
    * Notify changed items

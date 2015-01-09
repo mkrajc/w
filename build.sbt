@@ -24,3 +24,5 @@ libraryDependencies ++= Seq(
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
+transitiveClassifiers := Seq("sources")

@@ -6,7 +6,7 @@ import java.util.Date
 import org.majak.w.controller.SongController
 import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexProvider, IndexStore}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.controller.watchdog.{FileData, Index}
+import org.majak.w.controller.watchdog.{ImageDirectoryWatchDog, FileData, Index}
 import org.majak.w.service.SongService
 import org.mapdb.DBMaker
 
@@ -16,6 +16,10 @@ trait Module {
   val songController = new SongController
   def songService: SongService = null
 
+  val dataDir = """.\data"""
+  val imageDir = dataDir + """\images"""
+
+  lazy val imageWatchDog = new ImageDirectoryWatchDog(new File(imageDir))
 }
 
 object Module {

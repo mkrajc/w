@@ -1,8 +1,8 @@
 <configuration>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d [%t] %p %logger{0} - %m%n</Pattern>
-        </layout>
+        <encoder>
+            <pattern>%d %-5level [%thread] %logger{0}: %msg%n</pattern>
+        </encoder>
     </appender>
     <root level="${root-level:-INFO}">
         <appender-ref ref="CONSOLE"/>

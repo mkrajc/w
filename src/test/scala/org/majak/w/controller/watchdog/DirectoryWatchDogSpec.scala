@@ -56,19 +56,15 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     }
   }
 
-  it should "provide errors when scanning duplicate content" in {
+  it should "provide empty result when scanning duplicate content" in {
 
-    /**
-      testInTestDir { f =>
-      prepareFilesInDir(f, Map("one" -> "same", "two" -> "same"))
-      val wd = new DirectoryWatchDog(f)
-      val data = wd.scan()
-      val errors = data.right.get
-      errors shouldBe a[List[_]]
-      assert(errors.size === 1)
-      assert(errors(0).contains("one"))
-      assert(errors(0).contains("two"))
-    }**/
+    testInTestDir {
+      f =>
+        prepareFilesInDir(f, Map("one" -> "same", "two" -> "same"))
+        val wd = new DirectoryWatchDog(f)
+        val data = wd.scan()
+        data shouldBe None
+    }
   }
 
   it should "provide data when scanning with read-only files" in {
@@ -89,10 +85,8 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       val wd = new DirectoryWatchDog(f)
 
       var added = 0
-      val h = (fd: FileData) => {
-        added = added + 1
-        logger.info("added " + fd.path)
-      }
+      val h = (fd: FileData) => added = added + 1
+
       wd.observable.subscribe(onNext = e => e match {
         case FileAdded(f) => h(f)
         case _ => ()
@@ -116,22 +110,17 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
   it should "be notified when new files are added to directory" in {
 
     testInTestDir { f =>
-
-
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
       val data = wd.scan()
 
       var added = 0
-      val h = (fd: FileData) => {
-        added = added + 1
-        logger.info("added " + fd.path)
-      }
+      val h = (fd: FileData) => added = added + 1
+
       wd.observable.subscribe(onNext = e => e match {
         case FileAdded(f) => h(f)
         case _ => ()
       })
-
 
       prepareFilesInDir(f, Map("c" -> "c", "d" -> "d"))
       wd.rescan(data)
@@ -148,10 +137,8 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       val wd = new DirectoryWatchDog(f)
 
       var deleted = 0
-      val h = (fd: FileData) => {
-        deleted = deleted + 1
-        logger.info("deleted " + fd.path)
-      }
+      val h = (fd: FileData) => deleted = deleted + 1
+
       wd.observable.subscribe(onNext = _ match {
         case FileRemoved(f) => h(f)
         case _ => ()
@@ -213,7 +200,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     } catch {
       case e: Exception => {
         logger.error("erorr occured", e)
-        //throw e
+        throw e
       }
     } finally {
       FileUtils.deleteDirectory(dir)

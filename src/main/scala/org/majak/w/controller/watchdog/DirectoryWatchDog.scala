@@ -46,8 +46,13 @@ class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWat
       Some(new Index(fileSet, new Date))
     } else {
       None
-      //Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
     }
+  }
+
+  override def rescan(index: IndexResult): IndexResult = {
+      val newIdx = scanIntern()
+      notifyChanges(index, newIdx)
+      newIdx
   }
 
   override def scan(): IndexResult = {
@@ -89,8 +94,8 @@ class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWat
    */
   override def notifyChanges(currentIndex: IndexResult, previousIndex: IndexResult): Unit = {
     def compareIndices(currentIndex: Index, previousIndex: Index): Unit = {
-      val addedOrChanged = currentIndex.fileData &~ previousIndex.fileData
-      val deletedOrChanged = previousIndex.fileData &~ currentIndex.fileData
+      val addedOrChanged = previousIndex.fileData &~ currentIndex.fileData
+      val deletedOrChanged = currentIndex.fileData &~ previousIndex.fileData
 
       val (changedA, added) = addedOrChanged.partition(
         fd => deletedOrChanged.exists(e => e.path == fd.path || e.md5hex == fd.md5hex))
