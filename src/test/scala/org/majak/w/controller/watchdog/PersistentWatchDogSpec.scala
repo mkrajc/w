@@ -33,5 +33,5 @@ class PersistentWatchDogSpec extends FlatSpec with Matchers {
     val current = wd.index()
     assert(current === index)
   }
-  
+
 }

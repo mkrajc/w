@@ -6,7 +6,7 @@ import java.util.Date
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.rx.{ObservableObject, Done, Event}
+import org.majak.w.rx.{Done, Event, ObservableObject}
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
@@ -112,8 +112,8 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
     index.foreach(i => i.fileData.foreach(f => addSubject.onNext(FileAdded(f))))
     doneNotifier.onNext(Done)
   }
-
-  override val indexFile: File = ???
+  // TODO
+  override lazy val indexFile: File = new File(".", "DirectoryWatchDog.dat")
 }
 
 
