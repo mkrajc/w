@@ -1,14 +1,18 @@
 package org.majak.w.component.live.song
 
 import org.majak.w.model.SongModel.SongPart
-import org.majak.w.ui.mvp.View
+import org.majak.w.rx.{UiEvent, ObservableView}
+import rx.lang.scala.Observable
+
+case class SongPartSelected(songPart: SongPart) extends UiEvent
 
 /**
  * Represent UI for song detail component
  */
-trait SongDetailView extends View {
+trait SongDetailView extends ObservableView {
+  private lazy val subjSongPartSelected = createUiEventSubject[SongPartSelected]
 
-  type SongPartSelectedHandler = SongPart => Unit
+  def selectSongPart(songPart: SongPart) = subjSongPartSelected.onNext(SongPartSelected(songPart))
 
   def showSongName(name: String)
 
@@ -16,8 +20,7 @@ trait SongDetailView extends View {
 
   def clearSong()
 
-  def addSongPartSelectedHandler(h: SongPartSelectedHandler)
+  lazy val observable: Observable[SongPartSelected] = subjSongPartSelected
 
-  def removeSongPartSelectedHandler(h: SongPartSelectedHandler)
 
 }

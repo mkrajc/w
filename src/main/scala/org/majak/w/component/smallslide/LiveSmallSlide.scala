@@ -1,13 +1,11 @@
-package org.majak.w.component.live.smallslide
+package org.majak.w.component.smallslide
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
 import org.majak.w.component.presentation.PivotPresentationViewProvider
-import org.majak.w.utils.ListsUtils
+import org.majak.w.component.slide.Slide
 
 class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
-
-  var uiHandlers:List[LiveSmallSlideUiHandler] = Nil
 
   @BXML var slidePanel: BoxPane = _
 
@@ -15,17 +13,18 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 
   @BXML var hideButton: PushButton = _
 
-  override protected def onUiBind = {
+  override protected def onUiBind() = {
+    super.onUiBind()
 
     showButton.getButtonPressListeners.add(new ButtonPressListener {
       override def buttonPressed(button: Button) = {
         val pvp = new PivotPresentationViewProvider(showButton.getDisplay.getHostWindow)
-        uiHandlers foreach (_.onStartPresentation(pvp))
+        handleStartPresentation(pvp)
       }
     })
 
     hideButton.getButtonPressListeners.add(new ButtonPressListener {
-      override def buttonPressed(button: Button) = uiHandlers foreach (_.onHidePresentation())
+      override def buttonPressed(button: Button) = handleHidePresentation()
     })
 
 //    slide.setPreferredSize(120, 90)
@@ -33,12 +32,7 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
     showButton.setPreferredWidth(25)
     hideButton.setPreferredWidth(25)
 
-    slidePanel add slide
-
   }
 
-  override def addUiHandler(h: LiveSmallSlideUiHandler) = uiHandlers = ListsUtils.add(h, uiHandlers)
-  override def removeUiHandler(h: LiveSmallSlideUiHandler) = uiHandlers = ListsUtils.delete(h, uiHandlers)
-
-
+  override protected def setupSlide(slide: Slide): Unit = slidePanel add slide
 }

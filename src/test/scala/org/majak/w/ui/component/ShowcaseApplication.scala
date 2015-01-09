@@ -4,7 +4,7 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
-import org.majak.w.component.live.smallslide.LiveSmallSlide
+import org.majak.w.component.smallslide.LiveSmallSlide
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
@@ -33,8 +33,10 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     "MainMenu" -> (new MainMenu).asComponent,
     "LiveScreen" -> (new LiveScreen).asComponent,
     "LiveSmallSlide" -> liveSmallSlide.asComponent,
+    "PreviewSmallSlide" -> toPivotView(previewSmallSlidePresenter.view).asComponent,
     "Slide" -> SlideComponentProvider.createSlideTestComponent,
-    "SongDetail" -> SongDetailProvider.createSongDetailTest
+    "SongDetail" -> SongDetailProvider.createSongDetailTest,
+    "ImageLibrary"-> toPivotView(imageLibraryPresenter.view).asComponent
 
   )
 
@@ -46,9 +48,9 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   val c = new Column
   c.setWidth("1*")
 
-  (pane getColumns) add c
-  (pane getRows) add r
-  (pane getRows) add r2
+  pane.getColumns.add(c)
+  pane.getRows.add(r)
+  pane.getRows.add(r2)
 
   r2 add compPanel
   r add menuPanel
@@ -66,9 +68,9 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   })
 
   compButton setListData components.keys.toList
-  (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener.Adapter {
+  compButton.getListButtonSelectionListeners.add(new ListButtonSelectionListener.Adapter {
     override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI()
-  }
+  })
 
   setupUI()
 

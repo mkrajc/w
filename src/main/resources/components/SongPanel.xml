@@ -2,7 +2,8 @@
            xmlns:content="org.apache.pivot.wtk.content"
            xmlns="org.apache.pivot.wtk"
            orientation="vertical"
-           resizeMode="primary_region">
+           resizeMode="primary_region"
+           styles="{useShadow:true}">
     <TabPane.tabData>
         <content:ButtonData text="%liveScreen.rightContent.tab.songs"/>
     </TabPane.tabData>

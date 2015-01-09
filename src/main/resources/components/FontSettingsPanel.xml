@@ -1,0 +1,50 @@
+<BoxPane xmlns:bxml="http://pivot.apache.org/bxml"
+         xmlns:content="org.apache.pivot.wtk.content"
+         xmlns:w="org.majak.w.ui.component.pivot"
+         xmlns="org.apache.pivot.wtk"
+         bxml:id="fontPanel"
+         styles="{ spacing: 0, horizontalAlignment: 'left', verticalAlignment: 'center', fill: true}">
+    <w:FontListButton bxml:id="fontButton" />
+    <PushButton bxml:id="biggerSizeButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/increase-font-16.png"/>
+        </buttonData>
+    </PushButton>
+    <PushButton bxml:id="smallerSizeButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/decrease-font-16.png"/>
+        </buttonData>
+    </PushButton>
+
+    <PushButton bxml:id="alignLeftButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/align-left-16.png"/>
+        </buttonData>
+    </PushButton>
+    <PushButton bxml:id="alignCenterButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/align-center-16.png"/>
+        </buttonData>
+    </PushButton>
+    <PushButton bxml:id="alignRightButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/align-right-16.png"/>
+        </buttonData>
+    </PushButton>
+
+    <PushButton bxml:id="valignTopButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/valign-top-16.png"/>
+        </buttonData>
+    </PushButton>
+    <PushButton bxml:id="valignCenterButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/valign-center-16.png"/>
+        </buttonData>
+    </PushButton>
+    <PushButton bxml:id="valignBottomButton" >
+        <buttonData>
+            <content:ButtonData icon="/images/valign-bottom-16.png"/>
+        </buttonData>
+    </PushButton>
+</BoxPane>

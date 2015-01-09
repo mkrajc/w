@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
  * Is marker trait to identify hierarchy of views
  */
 trait View {
-  def bindView()
+  def bindView() = {}
 
-  def unbindView()
+  def unbindView() = {}
 }
 
 /**
@@ -19,7 +19,7 @@ trait View {
  */
 abstract class Presenter[V <: View] {
 
-  val logger = LoggerFactory.getLogger(getClass)
+  lazy val logger = LoggerFactory.getLogger(getClass)
 
   protected def onBind(v: V) = {}
 

@@ -1,13 +1,14 @@
-<SplitPane bxml:id="liveScreen" orientation="horizontal"
-           splitRatio="0.3"
-           styles="{splitterThickness:3}"
-           xmlns:bxml="http://pivot.apache.org/bxml"
+<SplitPane xmlns:bxml="http://pivot.apache.org/bxml"
            xmlns:content="org.apache.pivot.wtk.content"
-           xmlns="org.apache.pivot.wtk">
+           xmlns="org.apache.pivot.wtk"
+           bxml:id="liveScreen"
+           orientation="horizontal"
+           splitRatio="0.3"
+           styles="{splitterThickness:3, useShadow:true}" >
     <left>
         <FillPane styles="{backgroundColor: '#f6f5f6'}"/>
     </left>
     <right>
-        <TabPane bxml:id="liveContentPane" />
+        <TabPane bxml:id="liveContentPane"/>
     </right>
 </SplitPane>

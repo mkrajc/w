@@ -4,8 +4,7 @@ import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.Keyboard.{KeyCode, KeyLocation}
 import org.apache.pivot.wtk._
 import org.majak.w.model.SongModel.SongPart
-import org.majak.w.ui.pivot.{StylesUtils, PivotComponent}
-import org.majak.w.utils.ListsUtils
+import org.majak.w.ui.pivot.{PivotComponent, StylesUtils}
 
 class SongDetail extends PivotComponent with SongDetailView {
 
@@ -13,7 +12,6 @@ class SongDetail extends PivotComponent with SongDetailView {
 
   @BXML var songPartsPanel: BoxPane = _
 
-  var spHandlers: List[SongPartSelectedHandler] = Nil
   var selected: Option[SongPartTextArea] = None
 
   override def showSongName(name: String) = songName.setText(name)
@@ -39,10 +37,12 @@ class SongDetail extends PivotComponent with SongDetailView {
     })
 
     def select(spTextArea: SongPartTextArea) = {
-      spHandlers.map(_(spTextArea.songPart))
+
       selected.map(ta => StylesUtils.setBackground(ta, "#ffffff"))
       selected = Some(spTextArea)
       StylesUtils.setBackground(spTextArea, "#f4f4f4")
+
+      selectSongPart(spTextArea.songPart)
     }
 
     def createSongPartComponent(sp: SongPart): SongPartTextArea = {
@@ -59,9 +59,6 @@ class SongDetail extends PivotComponent with SongDetailView {
       ta
     }
   }
-
-  override def addSongPartSelectedHandler(h: SongPartSelectedHandler) = spHandlers = ListsUtils.add(h,spHandlers)
-  override def removeSongPartSelectedHandler(h: SongPartSelectedHandler) = spHandlers = ListsUtils.delete(h,spHandlers)
 }
 
 class SongPartTextArea(val songPart: SongPart) extends TextArea {

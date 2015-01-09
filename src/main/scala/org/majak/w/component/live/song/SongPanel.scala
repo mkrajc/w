@@ -2,7 +2,8 @@ package org.majak.w.component.live.song
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.FillPane
-import org.majak.w.component.live.smallslide.{LiveSmallSlide, LiveSmallSlideView, PreviewSmallSlide, PreviewSmallSlideView}
+import org.majak.w.component.smallslide.preview.{PreviewSmallSlideView, PreviewSmallSlide}
+import org.majak.w.component.smallslide.{LiveSmallSlide, LiveSmallSlideView}
 import org.majak.w.ui.pivot.PivotComponent
 
 
