@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 class ImageDirectoryWatchDogSpec extends FlatSpec with Matchers with Module{
   val logger = LoggerFactory.getLogger(getClass)
 
+  /**
   "ImageDirectoryWatchDog" should "initialize if directory exist" in {
     val wd = new ImageDirectoryWatchDog(new File("""c:\Users\Martin\Pictures\"""))
 
@@ -20,10 +21,5 @@ class ImageDirectoryWatchDogSpec extends FlatSpec with Matchers with Module{
 
     wd.scan()
   }
-
-  it should "test mapdb" in {
-    val wd = new ImageDirectoryWatchDog(new File("""c:\Users\Martin\Pictures\"""))
-    val i = wd.index(createIndexProvider)
-    i.fileData.foreach(println)
-  }
+  **/
 }

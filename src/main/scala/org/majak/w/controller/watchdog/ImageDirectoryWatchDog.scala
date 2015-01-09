@@ -7,6 +7,7 @@ import java.net.URL
 import org.apache.pivot.util.concurrent.{Task, TaskListener}
 import org.apache.pivot.wtk.TaskAdapter
 import org.apache.pivot.wtk.media.Image
+import org.majak.w.controller.watchdog.PersistentWatchDog._
 import org.majak.w.rx.Event
 import rx.lang.scala.Subject
 

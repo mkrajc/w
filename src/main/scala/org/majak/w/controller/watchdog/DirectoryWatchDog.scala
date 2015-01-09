@@ -1,12 +1,15 @@
 package org.majak.w.controller.watchdog
 
-import java.io.{File, FileInputStream}
+import java.io.{FileInputStream, File}
 import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
-import org.majak.w.controller.watchdog.DirectoryWatchDog.IndexResult
-import org.majak.w.rx.{Done, Event, ObservableObject}
+import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexStore, IndexProvider}
+
+import org.majak.w.controller.watchdog.WatchDog.IndexResult
+import org.majak.w.di.Module
+import org.majak.w.rx.{Done, Event}
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
@@ -18,8 +21,12 @@ case class FileRemoved(fileData: FileData) extends WatchDogEvent
 
 case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
 
-class DirectoryWatchDog(val directory: File) extends ObservableObject with IndexPersistance {
+class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWatchDog {
   val logger = LoggerFactory.getLogger(getClass)
+
+  override val indexProvider: IndexProvider = Module.createIndexProvider
+  override val indexStore: IndexStore = Module.createIndexStore
+  override val indexName = "data"
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
   protected lazy val removedSubject = createUiEventSubject[FileRemoved]
@@ -31,26 +38,22 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject with Index
   require(directory.exists(), "Not existing directory: " + directory)
 
   private def scanIntern(): IndexResult = {
-    val fData = scanFiles(directory.listFiles.toList, Nil)
+    val fData: List[FileData] = scanFiles(directory.listFiles.toList, Nil)
     val (validFData, hexCollisions) = fData.groupBy(_.md5hex).partition(_._2.length == 1)
 
     if (hexCollisions.isEmpty) {
       val fileSet = validFData.flatMap(_._2).toSet
-      Left(new Index(fileSet, new Date))
+      Some(new Index(fileSet, new Date))
     } else {
-      Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
+      None
+      //Right(hexCollisions.map(f => "Collisions [" + f._1 + "] on files: " + f._2.mkString).toList)
     }
   }
 
-  def scan(): IndexResult = {
-    val ir = scanIntern()
-    ir match {
-      case Right(errors) => Right("Cannot scan directory." :: errors)
-      case Left(index) =>
-        index.fileData.foreach(f => addSubject.onNext(FileAdded(f)))
-        doneNotifier.onNext(Done)
-    }
-    ir
+  override def scan(): IndexResult = {
+    val current = scanIntern()
+    notifyAsAdded(current)
+    current
   }
 
   def scanFiles(files: List[File], fd: List[FileData]): List[FileData] = {
@@ -76,12 +79,18 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject with Index
   }
 
 
+  /**
+   * Gets file that is watched.
+   */
+  override def file(): File = directory
 
-  def rescan(lastIndex: Index): IndexResult = {
-
-    def compareIndices(lastIndex: Index, currentIndex: Index): IndexResult = {
-      val addedOrChanged = currentIndex.fileData &~ lastIndex.fileData
-      val deletedOrChanged = lastIndex.fileData &~ currentIndex.fileData
+  /**
+   * Notify changed items
+   */
+  override def notifyChanges(currentIndex: IndexResult, previousIndex: IndexResult): Unit = {
+    def compareIndices(currentIndex: Index, previousIndex: Index): Unit = {
+      val addedOrChanged = currentIndex.fileData &~ previousIndex.fileData
+      val deletedOrChanged = previousIndex.fileData &~ currentIndex.fileData
 
       val (changedA, added) = addedOrChanged.partition(
         fd => deletedOrChanged.exists(e => e.path == fd.path || e.md5hex == fd.md5hex))
@@ -99,24 +108,19 @@ class DirectoryWatchDog(val directory: File) extends ObservableObject with Index
       changedStates.foreach(p => changedSubject.onNext(FileChanged(p._1, p._2)))
       doneNotifier.onNext(Done)
 
-      Left(currentIndex)
     }
 
-    val ir = scanIntern()
-    ir match {
-      case Right(errors) => Right("Cannot scan directory." :: errors)
-      case Left(index) => compareIndices(lastIndex, index)
-    }
+    if(previousIndex.isDefined) compareIndices(currentIndex.get, previousIndex.get)
+    else notifyAsAdded(currentIndex)
 
   }
 
+  private def notifyAsAdded(index: IndexResult): Unit ={
+    index.foreach(i => i.fileData.foreach(f => addSubject.onNext(FileAdded(f))))
+    doneNotifier.onNext(Done)
+  }
+
+
 }
 
-object DirectoryWatchDog {
 
-  type IndexResult = Either[Index, List[String]]
-}
-
-case class FileData(path: String, md5hex: String)
-
-case class Index(fileData: Set[FileData], createdAt: Date)
