@@ -33,12 +33,5 @@ class PersistentWatchDogSpec extends FlatSpec with Matchers {
     val current = wd.index()
     assert(current === index)
   }
-
-  it should "store and retrieve same index" in {
-    val wd = new PersistentWatchDogSpecClass
-    val index = Some(Index(fileData = Set(FileData("a", "b")), createdAt = new Date()))
-    wd.store(index)
-    val current = wd.index()
-    assert(current === index)
-  }
+  
 }
