@@ -1,28 +1,36 @@
 package org.majak.w.controller.watchdog
 
-import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexStore, IndexProvider}
+import java.io.File
+
+import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexProvider, IndexStore}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
+import org.majak.w.di.Module
 
 trait PersistentWatchDog extends WatchDog {
   val indexName: String
-  val indexProvider: IndexProvider
-  val indexStore: IndexStore
+  val indexFile: File
 
+  lazy val (indexProvider: IndexProvider, indexStore: IndexStore) = Module.createIndex(indexFile)
 
   def refresh(): Unit = {
     val idx = index()
     val newIdx = scan()
 
-    notifyChanges(idx, newIdx)
+    processIndex(idx, newIdx)
   }
 
   def index(): IndexResult = {
     indexProvider(indexName)
   }
 
-  def store(index: IndexResult, indexStore: IndexStore): Unit = {
+  def store(index: IndexResult): Unit = {
     indexStore(indexName, index)
   }
+
+  /**
+   * Process indices
+   */
+  def processIndex(currentIndex: IndexResult, previousIndex: IndexResult): Unit
 
 }
 

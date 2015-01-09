@@ -4,11 +4,10 @@ import java.io.File
 import java.util.Date
 
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.rx.ObservableObject
 
 case class Index(fileData: Set[FileData], createdAt: Date)
 
-trait WatchDog extends ObservableObject {
+trait WatchDog {
   /**
    * Gets file that is watched.
    */
@@ -22,10 +21,6 @@ trait WatchDog extends ObservableObject {
 
   def rescan(index: IndexResult): IndexResult
 
-  /**
-   * Notify changed items
-   */
-  def notifyChanges(currentIndex: IndexResult, previousIndex: IndexResult)
 }
 
 object WatchDog {

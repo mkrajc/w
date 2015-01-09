@@ -1,53 +1,50 @@
 package org.majak.w.di
 
 import java.io.File
-import java.util.Date
 
 import org.majak.w.controller.SongController
 import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexProvider, IndexStore}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.controller.watchdog.{ImageDirectoryWatchDog, FileData, Index}
+import org.majak.w.controller.watchdog.{ImageDirectoryWatchDog, Index}
 import org.majak.w.service.SongService
-import org.mapdb.DBMaker
-
-import scala.collection.JavaConversions._
+import org.mapdb.{DB, DBMaker}
 
 trait Module {
   val songController = new SongController
+
   def songService: SongService = null
 
-  val dataDir = """.\data"""
-  val imageDir = dataDir + """\images"""
-
-  lazy val imageWatchDog = new ImageDirectoryWatchDog(new File(imageDir))
+  lazy val imageWatchDog = new ImageDirectoryWatchDog(new File(Module.imageDir))
 }
 
 object Module {
-  private lazy val db = DBMaker.newFileDB(new File("./index.dat")).closeOnJvmShutdown().make()
+  val dataDir = """.\data"""
+  val imageDir = dataDir + """\images"""
+  val indexDir = dataDir + """\index"""
+  //val indexFile = indexDir + """\i.dat"""
 
-  def createIndexProvider: IndexProvider = {
+
+  def createIndex(indexFile: File): (IndexProvider, IndexStore) = {
+    val db = DBMaker.newFileDB(indexFile).closeOnJvmShutdown().make()
+    (createIndexProvider(db), createIndexStore(db))
+  }
+
+  def createIndexProvider(db: DB): IndexProvider = {
+
     val provider = (s: String) => {
-      println("create provider")
-      if(db.getHashSet(s) == null) {
-        db.createHashSet(s)
-      }
-
-      val fileDatas = db.getHashSet[FileData](s)
-      Some(Index(fileDatas.toSet, new Date()))
+      val store = db.getHashMap[String, Index]("test")
+      val v = store.get(s)
+      Option[Index](v)
     }
 
     provider
   }
 
-  def createIndexStore: IndexStore = {
-    (s:String, i: IndexResult) => {
-      println("create store")
-      if(db.getHashSet(s) == null) {
-        db.createHashSet(s)
-      }
+  def createIndexStore(db: DB): IndexStore = {
+    (s: String, i: IndexResult) => {
+      val store = db.getHashMap[String, Index]("test")
 
-      val fileDatas = db.getHashSet[FileData](s)
-      fileDatas.addAll(i.get.fileData)
+      i.foreach(store.put(s, _))
 
       db.commit()
     }

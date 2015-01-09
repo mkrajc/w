@@ -1,15 +1,12 @@
 package org.majak.w.controller.watchdog
 
-import java.io.{FileInputStream, File}
+import java.io.{File, FileInputStream}
 import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
-import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexStore, IndexProvider}
-
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.di.Module
-import org.majak.w.rx.{Done, Event}
+import org.majak.w.rx.{ObservableObject, Done, Event}
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
@@ -21,11 +18,9 @@ case class FileRemoved(fileData: FileData) extends WatchDogEvent
 
 case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
 
-class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWatchDog {
+class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with ObservableObject {
   val logger = LoggerFactory.getLogger(getClass)
 
-  override val indexProvider: IndexProvider = Module.createIndexProvider
-  override val indexStore: IndexStore = Module.createIndexStore
   override val indexName = "data"
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
@@ -50,9 +45,9 @@ class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWat
   }
 
   override def rescan(index: IndexResult): IndexResult = {
-      val newIdx = scanIntern()
-      notifyChanges(index, newIdx)
-      newIdx
+    val newIdx = scanIntern()
+    processIndex(index, newIdx)
+    newIdx
   }
 
   override def scan(): IndexResult = {
@@ -83,16 +78,9 @@ class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWat
     }
   }
 
-
-  /**
-   * Gets file that is watched.
-   */
   override def file(): File = directory
 
-  /**
-   * Notify changed items
-   */
-  override def notifyChanges(currentIndex: IndexResult, previousIndex: IndexResult): Unit = {
+  override def processIndex(currentIndex: IndexResult, previousIndex: IndexResult): Unit = {
     def compareIndices(currentIndex: Index, previousIndex: Index): Unit = {
       val addedOrChanged = previousIndex.fileData &~ currentIndex.fileData
       val deletedOrChanged = currentIndex.fileData &~ previousIndex.fileData
@@ -115,17 +103,17 @@ class DirectoryWatchDog(val directory: File) extends WatchDog with PersistentWat
 
     }
 
-    if(previousIndex.isDefined) compareIndices(currentIndex.get, previousIndex.get)
+    if (previousIndex.isDefined) compareIndices(currentIndex.get, previousIndex.get)
     else notifyAsAdded(currentIndex)
 
   }
 
-  private def notifyAsAdded(index: IndexResult): Unit ={
+  private def notifyAsAdded(index: IndexResult): Unit = {
     index.foreach(i => i.fileData.foreach(f => addSubject.onNext(FileAdded(f))))
     doneNotifier.onNext(Done)
   }
 
-
+  override val indexFile: File = ???
 }
 
 

@@ -40,12 +40,16 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   it should "provide data when scanning nonempty directory recursively" in {
-    testInTestDir { f =>
+
+    val root = tmpRandDir
+    val nested= new File(root,"nested")
+
+    FileUtils.forceMkdir(root)
+    FileUtils.forceMkdir(nested)
+
+    testInTestDir(root, { f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
-
-      val nested = new File(f, "nested")
       FileUtils.forceMkdir(nested)
-
       prepareFilesInDir(nested, Map("c" -> "c"))
 
       val wd = new DirectoryWatchDog(f)
@@ -53,7 +57,10 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       val index = data.get
       index shouldBe a[Index]
       assert(index.fileData.size === 3)
-    }
+
+      FileUtils.deleteDirectory(nested)
+      FileUtils.deleteDirectory(root)
+    })
   }
 
   it should "provide empty result when scanning duplicate content" in {
@@ -191,9 +198,14 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   val tmpDir: File = TestUtils.tempDir
+  def tmpRandDir =  new File(tmpDir, UUID.randomUUID().toString)
 
-  def testInTestDir(test: File => Unit): Unit = {
-    val dir = new File(tmpDir, UUID.randomUUID().toString)
+  def testInTestDir(directory: File, test: File => Unit): Unit = {
+    val dir = if (directory.exists()) {
+      directory
+    } else {
+      tmpRandDir
+    }
     FileUtils.forceMkdir(dir)
     try {
       test(dir)
@@ -204,6 +216,10 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     } finally {
       FileUtils.deleteDirectory(dir)
     }
+  }
+
+  def testInTestDir(test: File => Unit): Unit = {
+    testInTestDir(new File(tmpDir, UUID.randomUUID().toString), test)
   }
 
   def createFile(dir: File, name: String, content: String, ro: Boolean = false): File = {
