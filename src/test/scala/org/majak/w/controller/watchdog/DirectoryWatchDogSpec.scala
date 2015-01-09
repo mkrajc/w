@@ -44,7 +44,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
 
       val nested = new File(f, "nested")
-      nested.mkdir()
+      FileUtils.forceMkdir(nested)
 
       prepareFilesInDir(nested, Map("c" -> "c"))
 
@@ -194,14 +194,13 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   def testInTestDir(test: File => Unit): Unit = {
     val dir = new File(tmpDir, UUID.randomUUID().toString)
-    dir.mkdir()
+    FileUtils.forceMkdir(dir)
     try {
       test(dir)
     } catch {
-      case e: Exception => {
-        logger.error("erorr occured", e)
+      case e: Exception =>
+        logger.error("error occurred", e)
         throw e
-      }
     } finally {
       FileUtils.deleteDirectory(dir)
     }
