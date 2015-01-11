@@ -22,6 +22,8 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
   val logger = LoggerFactory.getLogger(getClass)
 
   override val indexName = "data"
+  // TODO
+  override val indexFile: File = new File(".", "DirectoryWatchDog.dat")
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
   protected lazy val removedSubject = createUiEventSubject[FileRemoved]
@@ -46,7 +48,7 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   override def rescan(index: IndexResult): IndexResult = {
     val newIdx = scanIntern()
-    processIndex(index, newIdx)
+    processIndex(newIdx, index)
     newIdx
   }
 
@@ -80,10 +82,10 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   override def file(): File = directory
 
-  override def processIndex(currentIndex: IndexResult, previousIndex: IndexResult): Unit = {
+  private def processIndex(currentIndex: IndexResult, previousIndex: IndexResult): Unit = {
     def compareIndices(currentIndex: Index, previousIndex: Index): Unit = {
-      val addedOrChanged = previousIndex.fileData &~ currentIndex.fileData
-      val deletedOrChanged = currentIndex.fileData &~ previousIndex.fileData
+      val deletedOrChanged = previousIndex.fileData &~ currentIndex.fileData
+      val addedOrChanged = currentIndex.fileData &~ previousIndex.fileData
 
       val (changedA, added) = addedOrChanged.partition(
         fd => deletedOrChanged.exists(e => e.path == fd.path || e.md5hex == fd.md5hex))
@@ -112,8 +114,7 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
     index.foreach(i => i.fileData.foreach(f => addSubject.onNext(FileAdded(f))))
     doneNotifier.onNext(Done)
   }
-  // TODO
-  override lazy val indexFile: File = new File(".", "DirectoryWatchDog.dat")
+
 }
 
 

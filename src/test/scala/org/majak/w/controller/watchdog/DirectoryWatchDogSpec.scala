@@ -1,18 +1,17 @@
 package org.majak.w.controller.watchdog
 
 import java.io.File
-import java.util.UUID
 
 import org.apache.commons.io.FileUtils
 import org.junit.runner.RunWith
-import org.majak.w.TestUtils
+import org.majak.w.{TestUtils, TestableDir}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
 
 @RunWith(classOf[JUnitRunner])
-class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
+class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar with TestableDir {
   val logger = LoggerFactory.getLogger(getClass)
 
   "DirectoryWatchDog" should "initialize if directory exist" in {
@@ -29,7 +28,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   it should "provide data when scanning nonempty directory" in {
-    testInTestDir { f =>
+    testInTmpDir { f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
       val data = wd.scan()
@@ -41,13 +40,13 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "provide data when scanning nonempty directory recursively" in {
 
-    val root = tmpRandDir
-    val nested= new File(root,"nested")
+    val root = tmpRandFile
+    val nested = new File(root, "nested")
 
     FileUtils.forceMkdir(root)
     FileUtils.forceMkdir(nested)
 
-    testInTestDir(root, { f =>
+    testInTestDir(root)({ f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       FileUtils.forceMkdir(nested)
       prepareFilesInDir(nested, Map("c" -> "c"))
@@ -65,7 +64,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "provide empty result when scanning duplicate content" in {
 
-    testInTestDir {
+    testInTmpDir {
       f =>
         prepareFilesInDir(f, Map("one" -> "same", "two" -> "same"))
         val wd = new DirectoryWatchDog(f)
@@ -76,7 +75,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "provide data when scanning with read-only files" in {
 
-    testInTestDir { f =>
+    testInTmpDir { f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
       val data = wd.scan()
@@ -87,7 +86,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   it should "notify on first scan everything as added" in {
-    testInTestDir { f =>
+    testInTmpDir { f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
 
@@ -106,7 +105,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   it should "not notify on rescan when nothing changed" in {
-    testInTestDir { f =>
+    testInTmpDir { f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
       val data = wd.scan()
@@ -116,7 +115,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "be notified when new files are added to directory" in {
 
-    testInTestDir { f =>
+    testInTmpDir { f =>
       prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
       val data = wd.scan()
@@ -139,7 +138,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "be notified when some files are deleted from directory" in {
 
-    testInTestDir { f =>
+    testInTmpDir { f =>
       val files = prepareFilesInDir(f, Map("a" -> "a", "b" -> "b"))
       val wd = new DirectoryWatchDog(f)
 
@@ -163,7 +162,7 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
 
   it should "be notified when some files are changed in directory" in {
 
-    testInTestDir { f =>
+    testInTmpDir { f =>
       val fileChanged = prepareFilesInDir(f, Map("a" -> "a"))
       val fileRenamed = prepareFilesInDir(f, Map("b" -> "b"))
       val fileRenAndChanged = prepareFilesInDir(f, Map("c" -> "c"))
@@ -193,41 +192,6 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar {
     }
   }
 
-  def prepareFilesInDir(dir: File, map: Map[String, String]) = {
-    map.map(kv => createFile(dir, kv._1, kv._2))
-  }
-
-  val tmpDir: File = TestUtils.tempDir
-  def tmpRandDir =  new File(tmpDir, UUID.randomUUID().toString)
-
-  def testInTestDir(directory: File, test: File => Unit): Unit = {
-    val dir = if (directory.exists()) {
-      directory
-    } else {
-      tmpRandDir
-    }
-    FileUtils.forceMkdir(dir)
-    try {
-      test(dir)
-    } catch {
-      case e: Exception =>
-        logger.error("error occurred", e)
-        throw e
-    } finally {
-      FileUtils.deleteDirectory(dir)
-    }
-  }
-
-  def testInTestDir(test: File => Unit): Unit = {
-    testInTestDir(new File(tmpDir, UUID.randomUUID().toString), test)
-  }
-
-  def createFile(dir: File, name: String, content: String, ro: Boolean = false): File = {
-    val f = new File(dir, name)
-    FileUtils.writeStringToFile(f, content)
-    f.setWritable(!ro)
-    f
-  }
 
 }
 

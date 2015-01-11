@@ -14,9 +14,8 @@ trait PersistentWatchDog extends WatchDog {
 
   def refresh(): Unit = {
     val idx = index()
-    val newIdx = scan()
-
-    processIndex(idx, newIdx)
+    val newIdx = rescan(idx)
+    store(newIdx)
   }
 
   def index(): IndexResult = {
@@ -26,11 +25,6 @@ trait PersistentWatchDog extends WatchDog {
   def store(index: IndexResult): Unit = {
     indexStore(indexName, index)
   }
-
-  /**
-   * Process indices
-   */
-  def processIndex(currentIndex: IndexResult, previousIndex: IndexResult): Unit
 
 }
 
