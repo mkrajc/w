@@ -2,26 +2,24 @@ package org.majak.w.di
 
 import java.io.File
 
-import org.majak.w.controller.SongController
+import org.majak.w.controller.watchdog.image.ImageDirectoryWatchDog
+import org.majak.w.controller.{ControllerSettings, SongController}
 import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexProvider, IndexStore}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.controller.watchdog.{ImageDirectoryWatchDog, Index}
+import org.majak.w.controller.watchdog.Index
 import org.majak.w.service.SongService
 import org.mapdb.{DB, DBMaker}
 
-trait Module {
+trait Module extends ControllerSettings{
   val songController = new SongController
 
   def songService: SongService = null
 
-  lazy val imageWatchDog = new ImageDirectoryWatchDog(new File(Module.imageDir))
+  lazy val imageWatchDog = new ImageDirectoryWatchDog(new File(imageDir))
 }
 
 object Module {
-  val dataDir = """.\data"""
-  val imageDir = dataDir + """\images"""
-  val indexDir = dataDir + """\index"""
-  //val indexFile = indexDir + """\i.dat"""
+
 
 
   def createIndex(indexFile: File): (IndexProvider, IndexStore) = {

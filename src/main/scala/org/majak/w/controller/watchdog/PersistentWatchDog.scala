@@ -4,9 +4,10 @@ import java.io.File
 
 import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexProvider, IndexStore}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
+import org.majak.w.controller.watchdog.sync.FileDataSource
 import org.majak.w.di.Module
 
-trait PersistentWatchDog extends WatchDog {
+trait PersistentWatchDog extends WatchDog with FileDataSource{
   val indexName: String
   val indexFile: File
 
@@ -26,6 +27,7 @@ trait PersistentWatchDog extends WatchDog {
     indexStore(indexName, index)
   }
 
+  override def list(): Set[FileData] = index().get.fileData
 }
 
 object PersistentWatchDog {

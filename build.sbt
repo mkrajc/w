@@ -23,6 +23,9 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.9.5" % "test"
 )
 
+libraryDependencies += "net.coobird" % "thumbnailator" % "0.4.8"
+
+
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 transitiveClassifiers := Seq("sources")

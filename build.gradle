@@ -23,6 +23,7 @@ dependencies {
     compile 'commons-io:commons-io:2.4'
     compile 'io.reactivex:rxscala_2.11:0.23.0'
     compile 'org.mapdb:mapdb:1.0.6'
+    compile 'net.coobird:thumbnailator:0.4.8'
 
     // logging
     compile 'org.slf4j:slf4j-api:1.7.6'

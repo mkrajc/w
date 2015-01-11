@@ -22,8 +22,8 @@ class PersistentWatchDogSpec extends FlatSpec with Matchers with TestableDir {
   "PersistentWatchDog" should "store and retrieve same index" in {
     testInTestDir(tmpRandDir) { f =>
       val watchedDir = tmpRandDir
-      val wd = new PersistentWatchDogSpecClass(new File(f, "index"), watchedDir )
-      val index = Some(Index(fileData = Set(FileData("a", "b")), createdAt = new Date()))
+      val wd = new PersistentWatchDogSpecClass(new File(f, "index"), watchedDir)
+      val index = Some(Index(fileData = Set(FileData("a", "b", "c", "d")), createdAt = new Date()))
       wd.store(index)
       val current = wd.index()
       assert(current === index)

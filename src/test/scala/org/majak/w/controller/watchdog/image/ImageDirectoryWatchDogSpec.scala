@@ -1,5 +1,5 @@
 
-package org.majak.w.controller.watchdog
+package org.majak.w.controller.watchdog.image
 
 import org.junit.runner.RunWith
 import org.majak.w.di.Module

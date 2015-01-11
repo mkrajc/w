@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 
 object Utils {
   val normalizerPattern = Pattern.compile("[^\\p{ASCII}]")
+
   /**
    * Creates option of type T from any ref
    * @param any
@@ -17,4 +18,9 @@ object Utils {
 
   def normalizeAccentedText(txt: String): String =
     normalizerPattern.matcher(Normalizer.normalize(txt, Normalizer.Form.NFD)) replaceAll ""
+
+  def extension(filename: String): String = {
+    val lastDotIndex = filename.lastIndexOf(".")
+    filename.substring(lastDotIndex + 1).toLowerCase
+  }
 }

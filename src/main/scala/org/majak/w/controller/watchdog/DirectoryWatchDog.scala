@@ -5,8 +5,10 @@ import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
+import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
 import org.majak.w.rx.{Done, Event, ObservableObject}
+import org.majak.w.utils.Utils
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
@@ -18,12 +20,11 @@ case class FileRemoved(fileData: FileData) extends WatchDogEvent
 
 case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
 
-class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with ObservableObject {
+class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with ObservableObject with ControllerSettings {
   val logger = LoggerFactory.getLogger(getClass)
 
   override val indexName = "data"
-  // TODO
-  override val indexFile: File = new File(".", "DirectoryWatchDog.dat")
+  override val indexFile: File = new File(indexDir, "DirectoryWatchDog.dat")
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
   protected lazy val removedSubject = createUiEventSubject[FileRemoved]
@@ -72,7 +73,8 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
         try {
           fis = new FileInputStream(f)
           val hex = DigestUtils.md5Hex(fis)
-          scanFiles(files.tail, FileData(f.getAbsolutePath, hex) :: fd)
+          val ext = Utils.extension(f.getName)
+          scanFiles(files.tail, FileData(f.getAbsolutePath, hex, f.getName, ext) :: fd)
         } finally {
           IOUtils.closeQuietly(fis)
         }
