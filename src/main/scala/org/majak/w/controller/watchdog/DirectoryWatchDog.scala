@@ -4,11 +4,12 @@ import java.io.{File, FileInputStream}
 import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.IOUtils
+import org.apache.commons.io.{FileUtils, IOUtils}
 import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
 import org.majak.w.rx.{Done, Event, ObservableObject}
 import org.majak.w.utils.Utils
+import scala.collection.JavaConversions._
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
@@ -36,7 +37,7 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
   require(directory.exists(), "Not existing directory: " + directory)
 
   private def scanIntern(): IndexResult = {
-    val fData: List[FileData] = scanFiles(directory.listFiles.toList, Nil)
+    val fData: List[FileData] = scanFiles(directory)
     val (validFData, hexCollisions) = fData.groupBy(_.md5hex).partition(_._2.length == 1)
 
     if (hexCollisions.isEmpty) {
@@ -59,27 +60,21 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
     current
   }
 
-  def scanFiles(files: List[File], fd: List[FileData]): List[FileData] = {
-    if (files.isEmpty) {
-      fd
-    } else {
-      val f = files.head
+  def scanFiles(root: File): List[FileData] = {
 
-      if (f.isDirectory) {
-        fd ::: scanFiles(f.listFiles.toList, Nil)
-      } else {
-        logger.trace("scanning file [" + f.getAbsolutePath + "]")
-        var fis: FileInputStream = null
-        try {
-          fis = new FileInputStream(f)
-          val hex = DigestUtils.md5Hex(fis)
-          val ext = Utils.extension(f.getName)
-          scanFiles(files.tail, FileData(f.getAbsolutePath, hex, f.getName, ext) :: fd)
-        } finally {
-          IOUtils.closeQuietly(fis)
-        }
+    val files = FileUtils.listFiles(root, null, true).toList
+    files.map(f => {
+      logger.trace("Scanning file [" + f.getAbsolutePath + "]")
+      var fis: FileInputStream = null
+      try {
+        fis = new FileInputStream(f)
+        val hex = DigestUtils.md5Hex(fis)
+        val ext = Utils.extension(f.getName)
+        FileData(f.getAbsolutePath, hex, f.getName, ext)
+      } finally {
+        IOUtils.closeQuietly(fis)
       }
-    }
+    })
   }
 
   override def file(): File = directory
@@ -102,7 +97,7 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
       added.foreach(f => addSubject.onNext(FileAdded(f)))
       deleted.foreach(f => removedSubject.onNext(FileRemoved(f)))
-      changedStates.foreach(p => changedSubject.onNext(FileChanged(p._1, p._2)))
+      changedStates.foreach(p => changedSubject.onNext(FileChanged(p._2, p._1)))
       doneNotifier.onNext(Done)
 
     }

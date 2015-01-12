@@ -113,7 +113,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   private def addImageView(iv: ImageView) = {
     imageView = Some(iv)
 
-    iv.getStyles.put("fill", false)
+    iv.getStyles.put("fill", true)
     iv.getStyles.put("preserveAspectRatio", false)
 
     // image must be first so it won't cover text

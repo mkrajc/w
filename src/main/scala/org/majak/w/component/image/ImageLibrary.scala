@@ -1,47 +1,74 @@
 package org.majak.w.component.image
 
 
+import java.awt.Color
+
 import org.apache.pivot.beans.BXML
+import org.apache.pivot.wtk.ComponentMouseButtonListener.Adapter
 import org.apache.pivot.wtk._
-import org.apache.pivot.wtk.media.Image
-import org.majak.w.ui.pivot.PivotComponent
+import org.apache.pivot.wtk.effects.ShadeDecorator
+import org.majak.w.controller.watchdog.image.Thumbnail
+import org.majak.w.ui.pivot.{StylesUtils, PivotComponent}
 
 
 class ImageLibrary extends PivotComponent with ImageLibraryView {
 
   @BXML protected var imagePanel: FlowPane = _
+  @BXML protected var refreshButton: PushButton = _
+  @BXML protected var imagesHeader: Label = _
 
-  private var imageLoadingIndicator: Option[ActivityIndicator] = Some(createActivityIndicator)
+  private val loading = new ShadeDecorator(0.33f, Color.LIGHT_GRAY)
+
+  private var thumbnailSize = 0
 
   override protected def onUiBind(): Unit = {
-    imagePanel.getStyles.put("alignment", HorizontalAlignment.CENTER)
-    imageLoadingIndicator.map(imagePanel.add)
-  }
-
-  private def createActivityIndicator: ActivityIndicator = {
-    val indicatorSize = 32
-    val activityIndicator = new ActivityIndicator
-    activityIndicator.setPreferredSize(indicatorSize, indicatorSize)
-    activityIndicator.setActive(true)
-    activityIndicator
-  }
-
-  override def addImage(img: Image): Unit = {
-    imageLoadingIndicator.map(f = indicator => {
-      imagePanel.remove(indicator)
-      imageLoadingIndicator = None
+    refreshButton.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button): Unit = fireRefresh()
     })
+  }
+
+  override def showThumbnails(imgs: Set[Thumbnail]): Unit = {
+    imagesHeader.setText(imagesHeader.getText.format(imgs.size))
+    imagePanel.removeAll()
+
+    imgs.foreach(showThumbnail)
+
+    imagePanel.repaint()
+  }
+
+  private def showThumbnail(thumbnail: Thumbnail): Unit = {
     val b = new Border()
-    val iv = new ImageView(img)
+    val iv = new ImageView(thumbnail.thumbImage)
 
     b setContent iv
 
-    b.setPreferredSize(120, 90)
-    iv.setPreferredSize(120, 90)
+    b.setPreferredSize(thumbnailSize, thumbnailSize)
+    iv.setPreferredSize(thumbnailSize, thumbnailSize)
+    StylesUtils.setBackground(iv, "#000000")
     iv.setCursor(Cursor.HAND)
     iv.getStyles.put("fill", true)
 
+    iv.getComponentMouseButtonListeners.add(new Adapter {
+      override def mouseClick(component: Component, button: Mouse.Button, x: Int, y: Int, count: Int): Boolean = {
+        fireThumbnailClicked(thumbnail)
+        false
+      }
+    })
+
     imagePanel add b
-    imagePanel.repaint()
+  }
+
+  override def setThumbSize(size: Int): Unit = thumbnailSize = size
+
+  override def setEnabled(enabled: Boolean): Unit = {
+    refreshButton.setEnabled(enabled)
+    imagePanel.setEnabled(enabled)
+
+    if (enabled) {
+      imagePanel.getDecorators.remove(loading)
+    } else {
+      imagePanel.getDecorators.add(loading)
+    }
+
   }
 }

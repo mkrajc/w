@@ -8,4 +8,7 @@ trait ControllerSettings {
   val indexDir = appDir + """\index"""
   val thumbnailsDir = appDir + """\thumbs"""
 
+  val THUMBS_SIZE = 200
+
+
 }

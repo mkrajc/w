@@ -3,51 +3,53 @@ package org.majak.w.controller.watchdog.image
 
 import java.io.File
 
+import org.apache.commons.io.FileUtils
 import org.apache.pivot.util.concurrent.Task
 import org.apache.pivot.wtk.media.Image
-import org.majak.w.controller.watchdog.{DirectoryWatchDog, FileAdded, FileData}
-import rx.lang.scala.Subject
+import org.majak.w.controller.watchdog._
+import rx.lang.scala.Observable
 
 case class ImageData(fileData: FileData, img: Image)
 
 class ImageDirectoryWatchDog(file: File) extends DirectoryWatchDog(file) {
-  val imagesLoaded = Subject[Seq[ImageData]]()
-  val imageLoaded = Subject[Image]()
+
+  override def observable: Observable[WatchDogEvent] = {
+    super.observable.filter(isImageRelated)
+  }
 
   override val indexName: String = "images"
   override val indexFile: File = new File(indexDir, indexName)
-  //val thumbnailer = new ImageThumbnailManager
 
+  override def list(): Set[FileData] = {
+    val (filteredList, a) = super.list().partition(fd => hasImageExtension(fd.name))
 
-  val addImageSubject = addSubject.filter(hasImageExtension)
+    if (a.nonEmpty) {
+      a.foreach(deleteFile)
+    }
 
+    filteredList
 
-  addSubject.tumblingBuffer(doneNotifier).subscribe(onNext = seq => {
+  }
 
-    /*if (seq.nonEmpty) {
-      val task = new LoadImagesTask(seq.map(f => f.fileData))
+  def deleteFile(fileData: FileData): Unit = {
+    logger.info("Deleting file because not an image: " + fileData.path)
+    FileUtils.deleteQuietly(new File(fileData.path))
+  }
 
-      val tl: TaskListener[Seq[ImageData]] = new TaskAdapter[Seq[ImageData]](new TaskListener[Seq[ImageData]] {
-        override def executeFailed(task: Task[Seq[ImageData]]): Unit = {}
-
-        override def taskExecuted(task: Task[Seq[ImageData]]): Unit = {
-
-          imagesLoaded.onNext(task.getResult)
-          task.getResult.map(id => thumbnailer.createThumbnail(id))
-        }
-      })
-
-      task.execute(tl)
-    }*/
-
-    //seq.map(e => thumbnailer.createThumbnail(e.fileData))
-  })
-
-  def hasImageExtension(fileAdded: FileAdded): Boolean = {
-    val path = fileAdded.fileData.path
+  def hasImageExtension(path: String): Boolean = {
     val lastDotIndex = path.lastIndexOf(".")
     val ext = path.substring(lastDotIndex + 1).toLowerCase
     List("jpg", "jpeg", "png", "gif", "bmp").contains(ext)
+  }
+
+  def isImageRelated(event: WatchDogEvent): Boolean = {
+    val path = event match {
+      case a: FileAdded => a.fileData.path
+      case r: FileRemoved => r.fileData.path
+      case ch: FileChanged => ch.after.path
+    }
+
+    hasImageExtension(path)
   }
 
 }

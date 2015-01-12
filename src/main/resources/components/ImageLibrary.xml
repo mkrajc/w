@@ -1,8 +1,36 @@
-<ScrollPane xmlns:bxml="http://pivot.apache.org/bxml"
-            xmlns="org.apache.pivot.wtk"
-            verticalScrollBarPolicy="FILL_TO_CAPACITY"
-            horizontalScrollBarPolicy="FILL">
-    <FlowPane bxml:id="imagePanel"
-              styles="{horizontalSpacing:7, verticalSpacing:7, padding:7}"/>
+<TablePane xmlns:bxml="http://pivot.apache.org/bxml"
+           xmlns="org.apache.pivot.wtk"
+           xmlns:content="org.apache.pivot.wtk.content"
+           styles="{verticalSpacing:0, horizontalSpacing:0, showHorizontalGridLines:false, showVerticalGridLines:false, padding:0}">
+    <TabPane.tabData>
+        <content:ButtonData text="%liveScreen.tab.imageLibrary"/>
+    </TabPane.tabData>
 
-</ScrollPane>
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+
+    <TablePane.Row height="30">
+        <GridPane columnCount="2">
+            <GridPane.Row>
+                <BoxPane styles="{padding:7, verticalAlignment: 'center'}">
+                    <Label bxml:id="imagesHeader" text="%imageLibrary.header"/>
+                </BoxPane>
+                <BoxPane styles="{padding:7, verticalAlignment: 'center', horizontalAlignment: 'right'}">
+                    <PushButton bxml:id="refreshButton" tooltipText="%imageLibrary.button.refresh_t">
+                        <buttonData>
+                            <content:ButtonData icon="/images/refresh-16.png" text="%imageLibrary.button.refresh"/>
+                        </buttonData>
+                    </PushButton>
+                </BoxPane>
+            </GridPane.Row>
+        </GridPane>
+    </TablePane.Row>
+
+    <TablePane.Row height="1*">
+        <ScrollPane verticalScrollBarPolicy="FILL_TO_CAPACITY"
+                    horizontalScrollBarPolicy="FILL">
+            <FlowPane bxml:id="imagePanel" styles="{horizontalSpacing:7, verticalSpacing:7, padding:7}"/>
+        </ScrollPane>
+    </TablePane.Row>
+</TablePane>

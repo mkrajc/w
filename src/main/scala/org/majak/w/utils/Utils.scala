@@ -23,4 +23,8 @@ object Utils {
     val lastDotIndex = filename.lastIndexOf(".")
     filename.substring(lastDotIndex + 1).toLowerCase
   }
+
+  def okOrFailed(boolean: Boolean): String = {
+    if (boolean) "OK" else "FAILED"
+  }
 }
