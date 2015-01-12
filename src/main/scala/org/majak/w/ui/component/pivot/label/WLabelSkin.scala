@@ -3,7 +3,6 @@ package org.majak.w.ui.component.pivot.label
 import java.awt._
 import java.awt.font.{FontRenderContext, GlyphVector}
 import java.awt.geom.Rectangle2D
-import java.awt.image.BufferedImage
 import java.text.StringCharacterIterator
 
 import org.apache.pivot.collections.Dictionary
@@ -12,17 +11,13 @@ import org.apache.pivot.serialization.SerializationException
 import org.apache.pivot.wtk
 import org.apache.pivot.wtk.skin.ComponentSkin
 import org.apache.pivot.wtk.{Component, Dimensions, GraphicsUtilities, HorizontalAlignment, Insets, LabelListener, Platform, Theme, VerticalAlignment}
-import test.ShadowEffect
 
 class WLabelSkin extends ComponentSkin with LabelListener {
-  val NUM_KERNELS = 16
-  //val GAUSSIAN_BLUR_KERNELS = generateGaussianBlurKernels(NUM_KERNELS)
-
 
   val theme: Theme = Theme.getTheme
 
   private var font = theme.getFont
-  private var color = Color.WHITE
+  private var color = Color.BLACK
 
   private var horizontalAlignment = HorizontalAlignment.LEFT
   private var verticalAlignment = VerticalAlignment.TOP
@@ -31,7 +26,7 @@ class WLabelSkin extends ComponentSkin with LabelListener {
   private var wrapText: Boolean = false
   private var textHeight: Float = 0
 
-  private val outlineStrokeWidth = 2
+  private val outlineStrokeWidth = 3
   private val outlineColor = Color.BLACK
 
   private var glyphVectors: scala.collection.immutable.List[GlyphVector] = scala.collection.immutable.Nil
@@ -259,19 +254,19 @@ class WLabelSkin extends ComponentSkin with LabelListener {
           }
         } else {
 
-          graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-          graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-          graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+          //graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+          //graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+          //graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
 
           val shape = glyphVector.getOutline(x, y + ascent)
 
-          drawOutline(graphics, shape)
+         // drawOutline(graphics, shape)
           //drawShadow(graphics, shape)
 
           graphics.setPaint(color)
-          graphics.fill(shape)
+          //graphics.fill(shape)
 
-          //graphics.drawGlyphVector(glyphVector, x, y + ascent)
+          graphics.drawGlyphVector(glyphVector, x, y + ascent)
         }
 
         y += textBounds.getHeight.toFloat
@@ -284,83 +279,6 @@ class WLabelSkin extends ComponentSkin with LabelListener {
     graphics.setStroke(new BasicStroke(outlineStrokeWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL))
     graphics.setPaint(outlineColor)
     graphics.draw(shape)
-  }
-
-  private def drawShadow(graphics: Graphics2D, shape: Shape): Unit = {
-    val shadow = new ShadowEffect(Color.red, 3, 3, 0.8.toFloat)
-    val image = new BufferedImage(shape.getBounds.width, shape.getBounds.height,
-      BufferedImage.TYPE_INT_RGB)
-    shadow.setBlurKernelSize(15)
-    shadow.setBlurPasses(10)
-    shadow.draw(image, graphics, shape)
-    graphics.drawRenderedImage(image, null)
-    //val blurKernelSize = 0
-    //if (blurKernelSize > 1 && blurKernelSize < NUM_KERNELS /*&& blurPasses > 0*/ ) {
-    /* val image = new BufferedImage(shape.getBounds.width, shape.getBounds.height,
-       BufferedImage.TYPE_INT_RGB)
-
-     val kernel = scala.collection.immutable.List(
-       1f / 9f, 1f / 9f, 1f / 9f,
-       1f / 9f, 1f / 9f, 1f / 9f,
-       1f / 9f, 1f / 9f, 1f / 9f
-     )
-
-     val op = new ConvolveOp(new Kernel(3, 3, kernel.toArray),
-       ConvolveOp.EDGE_NO_OP, null)
-
-     val shadow = op.filter(image, null)
-     graphics.setColor(Color.red)
-     val id = new AffineTransform()
-     id.setToIdentity()
-
-     graphics.drawRenderedImage(shadow, id)*/
-
-    // }
-  }
-
-  /*
-  private def generateGaussianBlurKernels(level: Int): Array[Array[Float]] = {
-    val pascalsTriangle = generatePascalsTriangle(level);
-    val gaussianTriangle = new float[pascalsTriangle.length][];
-    for (int i = 0;
-    i < gaussianTriangle.length;
-    i ++)
-    {
-      float total = 0.0f;
-      gaussianTriangle[i] = new float[pascalsTriangle[i].length];
-      for (int j = 0;
-      j < pascalsTriangle[i].length;
-      j ++)
-      total += pascal(i,j)
-      float coefficient = 1 / total;
-      for (int j = 0;
-      j < pascalsTriangle[i].length;
-      j ++)
-      gaussianTriangle[i][j] = coefficient * pascalsTriangle[i][j];
-    }
-    return gaussianTriangle;
-  }
-
-  private def generatePascalsTriangle(lvl: Int): List[List[Float]] = {
-
-    val level = math.max(2, lvl)
-    var triangle = Nil
-
-    for (i <- 0 to level) {
-      triangle =
-    }
-
-    triangle
-  }*/
-
-  def pascal(c: Int, r: Int): Int = {
-    require(c >= 0 && r >= 0 && c <= r, "Not coordinates in pascal triangle")
-
-    (c, r) match {
-      case (0, _) => 1
-      case (a, b) if a == b => 1
-      case _ => pascal(c - 1, r - 1) + pascal(c, r - 1)
-    }
   }
 
   override def isFocusable: Boolean = false

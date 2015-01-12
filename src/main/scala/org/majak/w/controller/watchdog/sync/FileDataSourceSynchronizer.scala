@@ -42,10 +42,9 @@ with Observer[WatchDogEvent] {
     event match {
       case FileAdded(data) => add(create(data))
       case FileRemoved(data) => remove(data)
-      case FileChanged(from, data) => {
+      case FileChanged(from, data) =>
         remove(from)
         add(create(data))
-      }
     }
   }
 }

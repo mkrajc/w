@@ -66,14 +66,16 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def showTextContent(textContent: TextContent) = {
-    clearTextContent()
-    textContent.texts.foreach(addLabel)
-    refreshTextLayout()
+    if(front != textContent) {
+      clearTextContent()
+      textContent.texts.foreach(addLabel)
+      refreshTextLayout()
 
-    front = textContent
+      front = textContent
 
-    if (effects) {
-      labels.foreach(transition)
+      if (effects) {
+        labels.foreach(transition)
+      }
     }
   }
 
@@ -94,14 +96,16 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def showImageContent(imageContent: ImageContent) = {
-    clearImageContent()
-    addImageView(new ImageView(imageContent.img))
-    autosizeImage()
+    if(imageContent != back) {
+      clearImageContent()
+      addImageView(new ImageView(imageContent.img))
+      autosizeImage()
 
-    back = imageContent
+      back = imageContent
 
-    if (effects) {
-      imageView.foreach(transition)
+      if (effects) {
+        imageView.foreach(transition)
+      }
     }
   }
 

@@ -26,7 +26,6 @@ class FadeInTransition(val component: Component, val duration: Int)
   override def update() = {
     val percentComplete = getPercentComplete
     if (percentComplete < 1.0f) {
-      println(percentComplete)
       applyPercentage(percentComplete)
       component.repaint
     }
