@@ -1,17 +1,27 @@
 package org.majak.w.component.image
 
-import org.apache.pivot.wtk.media.Image
+import org.majak.w.controller.watchdog.image.Thumbnail
 import org.majak.w.rx.{ObservableView, UiEvent}
 import rx.lang.scala.Observable
 
-case object ImageSelected extends UiEvent
+sealed trait ImageLibraryUiEvent extends UiEvent
+
+case class ThumbnailClicked(thumbnail: Thumbnail) extends ImageLibraryUiEvent
+
+case object Refresh extends ImageLibraryUiEvent
 
 trait ImageLibraryView extends ObservableView {
+  def setThumbSize(size: Int)
 
+  def showThumbnails(imgs: Set[Thumbnail])
 
-  def addImage(img: Image)
+  def setEnabled(enabled: Boolean)
 
-  private lazy val imageSelected = createUiEventSubject
+  private lazy val eventSubject = createUiEventSubject[ImageLibraryUiEvent]
 
-  override def observable: Observable[ImageSelected.type] = preventDoubleClicks(imageSelected)
+  protected def fireRefresh() = eventSubject.onNext(Refresh)
+
+  protected def fireThumbnailClicked(thumbnail: Thumbnail) = eventSubject.onNext(new ThumbnailClicked(thumbnail))
+
+  override def observable: Observable[ImageLibraryUiEvent] = preventDoubleClicks(eventSubject)
 }

@@ -19,7 +19,7 @@ trait View {
  */
 abstract class Presenter[V <: View] {
 
-  val logger = LoggerFactory.getLogger(getClass)
+  lazy val logger = LoggerFactory.getLogger(getClass)
 
   protected def onBind(v: V) = {}
 

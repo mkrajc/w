@@ -48,9 +48,9 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   val c = new Column
   c.setWidth("1*")
 
-  (pane getColumns) add c
-  (pane getRows) add r
-  (pane getRows) add r2
+  pane.getColumns.add(c)
+  pane.getRows.add(r)
+  pane.getRows.add(r2)
 
   r2 add compPanel
   r add menuPanel
@@ -68,9 +68,9 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   })
 
   compButton setListData components.keys.toList
-  (compButton getListButtonSelectionListeners) add new ListButtonSelectionListener.Adapter {
+  compButton.getListButtonSelectionListeners.add(new ListButtonSelectionListener.Adapter {
     override def selectedItemChanged(b: ListButton, psi: scala.Any): Unit = setupUI()
-  }
+  })
 
   setupUI()
 

@@ -5,16 +5,20 @@
       "songs": "Songs"
     }
   },
-
   "liveScreen": {
-    "rightContent": {
-      "tab": {
-        "songs": "Songs",
-        "quickText": "Quick Text"
-      }
+    "tab": {
+      "songs": "Songs",
+      "quickText": "Quick Text",
+      "imageLibrary": "Images"
     }
   },
-
+  "imageLibrary": {
+    "header": "Images: %s",
+    "button": {
+      "refresh": "Refresh",
+      "refresh_t": "Refresh images"
+    }
+  },
   "liveSmallSlide": {
     "button": {
       "show": "Show",
@@ -23,7 +27,6 @@
       "hide_t": "Hide presentation screen"
     }
   },
-
   "previewSmallSlide": {
     "button": {
       "format_t": "Formatting options"

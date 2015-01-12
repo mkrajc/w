@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory
  *
  */
 trait Binding {
-  val logger = LoggerFactory.getLogger(getClass)
+  lazy val logger = LoggerFactory.getLogger(getClass)
 
   /** default xml name - lowercased classname with '.xml' suffix **/
   private lazy val xmlNameDefault: String = getClass.getSimpleName.toLowerCase + ".xml"

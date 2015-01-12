@@ -1,19 +1,16 @@
 package org.majak.w.di
 
-import java.io.File
-
-import org.majak.w.component.image.{ImageLibraryView, ImageLibrary, ImageLibraryPresenter}
+import org.majak.w.component.image.{ImageLibrary, ImageLibraryPresenter, ImageLibraryView}
 import org.majak.w.component.live.screen.{LiveScreen, LiveScreenPresenter, LiveScreenView}
-import org.majak.w.component.smallslide._
 import org.majak.w.component.live.song._
 import org.majak.w.component.main.menu.{MainMenu, MainMenuPresenter, MainMenuView}
 import org.majak.w.component.main.screen.{MainScreen, MainScreenPresenter, MainScreenView}
 import org.majak.w.component.presentation.PresentationPresenter
-import org.majak.w.component.smallslide.preview.{PreviewSmallSlideView, PreviewSmallSlidePresenter, PreviewSmallSlide}
+import org.majak.w.component.smallslide._
+import org.majak.w.component.smallslide.preview.{PreviewSmallSlide, PreviewSmallSlidePresenter, PreviewSmallSlideView}
 import org.majak.w.component.songlist.SongListPresenter
 import org.majak.w.component.songlist.pivot.SongListComponent
 import org.majak.w.component.songlist.view.SongListView
-import org.majak.w.controller.ImageDirectoryWatchDog
 import org.majak.w.ui.mvp.{Presenter, View}
 
 
@@ -32,13 +29,18 @@ trait UiModule extends Module {
   lazy val previewSmallSlideView = new PreviewSmallSlide
   lazy val previewSmallSlidePresenter = doBind[PreviewSmallSlideView, PreviewSmallSlidePresenter](new PreviewSmallSlidePresenter(presentationPresenter), previewSmallSlideView)
 
-  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](new LiveScreenPresenter(songPanelPresenter), new LiveScreen)
+  lazy val liveScreenPresenter = doBind[LiveScreenView, LiveScreenPresenter](
+    new LiveScreenPresenter(liveSmallSlidePresenter,
+      previewSmallSlidePresenter,
+      songPanelPresenter,
+      songDetailPresenter,
+      imageLibraryPresenter), new LiveScreen)
 
   lazy val songDetailView = new SongDetail
   lazy val songDetailPresenter = doBind[SongDetailView, SongDetailPresenter](new SongDetailPresenter, songDetailView)
-  lazy val songPanelPresenter = doBind[SongPanelView, SongPanelPresenter](new SongPanelPresenter(liveSmallSlidePresenter, previewSmallSlidePresenter, songDetailPresenter), new SongPanel)
+  lazy val songPanelPresenter = doBind[SongPanelView, SongPanelPresenter](new SongPanelPresenter(songDetailPresenter), new SongPanel)
 
-  lazy val imageLibraryPresenter = doBind[ImageLibraryView, ImageLibraryPresenter](new ImageLibraryPresenter(new ImageDirectoryWatchDog(new File( """c:\Users\Martin\Pictures\"""))), new ImageLibrary)
+  lazy val imageLibraryPresenter = doBind[ImageLibraryView, ImageLibraryPresenter](new ImageLibraryPresenter(imageWatchDog), new ImageLibrary)
 
   private def doBind[V <: View, P <: Presenter[V]](p: P, view: V): P = {
     if (view == null) throw new IllegalArgumentException("cannot bind presenter with undefined view")
