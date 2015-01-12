@@ -9,17 +9,7 @@ import org.scalatest.{FlatSpec, Matchers, PrivateMethodTester}
 @RunWith(classOf[JUnitRunner])
 class SlideSpec extends FlatSpec with Matchers with MockitoSugar {
 
-  "Slide" should "compute font size relatively to slide size" in {
-    new PrivateMethodTester {
-      val slide = new Slide
-      slide.setSize(0, 100)
-      val computeFontSize = PrivateMethod[Int]('computeFontSize)
-      slide.invokePrivate(computeFontSize())
-      assert(10 === slide.fontSettings.size)
-    }
-  }
-
-  it should "partially lift int array to array of accumulated sums" in {
+  "Slide" should "partially lift int array to array of accumulated sums" in {
     new PrivateMethodTester {
       val slide = new Slide
       val list = List(0, 2, 1, 2, 1)
