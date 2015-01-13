@@ -3,7 +3,6 @@ package org.majak.w.controller.watchdog.image
 
 import java.io.File
 
-import org.apache.commons.io.FileUtils
 import org.apache.pivot.util.concurrent.Task
 import org.apache.pivot.wtk.media.Image
 import org.majak.w.controller.watchdog._
@@ -31,9 +30,9 @@ class ImageDirectoryWatchDog(file: File) extends DirectoryWatchDog(file) {
 
   }
 
-  def deleteFile(fileData: FileData): Unit = {
-    logger.info("Deleting file because not an image: " + fileData.path)
-    FileUtils.deleteQuietly(new File(fileData.path))
+  override def deleteFile(fileData: FileData): Unit = {
+    logger.info("Deleting file (not an image): " + fileData.path)
+    super.deleteFile(fileData)
   }
 
   def hasImageExtension(path: String): Boolean = {

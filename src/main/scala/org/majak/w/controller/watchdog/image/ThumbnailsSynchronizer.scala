@@ -18,9 +18,7 @@ import scala.collection.mutable.ListBuffer
 
 case class Thumbnail(source: FileData, thumbImage: Image) {
 
-  def loadImage(): Image = {
-    Image.loadFromCache(new File(source.path).toURI.toURL)
-  }
+  def loadImage(): Image = Image.load(new File(source.path).toURI.toURL)
 
   override def equals(o: scala.Any): Boolean = {
     o match {
@@ -61,7 +59,7 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
     logger.info("Checking thumbnail for " + fileData.name + "\t[" + Utils.okOrFailed(ok) + "]")
 
     if (ok) {
-      addThumbnail(Thumbnail(fileData, Image.loadFromCache(thumbFile.toURI.toURL)))
+      addThumbnail(Thumbnail(fileData, Image.load(thumbFile.toURI.toURL)))
     }
 
     ok
@@ -93,6 +91,10 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
     }
   }
 
-  private def createThumbFile(origin: FileData): File = new File(dir, origin.name)
+  private def createThumbFile(origin: FileData): File = {
+    val thumbFile = new File(dir, origin.path.diff(imageDir.getAbsolutePath))
+    FileUtils.forceMkdir(new File(thumbFile.getParent))
+    thumbFile
+  }
 
 }

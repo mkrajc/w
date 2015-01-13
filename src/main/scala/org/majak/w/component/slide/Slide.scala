@@ -49,7 +49,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   def clearContent() = {
     clearTextContent()
-    clearImageContent()
+    clearBackContent()
     removeAll()
   }
 
@@ -59,7 +59,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     labels = Nil
   }
 
-  private def clearImageContent() = {
+  private def clearBackContent() = {
     back = EmptyBack
     imageView.foreach(remove(_))
     imageView = None
@@ -88,20 +88,35 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     logger.debug("show content [{}] on slide [{}]", c, this, None)
     c match {
       case i: ImageContent => showImageContent(i)
+      case tc: ThumbnailContent => showThumbContent(tc)
       case t: TextContent => showTextContent(t)
       case EmptyFront => clearTextContent()
-      case EmptyBack => clearImageContent()
+      case EmptyBack => clearBackContent()
       case Empty => clearContent()
     }
   }
 
   private def showImageContent(imageContent: ImageContent) = {
     if(imageContent != back) {
-      clearImageContent()
+      clearBackContent()
       addImageView(new ImageView(imageContent.img))
       autosizeImage()
 
       back = imageContent
+
+      if (effects) {
+        imageView.foreach(transition)
+      }
+    }
+  }
+
+  private def showThumbContent(thumbContent: ThumbnailContent) = {
+    if(thumbContent != back) {
+      clearBackContent()
+      addImageView(new ImageView(thumbContent.thumb.thumbImage))
+      autosizeImage()
+
+      back = thumbContent
 
       if (effects) {
         imageView.foreach(transition)
@@ -196,7 +211,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     if (slideSnapshot != snapshot) {
 
       showContentInner(slideSnapshot.front)
-      showContentInner(slideSnapshot.back)
+      adaptBack(slideSnapshot.back)
       adaptFontSettings(slideSnapshot.fontSettings, slideSnapshot.size)
 
       setHorizontalAlign(slideSnapshot.horizontalAlignment)
@@ -205,6 +220,21 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
       refreshTextLayout()
       slideChanged()
     }
+  }
+
+  private def adaptBack(back: Back): Unit ={
+    val adaptedBack = back match {
+      case t: ThumbnailContent =>
+        logger.info("Converting thumbnail to image " + t.thumb.source.name)
+        ImageContent(t.thumb.loadImage())
+      case _ => back
+    }
+
+    showContentInner(adaptedBack)
+  }
+
+  private def handleSlideSnapshot(slide: SlideSnapshot): Unit = {
+
   }
 
   override def apply(slideSnapshot: SlideSnapshot): Unit = {

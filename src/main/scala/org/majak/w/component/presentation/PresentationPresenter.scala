@@ -20,6 +20,7 @@ ObserverPresenter[PresentationView] {
       case StartPresentation(source) => startPresentation(source)
       case HidePresentation => hidePresentation()
       case PreviewSlideConfirmed(slide) => view.slideView.adapt(slide)
+
     }
   }
 

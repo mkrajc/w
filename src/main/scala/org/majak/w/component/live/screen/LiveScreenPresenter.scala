@@ -2,7 +2,7 @@ package org.majak.w.component.live.screen
 
 import org.majak.w.component.image.{ThumbnailClicked, ImageLibraryPresenter}
 import org.majak.w.component.live.song.{SongDetailPresenter, SongPanelPresenter}
-import org.majak.w.component.slide.{ImageContent, TextContent, Content}
+import org.majak.w.component.slide.{ThumbnailContent, ImageContent, TextContent, Content}
 import org.majak.w.component.smallslide.LiveSmallSlidePresenter
 import org.majak.w.component.smallslide.preview.PreviewSmallSlidePresenter
 import org.majak.w.ui.mvp.Presenter
@@ -27,7 +27,7 @@ class LiveScreenPresenter(val liveSmallSlidePresenter: LiveSmallSlidePresenter,
 
     imageLibraryPresenter.imagesObservable.subscribe(e => {
       e match {
-        case ThumbnailClicked(t) => previewSmallSlidePresenter.view.slideView.showContent(ImageContent(t.loadImage()))
+        case ThumbnailClicked(t) => previewSmallSlidePresenter.view.slideView.showContent(ThumbnailContent(t))
         case _ => ()
       }
     })

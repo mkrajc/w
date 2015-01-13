@@ -4,6 +4,7 @@ import java.io.{File, FileInputStream}
 import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.io.filefilter.{NameFileFilter, NotFileFilter, TrueFileFilter}
 import org.apache.commons.io.{FileUtils, IOUtils}
 import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
@@ -26,6 +27,8 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   override val indexName = "data"
   override val indexFile: File = new File(indexDir, "DirectoryWatchDog.dat")
+
+  private val dirFilter = new NotFileFilter(new NameFileFilter(errorsDirName))
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
   protected lazy val removedSubject = createUiEventSubject[FileRemoved]
@@ -61,8 +64,7 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
   }
 
   def scanFiles(root: File): List[FileData] = {
-
-    val files = FileUtils.listFiles(root, null, true).toList
+    val files = FileUtils.listFiles(root, TrueFileFilter.INSTANCE, dirFilter).toList
     files.map(f => {
       logger.trace("Scanning file [" + f.getAbsolutePath + "]")
       var fis: FileInputStream = null
@@ -105,6 +107,11 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
     if (previousIndex.isDefined) compareIndices(currentIndex.get, previousIndex.get)
     else notifyAsAdded(currentIndex)
 
+  }
+
+  def deleteFile(fileData: FileData): Unit = {
+    logger.info("Deleting file : " + fileData.path)
+    FileUtils.moveFileToDirectory(new File(fileData.path), new File(directory, errorsDirName), true)
   }
 
   private def notifyAsAdded(index: IndexResult): Unit = {

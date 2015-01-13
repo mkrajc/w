@@ -15,7 +15,7 @@ trait Module extends ControllerSettings{
 
   def songService: SongService = null
 
-  lazy val imageWatchDog = new ImageDirectoryWatchDog(new File(imageDir))
+  lazy val imageWatchDog = new ImageDirectoryWatchDog(imageDir)
 }
 
 object Module {

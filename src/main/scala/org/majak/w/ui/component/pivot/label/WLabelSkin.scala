@@ -254,19 +254,19 @@ class WLabelSkin extends ComponentSkin with LabelListener {
           }
         } else {
 
-          //graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-          //graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-          //graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+          graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+          graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+          graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
 
           val shape = glyphVector.getOutline(x, y + ascent)
 
-         // drawOutline(graphics, shape)
+          drawOutline(graphics, shape)
           //drawShadow(graphics, shape)
 
           graphics.setPaint(color)
-          //graphics.fill(shape)
+          graphics.fill(shape)
 
-          graphics.drawGlyphVector(glyphVector, x, y + ascent)
+          //graphics.drawGlyphVector(glyphVector, x, y + ascent)
         }
 
         y += textBounds.getHeight.toFloat
