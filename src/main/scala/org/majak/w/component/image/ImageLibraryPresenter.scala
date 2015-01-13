@@ -1,9 +1,10 @@
 package org.majak.w.component.image
 
-import org.apache.pivot.util.concurrent.{TaskListener, Task}
+import org.apache.pivot.util.concurrent.{Task, TaskListener}
 import org.apache.pivot.wtk.TaskAdapter
 import org.majak.w.controller.ControllerSettings
-import org.majak.w.controller.watchdog.image.{Thumbnail, ImageDirectoryWatchDog, ThumbnailsSynchronizer}
+import org.majak.w.model.image.data.Thumbnail
+import org.majak.w.model.image.watchdog.{ImageDirectoryWatchDog, ThumbnailsSynchronizer}
 import org.majak.w.ui.mvp.Presenter
 import rx.lang.scala.Observable
 

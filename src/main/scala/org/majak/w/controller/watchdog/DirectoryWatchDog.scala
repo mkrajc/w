@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
 
-sealed class WatchDogEvent extends Event
+sealed abstract class WatchDogEvent extends Event
 
 case class FileAdded(fileData: FileData) extends WatchDogEvent
 
@@ -28,14 +28,16 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
   override val indexName = "data"
   override val indexFile: File = new File(indexDir, "DirectoryWatchDog.dat")
 
-  private val dirFilter = new NotFileFilter(new NameFileFilter(errorsDirName))
+  val supportedExtensions: Set[String] = Nil.toSet
+
+  private val dirFilter = new NotFileFilter(new NameFileFilter(ignoredDirName))
 
   protected lazy val addSubject = createUiEventSubject[FileAdded]
   protected lazy val removedSubject = createUiEventSubject[FileRemoved]
   protected lazy val changedSubject = createUiEventSubject[FileChanged]
   protected lazy val doneNotifier = createUiEventSubject[Done.type]
 
-  override def observable: Observable[WatchDogEvent] = addSubject.merge(removedSubject).merge(changedSubject)
+  override def observable: Observable[WatchDogEvent] = addSubject.merge(removedSubject).merge(changedSubject).filter(isFileSupported)
 
   require(directory.exists(), "Not existing directory: " + directory)
 
@@ -48,6 +50,37 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
       Some(new Index(fileSet, new Date))
     } else {
       None
+    }
+  }
+
+  def filterFiles(fileData: List[File]): List[File] = {
+    if (supportedExtensions.isEmpty) {
+      fileData
+    } else {
+      val (filteredList, ignored) = fileData.partition(fd => supportFile(fd.getName))
+
+      if (ignored.nonEmpty) {
+        ignored.foreach(ignoreFile)
+      }
+
+      filteredList
+    }
+  }
+
+  def isFileSupported(event: WatchDogEvent): Boolean = {
+    val path = event match {
+      case a: FileAdded => a.fileData.path
+      case r: FileRemoved => r.fileData.path
+      case ch: FileChanged => ch.after.path
+    }
+
+    supportFile(path)
+  }
+
+  def supportFile(filename: String): Boolean = {
+    if (supportedExtensions.isEmpty) true
+    else {
+      supportedExtensions.contains(Utils.extension(filename))
     }
   }
 
@@ -65,7 +98,8 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   def scanFiles(root: File): List[FileData] = {
     val files = FileUtils.listFiles(root, TrueFileFilter.INSTANCE, dirFilter).toList
-    files.map(f => {
+
+    filterFiles(files).map(f => {
       logger.trace("Scanning file [" + f.getAbsolutePath + "]")
       var fis: FileInputStream = null
       try {
@@ -109,9 +143,13 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   }
 
-  def deleteFile(fileData: FileData): Unit = {
-    logger.info("Deleting file : " + fileData.path)
-    FileUtils.moveFileToDirectory(new File(fileData.path), new File(directory, errorsDirName), true)
+  def ignoreFile(file: File): Unit = {
+    logger.info("Ignoring file : " + file.getPath)
+    FileUtils.moveFileToDirectory(file, new File(directory, ignoredDirName), true)
+  }
+
+  def ignoreFile(fileData: FileData): Unit = {
+    ignoreFile(new File(fileData.path))
   }
 
   private def notifyAsAdded(index: IndexResult): Unit = {

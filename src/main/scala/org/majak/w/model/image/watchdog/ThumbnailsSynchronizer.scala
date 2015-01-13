@@ -1,4 +1,4 @@
-package org.majak.w.controller.watchdog.image
+package org.majak.w.model.image.watchdog
 
 import java.io.File
 
@@ -10,23 +10,11 @@ import org.apache.pivot.wtk.media.{Image, Picture}
 import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.FileData
 import org.majak.w.controller.watchdog.sync.DirectoryWatchDogSynchronizer
+import org.majak.w.model.image.data.Thumbnail
 import org.majak.w.utils.Utils
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
-
-
-case class Thumbnail(source: FileData, thumbImage: Image) {
-
-  def loadImage(): Image = Image.load(new File(source.path).toURI.toURL)
-
-  override def equals(o: scala.Any): Boolean = {
-    o match {
-      case Thumbnail(src, _) => src == source
-      case _ => false
-    }
-  }
-}
 
 class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends DirectoryWatchDogSynchronizer[Thumbnail](imgWatchDog) with ControllerSettings {
   val dir = new File(thumbnailsDir)
@@ -40,16 +28,16 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
 
   override def add(data: Thumbnail): Unit = {
     if (data.thumbImage == null) {
-      imgWatchDog.deleteFile(data.source)
+      imgWatchDog.ignoreFile(data.source)
     } else {
       addThumbnail(data)
     }
   }
 
-  override def remove(fileData: FileData): Unit = {
-    logger.info("Deleting thumbnail for " + fileData.name)
-    FileUtils.forceDelete(createThumbFile(fileData))
-    thumbnailBuilder.find(_.source == fileData).map(thumbnailBuilder.-=)
+  override def remove(data: Thumbnail): Unit = {
+    logger.info("Deleting thumbnail for " + data.source.name)
+    FileUtils.forceDelete(createThumbFile(data.source))
+    thumbnailBuilder.find(_.source == data.source).map(thumbnailBuilder.-=)
   }
 
   override def isOk(fileData: FileData): Boolean = {
@@ -65,7 +53,7 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
     ok
   }
 
-  override protected def create(fileData: FileData): Thumbnail = {
+  override protected def create(fileData: FileData): Option[Thumbnail] = {
     logger.info("Create thumbnail for " + fileData.name)
     val t: Builder[File] = Thumbnails.of(new File(fileData.path))
       .size(THUMBS_SIZE, THUMBS_SIZE)
@@ -80,7 +68,7 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
         null
     }
 
-    Thumbnail(fileData, bufImg)
+    Some(Thumbnail(fileData, bufImg))
   }
 
   def thumbs: Set[Thumbnail] = thumbnailBuilder.toSet

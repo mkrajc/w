@@ -7,7 +7,7 @@ import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.ComponentMouseButtonListener.Adapter
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.ShadeDecorator
-import org.majak.w.controller.watchdog.image.Thumbnail
+import org.majak.w.model.image.data.Thumbnail
 import org.majak.w.ui.pivot.{StylesUtils, PivotComponent}
 
 

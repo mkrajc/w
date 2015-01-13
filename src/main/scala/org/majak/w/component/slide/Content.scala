@@ -1,7 +1,7 @@
 package org.majak.w.component.slide
 
 import org.apache.pivot.wtk.media.Image
-import org.majak.w.controller.watchdog.image.Thumbnail
+import org.majak.w.model.image.data.Thumbnail
 
 
 trait Content

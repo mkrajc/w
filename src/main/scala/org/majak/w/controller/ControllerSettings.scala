@@ -4,7 +4,7 @@ import java.io.File
 
 
 trait ControllerSettings {
-  val errorsDirName = ".errors"
+  val ignoredDirName = ".ignored"
 
   val dataDirPath = """.\data"""
   private val imageDirPath = dataDirPath + """\images"""

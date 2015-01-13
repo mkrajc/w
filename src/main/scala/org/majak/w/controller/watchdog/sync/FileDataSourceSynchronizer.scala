@@ -10,17 +10,17 @@ trait FileDataSource {
 
 abstract class FileDataSourceSynchronizer[T](val source: FileDataSource) {
 
-  protected def create(fileData: FileData): T
+  protected def create(fileData: FileData): Option[T]
 
   def add(data: T): Unit
 
-  def remove(fileData: FileData): Unit
+  def remove(data: T): Unit
 
   def isOk(fileData: FileData): Boolean
 
   def sync(): Unit = {
     val toBeAdded = source.list().filterNot(isOk)
-    toBeAdded.map(f => add(create(f)))
+    toBeAdded.map(f => create(f).map(add))
   }
 }
 
@@ -40,11 +40,11 @@ with Observer[WatchDogEvent] {
 
   override def onNext(event: WatchDogEvent): Unit = {
     event match {
-      case FileAdded(data) => add(create(data))
-      case FileRemoved(data) => remove(data)
+      case FileAdded(data) => create(data).map(add)
+      case FileRemoved(data) =>  create(data).map(remove)
       case FileChanged(from, data) =>
-        remove(from)
-        add(create(data))
+        create(from).map(remove)
+        create(data).map(add)
     }
   }
 }

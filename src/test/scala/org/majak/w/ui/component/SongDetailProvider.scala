@@ -2,7 +2,8 @@ package org.majak.w.ui.component
 
 import org.apache.pivot.wtk.Component
 import org.majak.w.component.live.song.{SongPartSelected, SongDetail}
-import org.majak.w.model.SongModel.SongPart
+import org.majak.w.model.song.data.SongModel
+import SongModel.SongPart
 
 
 object SongDetailProvider {

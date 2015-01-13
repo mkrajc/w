@@ -1,6 +1,6 @@
 package org.majak.w.component.image
 
-import org.majak.w.controller.watchdog.image.Thumbnail
+import org.majak.w.model.image.data.Thumbnail
 import org.majak.w.rx.{ObservableView, UiEvent}
 import rx.lang.scala.Observable
 

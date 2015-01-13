@@ -3,7 +3,8 @@ package org.majak.w.component.songlist.pivot
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
 import org.majak.w.component.songlist.view.{SongListView, SongListViewHandler}
-import org.majak.w.model.SongModel.SongListItem
+import org.majak.w.model.song.data.SongModel
+import SongModel.SongListItem
 import org.majak.w.ui.component.pivot.searchbox.{SearchBox, SearchHandler}
 import org.majak.w.ui.pivot.Conversions._
 import org.majak.w.ui.pivot.PivotComponent

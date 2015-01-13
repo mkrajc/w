@@ -10,6 +10,8 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
 
+import scala.collection.immutable.HashSet
+
 @RunWith(classOf[JUnitRunner])
 class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar with TestableDir {
   val logger = LoggerFactory.getLogger(getClass)
@@ -189,6 +191,39 @@ class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar wit
       wd.rescan(data)
 
       assert(changed === 2)
+    }
+  }
+
+  it should "not filter files by default" in {
+    testInTmpDir { f =>
+      val files = prepareFilesInDir(f, Map("a.a" -> "a", "b.b" -> "b", "c.c" -> "c"))
+      val wd = new DirectoryWatchDog(f)
+      val data = wd.scan()
+      assert(data.get.fileData.size === 3)
+    }
+  }
+
+  it should "filter provide only supported files" in {
+    testInTmpDir { f =>
+      prepareFilesInDir(f, Map("a.a" -> "a", "b.b" -> "b", "c.c" -> "c"))
+      val wd = new DirectoryWatchDog(f){
+        override val supportedExtensions: Set[String] = HashSet("a","b","c")
+      }
+
+      val data = wd.scan()
+      assert(data.get.fileData.size === 3)
+    }
+  }
+
+  it should "filter provide only supported files and ignore others" in {
+    testInTmpDir { f =>
+      prepareFilesInDir(f, Map("a.a" -> "a", "b.b" -> "b", "c.c" -> "c"))
+      val wd = new DirectoryWatchDog(f){
+        override val supportedExtensions: Set[String] = HashSet("a")
+      }
+
+      val data = wd.scan()
+      assert(data.get.fileData.size === 1)
     }
   }
 

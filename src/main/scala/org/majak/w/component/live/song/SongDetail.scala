@@ -3,7 +3,8 @@ package org.majak.w.component.live.song
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.Keyboard.{KeyCode, KeyLocation}
 import org.apache.pivot.wtk._
-import org.majak.w.model.SongModel.SongPart
+import org.majak.w.model.song.data.SongModel
+import SongModel.SongPart
 import org.majak.w.ui.pivot.{PivotComponent, StylesUtils}
 
 class SongDetail extends PivotComponent with SongDetailView {

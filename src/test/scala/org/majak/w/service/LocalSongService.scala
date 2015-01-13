@@ -1,6 +1,9 @@
 package org.majak.w.service
 
-import org.majak.w.model.SongModel.Song
+import org.majak.w.controller.watchdog.FileData
+import org.majak.w.model.song.data.SongModel
+import SongModel.Song
+import org.majak.w.model.song.service.SongService
 
 import scala.io.Source
 
@@ -18,6 +21,9 @@ class LocalSongService extends SongService{
 
   val songs = source.getLines.toList map toSong
 
-  override def getAllSongs(): List[Song] = songs
+  override def remove(song: Song): Boolean = ???
 
+  override def save(song: Song): Song = ???
+
+  override def findByFileData(fileData: FileData): Option[Song] = None
 }
