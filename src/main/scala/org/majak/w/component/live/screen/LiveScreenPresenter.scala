@@ -1,8 +1,8 @@
 package org.majak.w.component.live.screen
 
-import org.majak.w.component.image.{ThumbnailClicked, ImageLibraryPresenter}
+import org.majak.w.component.image.{ImageLibraryPresenter, ThumbnailClicked}
 import org.majak.w.component.live.song.{SongDetailPresenter, SongPanelPresenter}
-import org.majak.w.component.slide.{ThumbnailContent, ImageContent, TextContent, Content}
+import org.majak.w.component.slide.{Content, TextContent, ThumbnailContent}
 import org.majak.w.component.smallslide.LiveSmallSlidePresenter
 import org.majak.w.component.smallslide.preview.PreviewSmallSlidePresenter
 import org.majak.w.ui.mvp.Presenter

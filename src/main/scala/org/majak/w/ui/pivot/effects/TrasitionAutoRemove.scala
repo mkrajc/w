@@ -1,6 +1,6 @@
 package org.majak.w.ui.pivot.effects
 
-import org.apache.pivot.wtk.effects.{TransitionListener, Transition}
+import org.apache.pivot.wtk.effects.{Transition, TransitionListener}
 
 
 trait TransitionAutoRemove {

@@ -1,6 +1,6 @@
 package org.majak.w.ui.component.pivot.label
 
-import org.apache.pivot.wtk.{Label => PivotLabel, Component}
+import org.apache.pivot.wtk.{Component, Label => PivotLabel}
 
 class WLabel extends PivotLabel {
 

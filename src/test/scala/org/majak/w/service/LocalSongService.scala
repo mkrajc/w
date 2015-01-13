@@ -2,7 +2,7 @@ package org.majak.w.service
 
 import org.majak.w.controller.watchdog.FileData
 import org.majak.w.model.song.data.SongModel
-import SongModel.Song
+import org.majak.w.model.song.data.SongModel.Song
 import org.majak.w.model.song.service.SongService
 
 import scala.io.Source

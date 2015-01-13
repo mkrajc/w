@@ -1,7 +1,6 @@
 package org.majak.w.component.live.song
 
-import org.majak.w.model.song.data.SongModel
-import SongModel.{SongPart, Song}
+import org.majak.w.model.song.data.SongModel.{Song, SongPart}
 import org.majak.w.ui.mvp.Presenter
 
 /**

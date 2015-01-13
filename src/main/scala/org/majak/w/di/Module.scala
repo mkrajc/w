@@ -1,10 +1,11 @@
 package org.majak.w.di
 
 import java.io.File
-import org.majak.w.controller.{ControllerSettings, SongController}
+
+import org.majak.w.controller.watchdog.Index
 import org.majak.w.controller.watchdog.PersistentWatchDog.{IndexProvider, IndexStore}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
-import org.majak.w.controller.watchdog.Index
+import org.majak.w.controller.{ControllerSettings, SongController}
 import org.majak.w.model.image.watchdog.ImageDirectoryWatchDog
 import org.majak.w.model.song.service.SongService
 import org.mapdb.{DB, DBMaker}

@@ -2,7 +2,7 @@ package org.majak.w.ui.mvp
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 
 @RunWith(classOf[JUnitRunner])
 class PresenterSpec extends FlatSpec with Matchers {

@@ -1,8 +1,8 @@
 package org.majak.w.component.live.song
 
 import org.majak.w.model.song.data.SongModel
-import SongModel.SongPart
-import org.majak.w.rx.{UiEvent, ObservableView}
+import org.majak.w.model.song.data.SongModel.SongPart
+import org.majak.w.rx.{ObservableView, UiEvent}
 import rx.lang.scala.Observable
 
 case class SongPartSelected(songPart: SongPart) extends UiEvent

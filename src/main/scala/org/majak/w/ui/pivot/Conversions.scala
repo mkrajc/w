@@ -1,10 +1,10 @@
 package org.majak.w.ui.pivot
 
-import scala.language.implicitConversions
-
 import org.apache.pivot.collections.ArrayList
 import org.apache.pivot.wtk.Component
 import org.majak.w.ui.mvp.View
+
+import scala.language.implicitConversions
 
 /**
  * Contains implicit conversions between pivot collection types and scala collections

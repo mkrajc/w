@@ -10,9 +10,10 @@ import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
 import org.majak.w.rx.{Done, Event, ObservableObject}
 import org.majak.w.utils.Utils
-import scala.collection.JavaConversions._
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Observable
+
+import scala.collection.JavaConversions._
 
 sealed abstract class WatchDogEvent extends Event
 

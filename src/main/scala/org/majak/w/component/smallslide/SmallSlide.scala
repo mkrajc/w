@@ -1,7 +1,7 @@
 package org.majak.w.component.smallslide
 
-import org.apache.pivot.wtk.{Container, Component, ComponentListener}
-import org.majak.w.component.slide.{SlideView, Slide}
+import org.apache.pivot.wtk.{Component, ComponentListener, Container}
+import org.majak.w.component.slide.{Slide, SlideView}
 import org.majak.w.ui.component.Size
 import org.majak.w.ui.pivot.PivotComponent
 

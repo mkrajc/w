@@ -3,7 +3,7 @@ package org.majak.w.component.songlist
 import org.majak.w.component.songlist.view.SongListView
 import org.majak.w.controller.{SongController, SongIndexChangeListener}
 import org.majak.w.model.song.data.SongModel
-import SongModel.SongListItem
+import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.model.song.service.SongService
 import org.majak.w.ui.component.pivot.searchbox.SearchHandler
 import org.majak.w.ui.mvp.Presenter

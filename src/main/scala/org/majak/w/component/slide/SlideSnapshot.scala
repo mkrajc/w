@@ -1,6 +1,6 @@
 package org.majak.w.component.slide
 
-import org.apache.pivot.wtk.{VerticalAlignment, HorizontalAlignment}
+import org.apache.pivot.wtk.{HorizontalAlignment, VerticalAlignment}
 import org.majak.w.ui.component.Size
 
 case class FontSettings(size: Int, family: String) {

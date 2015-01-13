@@ -8,7 +8,7 @@ import org.apache.pivot.wtk.ComponentMouseButtonListener.Adapter
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.ShadeDecorator
 import org.majak.w.model.image.data.Thumbnail
-import org.majak.w.ui.pivot.{StylesUtils, PivotComponent}
+import org.majak.w.ui.pivot.{PivotComponent, StylesUtils}
 
 
 class ImageLibrary extends PivotComponent with ImageLibraryView {

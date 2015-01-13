@@ -1,7 +1,7 @@
 package org.majak.w.component.slide
 
 import org.majak.w.rx.{ObservableView, UiEvent}
-import rx.lang.scala.{Subject, Observable}
+import rx.lang.scala.{Observable, Subject}
 
 case class SlideChanged(snapshot: SlideSnapshot) extends UiEvent
 

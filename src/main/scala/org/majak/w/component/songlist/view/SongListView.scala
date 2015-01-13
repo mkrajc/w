@@ -1,7 +1,7 @@
 package org.majak.w.component.songlist.view
 
 import org.majak.w.model.song.data.SongModel
-import SongModel.SongListItem
+import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.ui.component.pivot.searchbox.SearchHandler
 import org.majak.w.ui.component.{ListView, Selectable}
 import org.majak.w.ui.mvp.View

@@ -4,12 +4,12 @@ import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
-import org.majak.w.component.smallslide.LiveSmallSlide
 import org.majak.w.component.main.menu.MainMenu
+import org.majak.w.component.smallslide.LiveSmallSlide
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
 import org.majak.w.model.song.data.SongModel
-import SongModel.SongListItem
+import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.service.LocalSongService
 import org.majak.w.ui.pivot.Conversions._
 

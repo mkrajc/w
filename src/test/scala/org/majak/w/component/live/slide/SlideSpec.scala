@@ -1,7 +1,7 @@
 package org.majak.w.component.live.slide
 
 import org.junit.runner.RunWith
-import org.majak.w.component.slide.{TextContent, EmptyFront, Slide}
+import org.majak.w.component.slide.{EmptyFront, Slide, TextContent}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers, PrivateMethodTester}

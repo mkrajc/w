@@ -1,6 +1,6 @@
 package org.majak.w.model.song.watchdog
 
-import java.io.{InputStream, FileInputStream}
+import java.io.{FileInputStream, InputStream}
 
 import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.FileData

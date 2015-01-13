@@ -2,6 +2,7 @@ package org.majak.w.rx
 
 import org.majak.w.ui.mvp.{Presenter, View}
 import rx.lang.scala.{Observable, Observer, Subject}
+
 import scala.concurrent.duration._
 
 trait Event
