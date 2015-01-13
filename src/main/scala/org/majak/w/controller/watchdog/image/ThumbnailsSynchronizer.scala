@@ -18,8 +18,15 @@ import scala.collection.mutable.ListBuffer
 
 case class Thumbnail(source: FileData, thumbImage: Image) {
 
-  def loadImage(): Image ={
+  def loadImage(): Image = {
     Image.loadFromCache(new File(source.path).toURI.toURL)
+  }
+
+  override def equals(o: scala.Any): Boolean = {
+    o match {
+      case Thumbnail(src, _) => src == source
+      case _ => false
+    }
   }
 }
 
@@ -27,10 +34,14 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
   val dir = new File(thumbnailsDir)
   val logger = LoggerFactory.getLogger(getClass)
 
+  if(!dir.exists()){
+    FileUtils.forceMkdir(dir)
+  }
+
   private val thumbnailBuilder = new ListBuffer[Thumbnail]()
 
   override def add(data: Thumbnail): Unit = {
-    if(data.thumbImage == null){
+    if (data.thumbImage == null) {
       imgWatchDog.deleteFile(data.source)
     } else {
       addThumbnail(data)
@@ -45,11 +56,11 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
 
   override def isOk(fileData: FileData): Boolean = {
     // TODO what if image name is same but different content
-   val thumbFile = createThumbFile(fileData)
+    val thumbFile = createThumbFile(fileData)
     val ok = thumbFile.exists()
     logger.info("Checking thumbnail for " + fileData.name + "\t[" + Utils.okOrFailed(ok) + "]")
 
-    if(ok){
+    if (ok) {
       addThumbnail(Thumbnail(fileData, Image.loadFromCache(thumbFile.toURI.toURL)))
     }
 
@@ -77,7 +88,7 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
   def thumbs: Set[Thumbnail] = thumbnailBuilder.toSet
 
   private def addThumbnail(thumbnail: Thumbnail): Unit = {
-    if(!thumbnailBuilder.contains(thumbnail)){
+    if (!thumbnailBuilder.contains(thumbnail)) {
       thumbnailBuilder += thumbnail
     }
   }
