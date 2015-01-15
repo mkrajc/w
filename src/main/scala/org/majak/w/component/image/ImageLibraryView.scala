@@ -23,5 +23,5 @@ trait ImageLibraryView extends ObservableView {
 
   protected def fireThumbnailClicked(thumbnail: Thumbnail) = eventSubject.onNext(new ThumbnailClicked(thumbnail))
 
-  override def observable: Observable[ImageLibraryUiEvent] = preventDoubleClicks(eventSubject)
+  override def observable: Observable[ImageLibraryUiEvent] = eventSubject
 }
