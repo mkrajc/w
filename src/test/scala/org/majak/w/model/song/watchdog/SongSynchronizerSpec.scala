@@ -84,12 +84,14 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
     }
   }
 
-  it should "should parse song if had parser" in {
+  it should "parse song if had parser" in {
     val d = tmpRandDir
     testInTestDir(d) {
       f =>
         val service = new TestSongService
-        val swd = new SongDirectoryWatchDog(f, parsers)
+        val swd = new SongDirectoryWatchDog(f, parsers){
+          override val indexFile = tmpRandFile
+        }
         val ss = new SongSynchronizer(swd, service, parsers)
 
         prepareFilesInDir(f, Map("a.x"->"1\n2\n3\n4"))
