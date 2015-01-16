@@ -27,9 +27,9 @@ libraryDependencies += "net.coobird" % "thumbnailator" % "0.4.8"
 
 //lucene
 libraryDependencies ++= Seq(
-  "org.apache.lucene" % "lucene-core" % "4.10.3",
-  "org.apache.lucene" % "lucene-analyzers-common" % "4.10.3",
-  "org.apache.lucene" % "lucene-queryparser" % "4.10.3"
+  "org.apache.lucene" % "lucene-core" % "4.7.2",
+  "org.apache.lucene" % "lucene-analyzers-common" % "4.7.2",
+  "org.apache.lucene" % "lucene-queryparser" % "4.7.2"
 )
 
 

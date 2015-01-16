@@ -14,7 +14,7 @@ import org.majak.w.model.song.data.SongModel.Song
 
 class LuceneSongService extends SongService with AppSettings {
 
-  val analyzer = new StandardAnalyzer()
+  val analyzer = new StandardAnalyzer(Version.LUCENE_47)
 
   protected val index: Directory = new SimpleFSDirectory(new File(indexDir, "songdb"))
 
@@ -61,7 +61,7 @@ class LuceneSongService extends SongService with AppSettings {
   }
 
   protected def createIndexWriter(): IndexWriter = {
-    val config = new IndexWriterConfig(Version.LUCENE_4_10_3, analyzer)
+    val config = new IndexWriterConfig(Version.LUCENE_47, analyzer)
     new IndexWriter(index, config)
   }
 
