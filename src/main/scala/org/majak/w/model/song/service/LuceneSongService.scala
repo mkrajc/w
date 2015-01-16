@@ -2,27 +2,35 @@ package org.majak.w.model.song.service
 
 import java.io.File
 
+import org.apache.commons.io.FileUtils
 import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.document.{Document, Field, StringField}
+import org.apache.lucene.document.{TextField, Document, Field, StringField}
 import org.apache.lucene.index.{DirectoryReader, IndexWriter, IndexWriterConfig, Term}
 import org.apache.lucene.search._
 import org.apache.lucene.store.{Directory, SimpleFSDirectory}
 import org.apache.lucene.util.Version
 import org.majak.w.controller.watchdog.FileData
 import org.majak.w.di.AppSettings
-import org.majak.w.model.song.data.SongModel.Song
+import org.majak.w.model.song.data.SongModel.{SongPart, Song}
 
 class LuceneSongService extends SongService with AppSettings {
 
   val analyzer = new StandardAnalyzer(Version.LUCENE_47)
 
-  protected val index: Directory = new SimpleFSDirectory(new File(indexDir, "songdb"))
+  private val luceneIndexDir = new File(indexDir, "songdb")
+
+  FileUtils.forceMkdir(luceneIndexDir)
+
+  protected val index: Directory = new SimpleFSDirectory(luceneIndexDir)
 
   private val FIELD_TYPE = "TYPE"
   private val FIELD_ID = "id"
   private val FIELD_NAME = "name"
+  private val FIELD_PARTS = "parts"
 
   private val SONG_TYPE = "SONG"
+
+  private val PARTS_SEPARATOR = """<~~~>"""
 
   override def remove(song: Song): Boolean = {
     deleteDocs(idQuery(song.id))
@@ -47,7 +55,14 @@ class LuceneSongService extends SongService with AppSettings {
   }
 
   protected def docToSong(doc: Document): Song = {
-    Song(name = doc.get(FIELD_NAME), parts = Nil, id = doc.get(FIELD_ID))
+    val partsStrings = doc.get(FIELD_PARTS).split(PARTS_SEPARATOR).toList
+    val parts = if (partsStrings.headOption.getOrElse("").isEmpty) {
+      Nil
+    } else {
+      partsStrings.map(l => SongPart(l.split("\n").toList))
+    }
+
+    Song(doc.get(FIELD_ID), doc.get(FIELD_NAME), parts)
   }
 
   protected def songToDoc(song: Song): Document = {
@@ -56,6 +71,8 @@ class LuceneSongService extends SongService with AppSettings {
     document.add(new StringField(FIELD_TYPE, SONG_TYPE, Field.Store.YES))
     document.add(new StringField(FIELD_ID, song.id, Field.Store.YES))
     document.add(new StringField(FIELD_NAME, song.name, Field.Store.YES))
+    val partsString = song.parts.map(sp => sp.lines.mkString("\n")).mkString(PARTS_SEPARATOR)
+    document.add(new TextField(FIELD_PARTS, partsString, Field.Store.YES))
 
     document
   }
@@ -112,13 +129,15 @@ class LuceneSongService extends SongService with AppSettings {
 
 
   private def listDoc(q: Query): List[Document] = {
-    val reader = DirectoryReader.open(index)
-    val searcher = new IndexSearcher(reader)
-    val topDocs = searcher.search(q, reader.numDocs())
-    if (topDocs.scoreDocs.nonEmpty) {
-      topDocs.scoreDocs.map(sd => searcher.doc(sd.doc)).toList
-    } else {
-      Nil
-    }
+    if (DirectoryReader.indexExists(index)) {
+      val reader = DirectoryReader.open(index)
+      val searcher = new IndexSearcher(reader)
+      val topDocs = searcher.search(q, reader.numDocs())
+      if (topDocs.scoreDocs.nonEmpty) {
+        topDocs.scoreDocs.map(sd => searcher.doc(sd.doc)).toList
+      } else {
+        Nil
+      }
+    } else Nil
   }
 }

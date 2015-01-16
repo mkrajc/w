@@ -4,7 +4,7 @@ import org.apache.lucene.document.{Field, TextField, Document}
 import org.apache.lucene.store.RAMDirectory
 import org.junit.runner.RunWith
 import org.majak.w.controller.watchdog.FileData
-import org.majak.w.model.song.data.SongModel.Song
+import org.majak.w.model.song.data.SongModel.{SongPart, Song}
 import org.majak.w.model.song.service.LuceneSongService
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
@@ -89,6 +89,20 @@ class LuceneSongServiceSpec extends FlatSpec with Matchers {
 
     val s = service.findByFileData(FileData("path", "123", "name.ext", "ext"))
     assert(s.isEmpty)
+  }
+
+  it should "save song with parts" in {
+    val service = new TLuceneSongService
+    val song = Song(id = "aaa", name = "AAA", parts = List(SongPart(List("a", "b")), SongPart(List("c"))))
+
+    service.save(song)
+
+    val s = service.songs
+
+    s.size shouldEqual 1
+    s(0) shouldEqual song
+    s(0).parts.size shouldEqual 2
+
   }
 
 }
