@@ -26,7 +26,7 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
     override def parse(inputStream: InputStream): Song = {
       val lines = Source.fromInputStream(inputStream).getLines().toList
       val parts = lines.map(l => SongPart(List(l)))
-      Song(inputStream.hashCode(), inputStream.hashCode().toString, parts)
+      Song(inputStream.hashCode().toString, inputStream.hashCode().toString, parts)
     }
   }
 
@@ -52,6 +52,8 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
       this.s = song :: s
       song
     }
+
+    override def findById(id: String): Option[Song] = ???
   }
 
   val parsers = List(new XSongParser)

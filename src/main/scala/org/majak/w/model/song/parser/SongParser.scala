@@ -24,7 +24,7 @@ class TxtSongParser extends SongParser {
         SongPart(l.filterNot(_.isEmpty))
       )
 
-      Song(name = name, parts = parts, id = 3)
+      Song(name = name, parts = parts, id = "x")
     } else {
       null
     }

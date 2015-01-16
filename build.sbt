@@ -25,7 +25,14 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "net.coobird" % "thumbnailator" % "0.4.8"
 
-libraryDependencies += "org.apache.lucene" % "lucene-core" % "4.10.3"
+//lucene
+libraryDependencies ++= Seq(
+  "org.apache.lucene" % "lucene-core" % "4.10.3",
+  "org.apache.lucene" % "lucene-analyzers-common" % "4.10.3",
+  "org.apache.lucene" % "lucene-queryparser" % "4.10.3"
+)
+
+
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
