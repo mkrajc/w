@@ -38,7 +38,10 @@ trait UiModule extends Module {
 
   lazy val songDetailView = new SongDetail
   lazy val songDetailPresenter = doBind[SongDetailView, SongDetailPresenter](new SongDetailPresenter, songDetailView)
-  lazy val songPanelPresenter = doBind[SongPanelView, SongPanelPresenter](new SongPanelPresenter(songDetailPresenter), new SongPanel)
+
+  lazy val songPanelPresenter = doBind[SongPanelView, SongPanelPresenter](
+    new SongPanelPresenter(songDetailPresenter, songListPresenter),
+    new SongPanel)
 
   lazy val imageLibraryPresenter = doBind[ImageLibraryView, ImageLibraryPresenter](new ImageLibraryPresenter(imageWatchDog), new ImageLibrary)
 

@@ -1,8 +1,17 @@
 <FillPane xmlns:bxml="http://pivot.apache.org/bxml"
           xmlns:content="org.apache.pivot.wtk.content"
-          xmlns="org.apache.pivot.wtk"
-          bxml:id="songDetailPanels">
+          xmlns="org.apache.pivot.wtk" >
     <TabPane.tabData>
         <content:ButtonData text="%liveScreen.tab.songs"/>
     </TabPane.tabData>
+    <SplitPane resizeMode="primary_region"
+               styles="{useShadow:true}">
+        <primaryRegion>top_left</primaryRegion>
+        <left>
+            <FillPane bxml:id="songListPanel"  minimumWidth="200"/>
+        </left>
+        <right>
+            <FillPane bxml:id="songDetailPanels"/>
+        </right>
+    </SplitPane>
 </FillPane>

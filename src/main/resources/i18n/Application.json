@@ -22,6 +22,16 @@
       "refresh_t": "Refresh images"
     }
   },
+  "songList": {
+    "header" : {
+      "text": "Songs: %s",
+      "loading": "Loading..."
+    },
+    "button": {
+      "refresh": "Refresh",
+      "refresh_t": "Refresh songs"
+    }
+  },
   "liveSmallSlide": {
     "button": {
       "show": "Show",

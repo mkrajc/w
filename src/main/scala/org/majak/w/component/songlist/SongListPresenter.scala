@@ -32,17 +32,18 @@ class SongListPresenter(val loadSongsTask: LoadSongsTask)
   }
 
   def refresh(): Unit = {
-    //view.setEnabled(false)
+    view.stateLoading()
+
     val tl = new TaskListener[List[SongListItem]] {
       override def taskExecuted(task: Task[List[SongListItem]]): Unit = {
         data = task.getResult
         view.showData(data)
-        //view.setEnabled(true)
+        view.stateOk()
       }
 
       override def executeFailed(task: Task[List[SongListItem]]): Unit = {
         logger.error("failed to load songs", task.getFault)
-        //view.setEnabled(true)
+        view.stateError()
       }
     }
 

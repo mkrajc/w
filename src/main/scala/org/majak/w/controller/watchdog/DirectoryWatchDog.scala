@@ -40,6 +40,11 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   override def observable: Observable[WatchDogEvent] = addSubject.merge(removedSubject).merge(changedSubject).filter(isFileSupported)
 
+  if(!directory.exists()){
+    logger.info("Creating directory: " + directory)
+    FileUtils.forceMkdir(directory)
+  }
+
   require(directory.exists(), "Not existing directory: " + directory)
 
   private def scanIntern(): IndexResult = {
@@ -159,5 +164,3 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
   }
 
 }
-
-
