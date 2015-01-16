@@ -2,13 +2,13 @@ package org.majak.w.component.image
 
 import org.apache.pivot.util.concurrent.{Task, TaskListener}
 import org.apache.pivot.wtk.TaskAdapter
-import org.majak.w.controller.ControllerSettings
+import org.majak.w.di.AppSettings
 import org.majak.w.model.image.data.Thumbnail
 import org.majak.w.model.image.watchdog.{ImageDirectoryWatchDog, ThumbnailsSynchronizer}
 import org.majak.w.ui.mvp.Presenter
 import rx.lang.scala.Observable
 
-class ImageLibraryPresenter(imgWatchDog: ImageDirectoryWatchDog) extends Presenter[ImageLibraryView] with ControllerSettings {
+class ImageLibraryPresenter(imgWatchDog: ImageDirectoryWatchDog) extends Presenter[ImageLibraryView] with AppSettings {
 
   val thumbSync = new ThumbnailsSynchronizer(imgWatchDog)
 

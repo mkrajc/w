@@ -13,7 +13,10 @@
     }
   },
   "imageLibrary": {
-    "header": "Images: %s",
+    "header" : {
+      "text": "Images: %s",
+      "loading": "Loading..."
+    },
     "button": {
       "refresh": "Refresh",
       "refresh_t": "Refresh images"

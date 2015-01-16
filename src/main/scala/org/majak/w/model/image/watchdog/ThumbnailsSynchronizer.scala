@@ -7,16 +7,16 @@ import net.coobird.thumbnailator.Thumbnails.Builder
 import net.coobird.thumbnailator.tasks.UnsupportedFormatException
 import org.apache.commons.io.FileUtils
 import org.apache.pivot.wtk.media.{Image, Picture}
-import org.majak.w.controller.ControllerSettings
 import org.majak.w.controller.watchdog.FileData
 import org.majak.w.controller.watchdog.sync.DirectoryWatchDogSynchronizer
+import org.majak.w.di.AppSettings
 import org.majak.w.model.image.data.Thumbnail
 import org.majak.w.utils.Utils
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
-class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends DirectoryWatchDogSynchronizer[Thumbnail](imgWatchDog) with ControllerSettings {
+class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends DirectoryWatchDogSynchronizer[Thumbnail](imgWatchDog) with AppSettings {
   val dir = new File(thumbnailsDir)
   val logger = LoggerFactory.getLogger(getClass)
 

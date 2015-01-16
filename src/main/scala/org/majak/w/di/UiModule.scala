@@ -17,7 +17,7 @@ import org.majak.w.ui.mvp.{Presenter, View}
 trait UiModule extends Module {
 
   lazy val songListPresenter =
-    doBind[SongListView, SongListPresenter](new SongListPresenter(songController, songService), new SongListComponent)
+    doBind[SongListView, SongListPresenter](new SongListPresenter(loadSongsTask), new SongListComponent)
   lazy val mainMenuPresenter = doBind[MainMenuView, MainMenuPresenter](new MainMenuPresenter, new MainMenu)
   lazy val mainScreenPresenter = doBind[MainScreenView, MainScreenPresenter](new MainScreenPresenter(mainMenuPresenter, liveScreenPresenter), new MainScreen())
 

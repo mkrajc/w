@@ -8,13 +8,12 @@ import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.smallslide.LiveSmallSlide
 import org.majak.w.component.songlist.view.SongListViewHandler
 import org.majak.w.di.UiModule
-import org.majak.w.model.song.data.SongModel
 import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.service.LocalSongService
 import org.majak.w.ui.pivot.Conversions._
 
 class ShowcaseApplication extends Application.Adapter with UiModule {
-  override def songService = new LocalSongService
+  override lazy val songService = new LocalSongService
 
   private val NONE_LABEL = new Label("<NONE>")
 
@@ -90,8 +89,6 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
     window setContent pane
     window.setMaximized(true)
-
-    songController.start
 
     window open display
   }

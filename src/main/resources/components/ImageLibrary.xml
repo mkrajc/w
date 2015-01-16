@@ -14,7 +14,7 @@
         <GridPane columnCount="2">
             <GridPane.Row>
                 <BoxPane styles="{padding:7, verticalAlignment: 'center'}">
-                    <Label bxml:id="imagesHeader" text="%imageLibrary.header"/>
+                    <Label bxml:id="imagesHeader" text="%imageLibrary.header.text"/>
                 </BoxPane>
                 <BoxPane styles="{padding:7, verticalAlignment: 'center', horizontalAlignment: 'right'}">
                     <PushButton bxml:id="refreshButton" tooltipText="%imageLibrary.button.refresh_t">

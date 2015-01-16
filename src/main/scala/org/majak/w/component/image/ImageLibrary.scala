@@ -4,6 +4,7 @@ package org.majak.w.component.image
 import java.awt.Color
 
 import org.apache.pivot.beans.BXML
+import org.apache.pivot.json.JSON
 import org.apache.pivot.wtk.ComponentMouseButtonListener.Adapter
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.ShadeDecorator
@@ -28,7 +29,7 @@ class ImageLibrary extends PivotComponent with ImageLibraryView {
   }
 
   override def showThumbnails(imgs: Set[Thumbnail]): Unit = {
-    imagesHeader.setText(imagesHeader.getText.format(imgs.size))
+    imagesHeader.setText(JSON.get[String](resources, "imageLibrary.header.text").format(imgs.size))
     imagePanel.removeAll()
 
     imgs.foreach(showThumbnail)
@@ -67,6 +68,7 @@ class ImageLibrary extends PivotComponent with ImageLibraryView {
     if (enabled) {
       imagePanel.getDecorators.remove(loading)
     } else {
+      imagesHeader.setText(JSON.get(resources, "imageLibrary.header.loading"))
       imagePanel.getDecorators.add(loading)
     }
 

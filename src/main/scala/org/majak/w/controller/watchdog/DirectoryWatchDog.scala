@@ -1,13 +1,13 @@
 package org.majak.w.controller.watchdog
 
-import java.io.{File, FileInputStream}
+import java.io.{FileInputStream, File}
 import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.filefilter.{NameFileFilter, NotFileFilter, TrueFileFilter}
-import org.apache.commons.io.{FileUtils, IOUtils}
-import org.majak.w.controller.ControllerSettings
+import org.apache.commons.io.{IOUtils, FileUtils}
+import org.apache.commons.io.filefilter.{TrueFileFilter, NameFileFilter, NotFileFilter}
 import org.majak.w.controller.watchdog.WatchDog.IndexResult
+import org.majak.w.di.AppSettings
 import org.majak.w.rx.{Done, Event, ObservableObject}
 import org.majak.w.utils.Utils
 import org.slf4j.LoggerFactory
@@ -23,7 +23,7 @@ case class FileRemoved(fileData: FileData) extends WatchDogEvent
 
 case class FileChanged(before: FileData, after: FileData) extends WatchDogEvent
 
-class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with ObservableObject with ControllerSettings {
+class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with ObservableObject with AppSettings {
   val logger = LoggerFactory.getLogger(getClass)
 
   override val indexName = "data"

@@ -1,15 +1,17 @@
-package org.majak.w.controller
+package org.majak.w.di
 
 import java.io.File
 
 
-trait ControllerSettings {
+trait AppSettings {
   val ignoredDirName = ".ignored"
 
   val dataDirPath = """.\data"""
   private val imageDirPath = dataDirPath + """\images"""
+  private val songDirPath = dataDirPath + """\songs"""
 
   val imageDir = new File(imageDirPath)
+  val songsDir = new File(songDirPath)
 
 
   val appDir = """.\.app"""
