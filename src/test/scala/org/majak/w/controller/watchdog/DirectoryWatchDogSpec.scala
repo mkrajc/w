@@ -16,17 +16,9 @@ import scala.collection.immutable.HashSet
 class DirectoryWatchDogSpec extends FlatSpec with Matchers with MockitoSugar with TestableDir {
   val logger = LoggerFactory.getLogger(getClass)
 
-  "DirectoryWatchDog" should "initialize if directory exist" in {
+  it should "initialize if directory exist" in {
     val wd = new DirectoryWatchDog(TestUtils.tempDir)
     wd shouldNot be(null)
-  }
-
-  it should "failed initialization if directory does not exist" in {
-    val neDir = "\\a\\a\\a"
-    val thrown = intercept[Exception] {
-      new DirectoryWatchDog(new File(neDir))
-    }
-    assert(thrown.getMessage.contains("Not existing directory: " + neDir))
   }
 
   it should "provide data when scanning nonempty directory" in {
