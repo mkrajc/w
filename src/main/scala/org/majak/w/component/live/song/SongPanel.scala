@@ -2,8 +2,7 @@ package org.majak.w.component.live.song
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.FillPane
-import org.majak.w.component.songlist.pivot.SongListComponent
-import org.majak.w.component.songlist.view.SongListView
+import org.majak.w.component.songlist.{SongListComponent, SongListView}
 import org.majak.w.ui.pivot.PivotComponent
 
 

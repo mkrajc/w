@@ -1,4 +1,4 @@
-package org.majak.w.component.songlist.pivot
+package org.majak.w.component.songlist
 
 import java.awt.Color
 
@@ -6,7 +6,6 @@ import org.apache.pivot.beans.BXML
 import org.apache.pivot.json.JSON
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.ShadeDecorator
-import org.majak.w.component.songlist.view.{SongListView, SongListViewHandler}
 import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.ui.component.pivot.searchbox.{SearchBox, SearchHandler}
 import org.majak.w.ui.component.{ERROR, LOADING, OK, State}

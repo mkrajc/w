@@ -1,4 +1,4 @@
-package org.majak.w.component.songlist.view
+package org.majak.w.component.songlist
 
 import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.rx.{ObservableView, UiEvent}

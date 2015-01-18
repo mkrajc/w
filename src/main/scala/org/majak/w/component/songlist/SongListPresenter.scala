@@ -2,8 +2,6 @@ package org.majak.w.component.songlist
 
 import org.apache.pivot.util.concurrent.{Task, TaskListener}
 import org.apache.pivot.wtk.TaskAdapter
-
-import org.majak.w.component.songlist.view.{Refresh, SongListUiEvent, SongListView}
 import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.model.song.service.SongService
 import org.majak.w.model.song.watchdog.SongSynchronizer

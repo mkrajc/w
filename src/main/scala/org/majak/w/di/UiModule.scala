@@ -8,9 +8,7 @@ import org.majak.w.component.main.screen.{MainScreen, MainScreenPresenter, MainS
 import org.majak.w.component.presentation.PresentationPresenter
 import org.majak.w.component.smallslide._
 import org.majak.w.component.smallslide.preview.{PreviewSmallSlide, PreviewSmallSlidePresenter, PreviewSmallSlideView}
-import org.majak.w.component.songlist.SongListPresenter
-import org.majak.w.component.songlist.pivot.SongListComponent
-import org.majak.w.component.songlist.view.SongListView
+import org.majak.w.component.songlist.{SongListComponent, SongListView, SongListPresenter}
 import org.majak.w.ui.mvp.{Presenter, View}
 
 
