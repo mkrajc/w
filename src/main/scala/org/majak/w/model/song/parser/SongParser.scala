@@ -2,31 +2,43 @@ package org.majak.w.model.song.parser
 
 import java.io.InputStream
 
-import org.majak.w.model.song.data.SongModel.{SongPart, Song}
+import org.majak.w.model.song.data.SongModel.{SongData, SongPart}
 
 import scala.io.Source
 
 trait SongParser {
   def ext: String
 
-  def parse(inputStream: InputStream): Song
+  def parse(inputStream: InputStream): Option[SongData] = {
+    try {
+      parseInputStream(inputStream)
+    } finally {
+      inputStream.close()
+    }
+  }
+
+  protected def parseInputStream(inputStream: InputStream): Option[SongData]
 }
 
 class TxtSongParser extends SongParser {
-  override def ext: String = "txt"
+  override val ext: String = "txt"
 
-  override def parse(inputStream: InputStream): Song = {
+  override def parseInputStream(inputStream: InputStream): Option[SongData] = {
     val lines = Source.fromInputStream(inputStream).getLines().toList
     if (lines.nonEmpty) {
       val name = lines.head.trim
       val parts = groupPrefix(lines.tail)(line => line.isEmpty).map(
         l =>
-        SongPart(l.filterNot(_.isEmpty))
+          SongPart(l.filterNot(_.isEmpty))
       )
 
-      Song(name = name, parts = parts, id = "x")
+      if (name.isEmpty) {
+        None
+      } else {
+        Some(SongData(name = name, parts = parts))
+      }
     } else {
-      null
+      None
     }
   }
 

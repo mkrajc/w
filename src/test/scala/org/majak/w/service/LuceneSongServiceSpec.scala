@@ -1,10 +1,9 @@
 package org.majak.w.service
 
-import org.apache.lucene.document.{Field, TextField, Document}
+import org.apache.lucene.document.{Document, Field, TextField}
 import org.apache.lucene.store.RAMDirectory
 import org.junit.runner.RunWith
-import org.majak.w.controller.watchdog.FileData
-import org.majak.w.model.song.data.SongModel.{SongPart, Song}
+import org.majak.w.model.song.data.SongModel.{Song, SongPart}
 import org.majak.w.model.song.service.LuceneSongService
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
@@ -52,6 +51,23 @@ class LuceneSongServiceSpec extends FlatSpec with Matchers {
 
   }
 
+  it should "save more songs" in {
+    val service = new TLuceneSongService
+
+    val song1 = Song(id = "aaa", name = "AAA", parts = Nil)
+    val song2 = Song(id = "bbb", name = "BBB", parts = Nil)
+
+    service.save(song1)
+    service.save(song2)
+
+    val s = service.songs
+
+    s.size shouldEqual 2
+    s(0) shouldEqual song1
+    s(1) shouldEqual song2
+
+  }
+
   it should "change song on multiple saving" in {
     val service = new TLuceneSongService
 
@@ -87,7 +103,7 @@ class LuceneSongServiceSpec extends FlatSpec with Matchers {
     val song = Song(id = "aaa", name = "AAA", parts = Nil)
     service.save(song)
 
-    val s = service.findByFileData(FileData("path", "123", "name.ext", "ext"))
+    val s = service.findById("bbb")
     assert(s.isEmpty)
   }
 

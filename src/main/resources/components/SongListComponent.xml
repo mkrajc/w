@@ -1,6 +1,7 @@
 <TablePane xmlns:bxml="http://pivot.apache.org/bxml"
            xmlns:w="org.majak.w.ui.component.pivot.searchbox"
            xmlns="org.apache.pivot.wtk"
+           xmlns:content="org.apache.pivot.wtk.content"
            bxml:id="tablePane"
            styles="{verticalSpacing:3, horizontalSpacing:0, showHorizontalGridLines:false, showVerticalGridLines:false, padding:3}">
     <columns>
@@ -8,9 +9,20 @@
     </columns>
 
     <TablePane.Row height="30">
-        <BoxPane styles="{padding: 0, verticalAlignment: 'center'}">
-            <Label bxml:id="songHeader" text="%songList.header.text"/>
-        </BoxPane>
+        <GridPane columnCount="2">
+            <GridPane.Row>
+                <BoxPane styles="{padding: 7, verticalAlignment: 'center'}">
+                    <Label bxml:id="songHeader" text="%songList.header.text"/>
+                </BoxPane>
+                <BoxPane styles="{padding:7, verticalAlignment: 'center', horizontalAlignment: 'right'}">
+                    <PushButton bxml:id="refreshButton" tooltipText="%songList.button.refresh_t">
+                        <buttonData>
+                            <content:ButtonData icon="/images/refresh-16.png" text="%songList.button.refresh"/>
+                        </buttonData>
+                    </PushButton>
+                </BoxPane>
+            </GridPane.Row>
+        </GridPane>
     </TablePane.Row>
 
 

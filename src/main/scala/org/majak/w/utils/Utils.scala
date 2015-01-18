@@ -27,4 +27,8 @@ object Utils {
   def okOrFailed(boolean: Boolean): String = {
     if (boolean) "OK" else "FAILED"
   }
+
+  def boolToOpt(expr: Boolean): Option[Boolean] = {
+    if (expr) Some(expr) else None
+  }
 }

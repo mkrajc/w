@@ -1,6 +1,6 @@
 package org.majak.w.model.song.parser
 
-import java.io.StringBufferInputStream
+import java.io.ByteArrayInputStream
 
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -26,14 +26,15 @@ class TxtSongParserSpec extends FlatSpec with Matchers {
         |Oh please, God, wake me
         |""".stripMargin
 
-    val songInput = new StringBufferInputStream(song)
+    val songInput = new ByteArrayInputStream(song.getBytes("UTF-8"))
     val parsedSong = parser.parse(songInput)
 
     parsedSong shouldNot be(null)
-    parsedSong.name shouldEqual "One"
-    parsedSong.parts.size shouldEqual 3
-    parsedSong.parts(0).lines(0) shouldEqual "I can't remember anything"
-    parsedSong.parts(2).lines(1) shouldEqual "Oh please, God, wake me"
+    parsedSong should be ('defined)
+    parsedSong.get.name shouldEqual "One"
+    parsedSong.get.parts.size shouldEqual 3
+    parsedSong.get.parts(0).lines(0) shouldEqual "I can't remember anything"
+    parsedSong.get.parts(2).lines(1) shouldEqual "Oh please, God, wake me"
 
   }
 }

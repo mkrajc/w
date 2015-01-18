@@ -8,13 +8,14 @@ import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.ShadeDecorator
 import org.majak.w.component.songlist.view.{SongListView, SongListViewHandler}
 import org.majak.w.model.song.data.SongModel.SongListItem
-import org.majak.w.ui.component.{LOADING, ERROR, OK, State}
 import org.majak.w.ui.component.pivot.searchbox.{SearchBox, SearchHandler}
+import org.majak.w.ui.component.{ERROR, LOADING, OK, State}
 import org.majak.w.ui.pivot.Conversions._
 import org.majak.w.ui.pivot.PivotComponent
 import org.majak.w.utils.Utils
 
 import scala.collection.mutable.ListBuffer
+
 
 class SongListComponent extends SongListView with PivotComponent {
 
@@ -23,6 +24,7 @@ class SongListComponent extends SongListView with PivotComponent {
   @BXML protected var listView: ListView = _
   @BXML protected var searchBox: SearchBox = _
   @BXML protected var songHeader: Label = _
+  @BXML protected var refreshButton: PushButton = _
 
   private val loading = new ShadeDecorator(0.33f, Color.LIGHT_GRAY)
 
@@ -38,13 +40,18 @@ class SongListComponent extends SongListView with PivotComponent {
         viewHandlers foreach (_.onSongListItemSelected(selected))
       }
     })
+
+    refreshButton.getButtonPressListeners.add(new ButtonPressListener {
+      override def buttonPressed(button: Button): Unit = fireRefresh()
+    })
   }
 
   override def setState(state: State): Unit = {
-    def stopLoad():Unit = {
+    def stopLoad(): Unit = {
       listView.getDecorators.remove(loading)
       listView.setEnabled(true)
       searchBox.setEnabled(true)
+      refreshButton.setEnabled(true)
     }
     state match {
       case OK => stopLoad()
@@ -56,11 +63,13 @@ class SongListComponent extends SongListView with PivotComponent {
         listView.getDecorators.add(loading)
         listView.setEnabled(false)
         searchBox.setEnabled(false)
+        refreshButton.setEnabled(false)
     }
   }
 
   override def showData(data: List[SongListItem]): Unit = {
     songHeader.setText(header(data.size))
+    listView.clear()
     listView.setListData(data)
   }
 

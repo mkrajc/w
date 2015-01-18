@@ -4,14 +4,13 @@ import java.io.File
 
 import org.apache.commons.io.FileUtils
 import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.document.{TextField, Document, Field, StringField}
-import org.apache.lucene.index.{DirectoryReader, IndexWriter, IndexWriterConfig, Term}
+import org.apache.lucene.document.{Document, Field, StringField, TextField}
+import org.apache.lucene.index._
 import org.apache.lucene.search._
 import org.apache.lucene.store.{Directory, SimpleFSDirectory}
 import org.apache.lucene.util.Version
-import org.majak.w.controller.watchdog.FileData
 import org.majak.w.di.AppSettings
-import org.majak.w.model.song.data.SongModel.{SongPart, Song}
+import org.majak.w.model.song.data.SongModel.{Song, SongPart}
 
 class LuceneSongService extends SongService with AppSettings {
 
@@ -35,10 +34,6 @@ class LuceneSongService extends SongService with AppSettings {
   override def remove(song: Song): Boolean = {
     deleteDocs(idQuery(song.id))
     true
-  }
-
-  override def findByFileData(fileData: FileData): Option[Song] = {
-    findById(fileData.md5hex)
   }
 
   override def songs: List[Song] = {
@@ -77,6 +72,12 @@ class LuceneSongService extends SongService with AppSettings {
     document
   }
 
+  override def removeAll(): Unit = {
+    val iw = createIndexWriter()
+    iw.deleteAll()
+    iw.close()
+  }
+
   protected def createIndexWriter(): IndexWriter = {
     val config = new IndexWriterConfig(Version.LUCENE_47, analyzer)
     new IndexWriter(index, config)
@@ -109,13 +110,17 @@ class LuceneSongService extends SongService with AppSettings {
   }
 
   private def firstDoc(q: Query): Option[Document] = {
-    val reader = DirectoryReader.open(index)
-    val searcher = new IndexSearcher(reader)
-    val topDocs = searcher.search(q, 1)
-    if (topDocs.scoreDocs.nonEmpty) {
-      val hit = topDocs.scoreDocs(0)
-      val document = searcher.doc(hit.doc)
-      Some(document)
+    if (DirectoryReader.indexExists(index)) {
+      val reader = DirectoryReader.open(index)
+      val searcher = new IndexSearcher(reader)
+      val topDocs = searcher.search(q, 1)
+      if (topDocs.scoreDocs.nonEmpty) {
+        val hit = topDocs.scoreDocs(0)
+        val document = searcher.doc(hit.doc)
+        Some(document)
+      } else {
+        None
+      }
     } else {
       None
     }
@@ -132,12 +137,12 @@ class LuceneSongService extends SongService with AppSettings {
     if (DirectoryReader.indexExists(index)) {
       val reader = DirectoryReader.open(index)
       val searcher = new IndexSearcher(reader)
-      val topDocs = searcher.search(q, reader.numDocs())
-      if (topDocs.scoreDocs.nonEmpty) {
-        topDocs.scoreDocs.map(sd => searcher.doc(sd.doc)).toList
-      } else {
-        Nil
-      }
+      if (reader.numDocs() > 0) {
+        val topDocs = searcher.search(q, reader.numDocs())
+        if (topDocs.scoreDocs.nonEmpty) {
+          topDocs.scoreDocs.map(sd => searcher.doc(sd.doc)).toList
+        } else Nil
+      } else Nil
     } else Nil
   }
 }

@@ -8,25 +8,36 @@ trait FileDataSource {
   def list(): Set[FileData]
 }
 
-abstract class FileDataSourceSynchronizer[T](val source: FileDataSource) {
+abstract class FileDataSourceSynchronizer[T, ID](val source: FileDataSource) {
+  val logger = LoggerFactory.getLogger(getClass)
 
   protected def create(fileData: FileData): Option[T]
 
+  protected def createId(fileData: FileData): ID
+
   def add(data: T): Unit
 
-  def remove(data: T): Unit
+  def removeById(id: (ID, FileData)): Boolean
 
-  def isOk(fileData: FileData): Boolean
+  def objectWithIdExists(id: (ID, FileData)): Boolean
+
+  def ensureExisting(ids: Set[(ID, FileData)]): Unit = {
+    ids.map(p => {
+      if (!objectWithIdExists(p)) {
+        create(p._2).map(add)
+      }
+    })
+  }
 
   def sync(): Unit = {
-    val toBeAdded = source.list().filterNot(isOk)
-    toBeAdded.map(f => create(f).map(add))
+    val list = source.list()
+    val ids = list.map(fd => (createId(fd), fd))
+    ensureExisting(ids)
   }
 }
 
-abstract class DirectoryWatchDogSynchronizer[T](val wd: DirectoryWatchDog) extends FileDataSourceSynchronizer[T](wd)
+abstract class DirectoryWatchDogSynchronizer[T, ID](val wd: DirectoryWatchDog) extends FileDataSourceSynchronizer[T, ID](wd)
 with Observer[WatchDogEvent] {
-  private val logger = LoggerFactory.getLogger(getClass)
 
   wd.observable.subscribe(this)
 
@@ -41,9 +52,9 @@ with Observer[WatchDogEvent] {
   override def onNext(event: WatchDogEvent): Unit = {
     event match {
       case FileAdded(data) => create(data).map(add)
-      case FileRemoved(data) =>  create(data).map(remove)
+      case FileRemoved(data) => removeById((createId(data), data))
       case FileChanged(from, data) =>
-        create(from).map(remove)
+        removeById((createId(from), from))
         create(data).map(add)
     }
   }

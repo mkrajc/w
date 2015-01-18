@@ -1,11 +1,16 @@
 package org.majak.w.component.songlist.view
 
 import org.majak.w.model.song.data.SongModel.SongListItem
+import org.majak.w.rx.{ObservableView, UiEvent}
 import org.majak.w.ui.component.pivot.searchbox.SearchHandler
-import org.majak.w.ui.component.{StateView, ListView, Selectable}
-import org.majak.w.ui.mvp.View
+import org.majak.w.ui.component.{ListView, Selectable, StateView}
+import rx.lang.scala.Observable
 
-trait SongListView extends ListView[SongListItem] with Selectable[SongListItem] with View with StateView {
+sealed trait SongListUiEvent extends UiEvent
+
+case object Refresh extends SongListUiEvent
+
+trait SongListView extends ListView[SongListItem] with Selectable[SongListItem] with StateView with ObservableView {
   def addHandler(h: SongListViewHandler)
 
   def removeHandler(h: SongListViewHandler)
@@ -13,6 +18,12 @@ trait SongListView extends ListView[SongListItem] with Selectable[SongListItem] 
   def addSearchHandler(h: SearchHandler)
 
   def removeSearchHandler(h: SearchHandler)
+
+  private lazy val eventSubject = createUiEventSubject[SongListUiEvent]
+
+  protected def fireRefresh() = eventSubject.onNext(Refresh)
+
+  override def observable: Observable[SongListUiEvent] = eventSubject
 
 }
 

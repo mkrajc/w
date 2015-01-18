@@ -1,6 +1,5 @@
 package org.majak.w.service
 
-import org.majak.w.controller.watchdog.FileData
 import org.majak.w.model.song.data.SongModel.Song
 import org.majak.w.model.song.service.SongService
 
@@ -24,7 +23,7 @@ class LocalSongService extends SongService{
 
   override def save(song: Song): Song = ???
 
-  override def findByFileData(fileData: FileData): Option[Song] = None
-
   override def findById(id: String): Option[Song] = ???
+
+  override def removeAll(): Unit = ???
 }

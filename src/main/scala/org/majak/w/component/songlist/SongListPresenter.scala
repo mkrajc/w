@@ -2,7 +2,8 @@ package org.majak.w.component.songlist
 
 import org.apache.pivot.util.concurrent.{Task, TaskListener}
 import org.apache.pivot.wtk.TaskAdapter
-import org.majak.w.component.songlist.view.SongListView
+
+import org.majak.w.component.songlist.view.{Refresh, SongListUiEvent, SongListView}
 import org.majak.w.model.song.data.SongModel.SongListItem
 import org.majak.w.model.song.service.SongService
 import org.majak.w.model.song.watchdog.SongSynchronizer
@@ -16,6 +17,7 @@ class SongListPresenter(val loadSongsTask: LoadSongsTask)
   var data: List[SongListItem] = _
 
   override protected def onBind(v: SongListView) = {
+    view.observable.subscribe(onNext = e => handleEvent(e))
 
     v.addSearchHandler(h = new SearchHandler {
       override def onSearch(text: String): Unit = {
@@ -28,7 +30,12 @@ class SongListPresenter(val loadSongsTask: LoadSongsTask)
     })
 
     refresh()
+  }
 
+  private def handleEvent(event: SongListUiEvent): Unit = {
+    event match {
+      case Refresh => refresh()
+    }
   }
 
   def refresh(): Unit = {
@@ -55,6 +62,7 @@ class LoadSongsTask(songSync: SongSynchronizer,
                     songService: SongService) extends Task[List[SongListItem]] {
   override def execute(): List[SongListItem] = {
     songSync.sync()
-    songService.songs.map(s => SongListItem(s.id, s.name, s.name))
+    val songs = songService.songs
+    songs.map(s => SongListItem(s.id, s.name, s.name))
   }
 }

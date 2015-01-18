@@ -12,15 +12,13 @@ import org.majak.w.controller.watchdog.sync.DirectoryWatchDogSynchronizer
 import org.majak.w.di.AppSettings
 import org.majak.w.model.image.data.Thumbnail
 import org.majak.w.utils.Utils
-import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
-class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends DirectoryWatchDogSynchronizer[Thumbnail](imgWatchDog) with AppSettings {
+class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends DirectoryWatchDogSynchronizer[Thumbnail, File](imgWatchDog) with AppSettings {
   val dir = new File(thumbnailsDir)
-  val logger = LoggerFactory.getLogger(getClass)
 
-  if(!dir.exists()){
+  if (!dir.exists()) {
     FileUtils.forceMkdir(dir)
   }
 
@@ -32,25 +30,6 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
     } else {
       addThumbnail(data)
     }
-  }
-
-  override def remove(data: Thumbnail): Unit = {
-    logger.info("Deleting thumbnail for " + data.source.name)
-    FileUtils.forceDelete(createThumbFile(data.source))
-    thumbnailBuilder.find(_.source == data.source).map(thumbnailBuilder.-=)
-  }
-
-  override def isOk(fileData: FileData): Boolean = {
-    // TODO what if image name is same but different content
-    val thumbFile = createThumbFile(fileData)
-    val ok = thumbFile.exists()
-    logger.info("Checking thumbnail for " + fileData.name + "\t[" + Utils.okOrFailed(ok) + "]")
-
-    if (ok) {
-      addThumbnail(Thumbnail(fileData, Image.load(thumbFile.toURI.toURL)))
-    }
-
-    ok
   }
 
   override protected def create(fileData: FileData): Option[Thumbnail] = {
@@ -85,4 +64,23 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
     thumbFile
   }
 
+  override protected def createId(fileData: FileData): File = createThumbFile(fileData)
+
+  override def removeById(id: (File, FileData)): Boolean = {
+    logger.info("Deleting thumbnail file for " + id._2.name)
+    FileUtils.forceDelete(id._1)
+    thumbnailBuilder.find(_.source == id._2).map(thumbnailBuilder.-=)
+    true
+  }
+
+  override def objectWithIdExists(id: (File, FileData)): Boolean = {
+    val ok = id._1.exists()
+    logger.info("Checking thumbnail for " + id._1.getName + "\t[" + Utils.okOrFailed(ok) + "]")
+
+    if (ok) {
+      addThumbnail(Thumbnail(id._2, Image.load(createThumbFile(id._2).toURI.toURL)))
+    }
+
+    ok
+  }
 }

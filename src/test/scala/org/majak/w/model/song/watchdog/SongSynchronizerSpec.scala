@@ -4,9 +4,8 @@ import java.io.InputStream
 
 import org.junit.runner.RunWith
 import org.majak.w.TestableDir
-import org.majak.w.controller.watchdog.FileData
 import org.majak.w.di.Module
-import org.majak.w.model.song.data.SongModel.{Song, SongPart}
+import org.majak.w.model.song.data.SongModel.{SongData, Song, SongPart}
 import org.majak.w.model.song.parser.SongParser
 import org.majak.w.model.song.service.SongService
 import org.scalatest.junit.JUnitRunner
@@ -23,10 +22,10 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
   class XSongParser extends SongParser {
     override def ext: String = "x"
 
-    override def parse(inputStream: InputStream): Song = {
+    override def parseInputStream(inputStream: InputStream): Option[SongData] = {
       val lines = Source.fromInputStream(inputStream).getLines().toList
       val parts = lines.map(l => SongPart(List(l)))
-      Song(inputStream.hashCode().toString, inputStream.hashCode().toString, parts)
+      Some(SongData(inputStream.hashCode().toString, parts))
     }
   }
 
@@ -41,10 +40,6 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
       true
     }
 
-    override def findByFileData(fileData: FileData): Option[Song] = {
-      None
-    }
-
     override def songs: List[Song] = s
 
     override def save(song: Song): Song = {
@@ -53,7 +48,9 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
       song
     }
 
-    override def findById(id: String): Option[Song] = ???
+    override def findById(id: String): Option[Song] = Some(Song(id, null, null))
+
+    override def removeAll(): Unit = ()
   }
 
   val parsers = List(new XSongParser)
@@ -66,7 +63,7 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
         val swd = new SongDirectoryWatchDog(f, parsers)
         val ss = new SongSynchronizer(swd, service, parsers)
 
-        ss.remove(null)
+        ss.removeById(("x", null))
 
         assert(service.removed == 1)
     }
@@ -80,7 +77,7 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
         val swd = new SongDirectoryWatchDog(f, parsers)
         val ss = new SongSynchronizer(swd, service, parsers)
 
-        ss.add(null)
+        ss.add(Song("a", "aAA", Nil))
 
         assert(service.saved == 1)
     }
@@ -91,12 +88,12 @@ class SongSynchronizerSpec extends FlatSpec with Matchers with Module with Testa
     testInTestDir(d) {
       f =>
         val service = new TestSongService
-        val swd = new SongDirectoryWatchDog(f, parsers){
+        val swd = new SongDirectoryWatchDog(f, parsers) {
           override val indexFile = tmpRandFile
         }
         val ss = new SongSynchronizer(swd, service, parsers)
 
-        prepareFilesInDir(f, Map("a.x"->"1\n2\n3\n4"))
+        prepareFilesInDir(f, Map("a.x" -> "1\n2\n3\n4"))
 
         ss.sync()
 
