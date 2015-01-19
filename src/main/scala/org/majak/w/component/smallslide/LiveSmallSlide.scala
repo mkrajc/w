@@ -27,8 +27,6 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
       override def buttonPressed(button: Button) = handleHidePresentation()
     })
 
-//    slide.setPreferredSize(120, 90)
-
     showButton.setPreferredWidth(25)
     hideButton.setPreferredWidth(25)
 

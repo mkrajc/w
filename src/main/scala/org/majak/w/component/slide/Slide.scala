@@ -37,7 +37,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   var back: Back = EmptyBack
   var fontSettings = FontSettings(DEFAULT_FONT_SIZE, "Arial")
 
-  StylesUtils.setBackground(this, "#f3f3f3")
+  StylesUtils.setBackground(this, "#000000")
   clearContent()
 
   getComponentListeners.add(new ComponentListener.Adapter {
@@ -207,35 +207,6 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   override def snapshot: SlideSnapshot = SlideSnapshot(front, back,
     fontSettings, Size(getSize.width, getSize.height), horizontalAlignment, verticalAlignment)
 
-  override def adapt(slideSnapshot: SlideSnapshot): Unit = {
-    if (slideSnapshot != snapshot) {
-
-      showContentInner(slideSnapshot.front)
-      adaptBack(slideSnapshot.back)
-      adaptFontSettings(slideSnapshot.fontSettings, slideSnapshot.size)
-
-      setHorizontalAlign(slideSnapshot.horizontalAlignment)
-      setVerticalAlign(slideSnapshot.verticalAlignment)
-
-      refreshTextLayout()
-      slideChanged()
-    }
-  }
-
-  private def adaptBack(back: Back): Unit ={
-    val adaptedBack = back match {
-      case t: ThumbnailContent =>
-        logger.info("Converting thumbnail to image " + t.thumb.source.name)
-        ImageContent(t.thumb.loadImage())
-      case _ => back
-    }
-
-    showContentInner(adaptedBack)
-  }
-
-  private def handleSlideSnapshot(slide: SlideSnapshot): Unit = {
-
-  }
 
   override def apply(slideSnapshot: SlideSnapshot): Unit = {
     if (slideSnapshot != snapshot) {
@@ -299,12 +270,6 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   private def applyFontSettings(label: Label): Unit = {
     StylesUtils.setFontFamily(label, fontSettings.family)
     StylesUtils.setFontSize(label, fontSettings.size)
-  }
-
-  private def adaptFontSettings(fontSettings: FontSettings, size: Size): Unit = {
-    val ratio: Float = size.height.toFloat / fontSettings.size
-    val adaptedSize = math.round(getSize.height / ratio)
-    this.fontSettings = FontSettings(adaptedSize.toInt, fontSettings.family)
   }
 
 }

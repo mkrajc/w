@@ -38,7 +38,7 @@ abstract class SmallSlide extends PivotComponent with SmallSlideView {
 
   protected def autoSizeSlideView(): Unit = {
     sourceSize match {
-      case None => slide.setPreferredSize(0, 0)
+      case None => ()//slide.setPreferredSize(0, 0)
       case Some(size) => autoscale()
     }
 
