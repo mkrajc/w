@@ -7,18 +7,14 @@ import org.apache.pivot.json.JSON
 import org.apache.pivot.wtk._
 import org.apache.pivot.wtk.effects.ShadeDecorator
 import org.majak.w.model.song.data.SongModel.SongListItem
-import org.majak.w.ui.component.pivot.searchbox.{SearchBox, SearchHandler}
+import org.majak.w.ui.component.pivot.{SearchBox, SearchBoxEvent}
 import org.majak.w.ui.component.{ERROR, LOADING, OK, State}
 import org.majak.w.ui.pivot.Conversions._
 import org.majak.w.ui.pivot.PivotComponent
-import org.majak.w.utils.Utils
-
-import scala.collection.mutable.ListBuffer
+import rx.lang.scala.Observable
 
 
 class SongListComponent extends SongListView with PivotComponent {
-
-  val viewHandlers = new ListBuffer[SongListViewHandler]
 
   @BXML protected var listView: ListView = _
   @BXML protected var searchBox: SearchBox = _
@@ -27,16 +23,12 @@ class SongListComponent extends SongListView with PivotComponent {
 
   private val loading = new ShadeDecorator(0.33f, Color.LIGHT_GRAY)
 
-  override def addHandler(h: SongListViewHandler): Unit = viewHandlers += h
 
-  override def removeHandler(h: SongListViewHandler): Unit = viewHandlers -= h
-
-  override protected def onUiBind = {
+  override protected def onUiBind() = {
     listView.setItemRenderer(new SongListItemRenderer)
     listView.getListViewSelectionListeners.add(new ListViewSelectionListener.Adapter {
       override def selectedItemChanged(listView: ListView, previousSelectedItem: scala.Any): Unit = {
-        val selected = Utils.nullAsOption[SongListItem](listView.getSelectedItem)
-        viewHandlers foreach (_.onSongListItemSelected(selected))
+        fireSelected()
       }
     })
 
@@ -51,12 +43,11 @@ class SongListComponent extends SongListView with PivotComponent {
       listView.setEnabled(true)
       searchBox.setEnabled(true)
       refreshButton.setEnabled(true)
+      songHeader.setText(header(0))
     }
     state match {
       case OK => stopLoad()
-      case ERROR =>
-        stopLoad()
-        songHeader.setText(header(0))
+      case ERROR => stopLoad()
       case LOADING =>
         songHeader.setText(JSON.get(resources, "songList.header.loading"))
         listView.getDecorators.add(loading)
@@ -82,9 +73,8 @@ class SongListComponent extends SongListView with PivotComponent {
     if (listView.getSelectedItem == null) None
     else Some(listView.getSelectedItem.asInstanceOf[SongListItem])
 
-  override def addSearchHandler(h: SearchHandler): Unit = searchBox addSearchHandler h
+  override def searchBoxObservable: Observable[SearchBoxEvent] = searchBox.observable
 
-  override def removeSearchHandler(h: SearchHandler): Unit = searchBox removeSearchHandler h
 }
 
 private class SongListItemRenderer extends BoxPane with ListView.ItemRenderer {

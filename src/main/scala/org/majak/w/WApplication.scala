@@ -2,10 +2,10 @@ package org.majak.w
 
 import org.apache.pivot.collections.Map
 import org.apache.pivot.wtk._
-import org.majak.w.di.UiModule
+import org.majak.w.di.AppModule
 import org.majak.w.ui.pivot.Conversions._
 
-class WApplication extends Application.Adapter with UiModule {
+class WApplication extends Application.Adapter with AppModule {
 
   override def startup(display: Display, properties: Map[String, String]) = {
 

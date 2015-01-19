@@ -1,5 +1,6 @@
 package org.majak.w.rx
 
+import org.majak.w.ui.component.StateView
 import org.majak.w.ui.mvp.{Presenter, View}
 import rx.lang.scala.{Observable, Observer, Subject}
 
@@ -11,13 +12,33 @@ case object Done extends Event
 
 trait UiEvent extends Event
 
-trait ObservableObject {
-  protected def createUiEventSubject[E <: Event] = Subject[E]()
+trait Action {
+  def onStart()
+
+  def onEnd()
+
+  def onFailure(fail: Throwable)
+}
+
+trait StateViewAction extends StateView with Action {
+
+  override def onEnd(): Unit = stateOk()
+
+  override def onStart(): Unit = stateLoading()
+
+  override def onFailure(fail: Throwable): Unit = stateError()
+}
+
+trait ObservableObject extends ObservableCreator {
 
   protected def preventDoubleClicks[T <: Event](observable: Observable[T]): Observable[T] = observable.throttleFirst(750
     .millis)
 
   def observable: Observable[Event]
+}
+
+trait ObservableCreator {
+  protected def createEventSubject[E <: Event] = Subject[E]()
 }
 
 trait ObservableView extends View {

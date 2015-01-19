@@ -3,7 +3,6 @@ package org.majak.w.component.live.song
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.Keyboard.{KeyCode, KeyLocation}
 import org.apache.pivot.wtk._
-import org.majak.w.model.song.data.SongModel
 import org.majak.w.model.song.data.SongModel.SongPart
 import org.majak.w.ui.pivot.{PivotComponent, StylesUtils}
 
@@ -19,10 +18,11 @@ class SongDetail extends PivotComponent with SongDetailView {
 
   override def clearSong() = {
     songName.setText("")
-    songPartsPanel.clear()
+    songPartsPanel.removeAll()
   }
 
   override def showSongParts(parts: List[SongPart]) = {
+    songPartsPanel.removeAll()
     parts.foreach(p => songPartsPanel.add(createSongPartComponent(p)))
 
     songPartsPanel.getComponentKeyListeners.add(new ComponentKeyListener.Adapter {

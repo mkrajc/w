@@ -33,10 +33,10 @@ class DirectoryWatchDog(val directory: File) extends PersistentWatchDog with Obs
 
   private val dirFilter = new NotFileFilter(new NameFileFilter(ignoredDirName))
 
-  protected lazy val addSubject = createUiEventSubject[FileAdded]
-  protected lazy val removedSubject = createUiEventSubject[FileRemoved]
-  protected lazy val changedSubject = createUiEventSubject[FileChanged]
-  protected lazy val doneNotifier = createUiEventSubject[Done.type]
+  protected lazy val addSubject = createEventSubject[FileAdded]
+  protected lazy val removedSubject = createEventSubject[FileRemoved]
+  protected lazy val changedSubject = createEventSubject[FileChanged]
+  protected lazy val doneNotifier = createEventSubject[Done.type]
 
   override def observable: Observable[WatchDogEvent] = addSubject.merge(removedSubject).merge(changedSubject).filter(isFileSupported)
 

@@ -1,5 +1,5 @@
 <TablePane xmlns:bxml="http://pivot.apache.org/bxml"
-           xmlns:w="org.majak.w.ui.component.pivot.searchbox"
+           xmlns:w="org.majak.w.ui.component.pivot"
            xmlns="org.apache.pivot.wtk"
            xmlns:content="org.apache.pivot.wtk.content"
            bxml:id="tablePane"

@@ -1,18 +1,17 @@
 package org.majak.w.ui.component
 
-import org.apache.pivot.collections.Map
+import org.apache.pivot.collections
 import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
 import org.majak.w.component.main.menu.MainMenu
 import org.majak.w.component.smallslide.LiveSmallSlide
-import org.majak.w.component.songlist.SongListViewHandler
-import org.majak.w.di.UiModule
-import org.majak.w.model.song.data.SongModel.SongListItem
+import org.majak.w.component.songlist.{SongItemSelected, SongListUiEvent}
+import org.majak.w.di.AppModule
 import org.majak.w.service.LocalSongService
 import org.majak.w.ui.pivot.Conversions._
 
-class ShowcaseApplication extends Application.Adapter with UiModule {
+class ShowcaseApplication extends Application.Adapter with AppModule {
   override lazy val songService = new LocalSongService
 
   private val NONE_LABEL = new Label("<NONE>")
@@ -36,7 +35,7 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
     "PreviewSmallSlide" -> toPivotView(previewSmallSlidePresenter.view).asComponent,
     "Slide" -> SlideComponentProvider.createSlideTestComponent,
     "SongDetail" -> SongDetailProvider.createSongDetailTest,
-    "ImageLibrary"-> toPivotView(imageLibraryPresenter.view).asComponent
+    "ImageLibrary" -> toPivotView(imageLibraryPresenter.view).asComponent
 
   )
 
@@ -61,11 +60,13 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
   menuPanel.getStyles.put("verticalAlignment", VerticalAlignment.CENTER)
   menuPanel.add(compButton)
 
-  songListPresenter.view.addHandler(new SongListViewHandler {
-    override def onSongListItemSelected(item: Option[SongListItem]): Unit = {
-      println(if (item.isDefined) item.get.name else "none")
+  songListPresenter.view.observable.subscribe(onNext = e => handleSongListEvent(e))
+
+  private def handleSongListEvent(event: SongListUiEvent): Unit = {
+    event match {
+      case SongItemSelected(s) => println(if (s.isDefined) s.get.name else "none")
     }
-  })
+  }
 
   compButton setListData components.keys.toList
   compButton.getListButtonSelectionListeners.add(new ListButtonSelectionListener.Adapter {
@@ -84,7 +85,7 @@ class ShowcaseApplication extends Application.Adapter with UiModule {
 
   }
 
-  override def startup(display: Display, properties: Map[String, String]): Unit = {
+  override def startup(display: Display, properties: collections.Map[String, String]): Unit = {
     val window = new Window
 
     window setContent pane

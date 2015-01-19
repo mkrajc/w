@@ -1,66 +1,44 @@
 package org.majak.w.component.songlist
 
-import org.apache.pivot.util.concurrent.{Task, TaskListener}
-import org.apache.pivot.wtk.TaskAdapter
-import org.majak.w.model.song.data.SongModel.SongListItem
-import org.majak.w.model.song.service.SongService
-import org.majak.w.model.song.watchdog.SongSynchronizer
-import org.majak.w.ui.component.pivot.searchbox.SearchHandler
+import org.majak.w.model.song.controller.SongController
+import org.majak.w.model.song.data.SongModel.{Song, SongListItem}
+import org.majak.w.model.song.rx.{SongEvent, SongsRefreshed}
+import org.majak.w.ui.component.pivot.{CancelSearch, Search, SearchBoxEvent}
 import org.majak.w.ui.mvp.Presenter
 import org.majak.w.utils.Utils
 
-class SongListPresenter(val loadSongsTask: LoadSongsTask)
-  extends Presenter[SongListView] {
+class SongListPresenter(songController: SongController) extends Presenter[SongListView] {
 
   var data: List[SongListItem] = _
 
   override protected def onBind(v: SongListView) = {
-    view.observable.subscribe(onNext = e => handleEvent(e))
+    view.searchBoxObservable.subscribe(onNext = e => handleSearchBoxEvent(e))
+    songController.observable.subscribe(onNext = e => handleSongEvent(e))
+    songController.subscribeSongListEvents(view.observable)
 
-    v.addSearchHandler(h = new SearchHandler {
-      override def onSearch(text: String): Unit = {
+    view.fireRefresh()
+  }
+
+  private def handleSongEvent(event: SongEvent) = {
+    event match {
+      case SongsRefreshed(d) =>
+        data = d.map(songToItem)
+        view.showData(data)
+      case _ => ()
+    }
+  }
+
+  private def songToItem(song: Song): SongListItem = {
+    SongListItem(song.id, song.name, song.name)
+  }
+
+  private def handleSearchBoxEvent(event: SearchBoxEvent): Unit = {
+    event match {
+      case CancelSearch => view.showData(data)
+      case Search(text) =>
         val filtered = data filter (s =>
           (Utils normalizeAccentedText s.name).toLowerCase contains Utils.normalizeAccentedText(text).toLowerCase)
         view showData filtered
-      }
-
-      override def onSearchCancel(): Unit = view.showData(data)
-    })
-
-    refresh()
-  }
-
-  private def handleEvent(event: SongListUiEvent): Unit = {
-    event match {
-      case Refresh => refresh()
     }
-  }
-
-  def refresh(): Unit = {
-    view.stateLoading()
-
-    val tl = new TaskListener[List[SongListItem]] {
-      override def taskExecuted(task: Task[List[SongListItem]]): Unit = {
-        data = task.getResult
-        view.showData(data)
-        view.stateOk()
-      }
-
-      override def executeFailed(task: Task[List[SongListItem]]): Unit = {
-        logger.error("failed to load songs", task.getFault)
-        view.stateError()
-      }
-    }
-
-    loadSongsTask.execute(new TaskAdapter[List[SongListItem]](tl))
-  }
-}
-
-class LoadSongsTask(songSync: SongSynchronizer,
-                    songService: SongService) extends Task[List[SongListItem]] {
-  override def execute(): List[SongListItem] = {
-    songSync.sync()
-    val songs = songService.songs
-    songs.map(s => SongListItem(s.id, s.name, s.name))
   }
 }
