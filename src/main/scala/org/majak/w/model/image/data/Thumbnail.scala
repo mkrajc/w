@@ -8,7 +8,7 @@ import org.majak.w.controller.watchdog.FileData
 
 case class Thumbnail(source: FileData, thumbImage: Image) {
 
-   def loadImage(): Image = Image.load(new File(source.path).toURI.toURL)
+   def loadImage(): Image = Image.loadFromCache(new File(source.path).toURI.toURL)
 
    override def equals(o: scala.Any): Boolean = {
      o match {
