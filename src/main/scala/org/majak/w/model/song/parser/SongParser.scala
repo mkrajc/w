@@ -25,9 +25,11 @@ class TxtSongParser extends SongParser {
 
   override def parseInputStream(inputStream: InputStream): Option[SongData] = {
     val lines = Source.fromInputStream(inputStream).getLines().toList
-    if (lines.nonEmpty) {
-      val name = lines.head.trim
-      val parts = groupPrefix(lines.tail)(line => line.isEmpty).map(
+    val groups = groupByEmptyLine(lines)
+
+    if (groups.nonEmpty) {
+      val name = groups.head.mkString(" - ").trim
+      val parts = groups.tail.map(
         l =>
           SongPart(l.filterNot(_.isEmpty))
       )
@@ -42,11 +44,19 @@ class TxtSongParser extends SongParser {
     }
   }
 
-  def groupPrefix[T](xs: List[T])(p: T => Boolean): List[List[T]] = xs match {
-    case List() => List()
-    case x :: xs1 =>
-      val (ys, zs) = xs1 span (!p(_))
-      (x :: ys) :: groupPrefix(zs)(p)
+  def groupByEmptyLine(xs: List[String]): List[List[String]] = {
+    def groupByEmptyLineAcc(xs: List[String], acc: List[List[String]]): List[List[String]] = {
+      if (xs.isEmpty) {
+        acc.reverse
+      } else {
+        val trimBeginning = xs.dropWhile(_.isEmpty)
+        val (ys, left) = trimBeginning.span(!_.isEmpty)
+        groupByEmptyLineAcc(left, ys :: acc)
+      }
+    }
+
+    groupByEmptyLineAcc(xs, Nil)
+
   }
 
 }
