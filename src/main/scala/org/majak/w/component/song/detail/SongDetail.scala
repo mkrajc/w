@@ -1,4 +1,4 @@
-package org.majak.w.component.live.song
+package org.majak.w.component.song.detail
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.Keyboard.{KeyCode, KeyLocation}

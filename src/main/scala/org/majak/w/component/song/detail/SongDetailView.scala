@@ -1,6 +1,5 @@
-package org.majak.w.component.live.song
+package org.majak.w.component.song.detail
 
-import org.majak.w.model.song.data.SongModel
 import org.majak.w.model.song.data.SongModel.SongPart
 import org.majak.w.rx.{ObservableView, UiEvent}
 import rx.lang.scala.Observable
