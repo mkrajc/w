@@ -4,23 +4,31 @@ import org.majak.w.component.presentation.PresentationViewProvider
 import org.majak.w.rx.{ObservableView, UiEvent}
 import rx.lang.scala.Observable
 
-trait LiveSmallSlideUiEvent extends UiEvent
+sealed trait LiveSmallSlideUiEvent extends UiEvent
 
 case class StartPresentation(source: PresentationViewProvider) extends LiveSmallSlideUiEvent
 
 case object HidePresentation extends LiveSmallSlideUiEvent
 
-trait LiveSmallSlideView extends SmallSlideView with ObservableView {
-  private lazy val subjStartPresentation = createUiEventSubject[StartPresentation]
-  private lazy val subjEndPresentation = createUiEventSubject[HidePresentation.type]
+case object BlackScreen extends LiveSmallSlideUiEvent
 
-  protected def handleStartPresentation(source: PresentationViewProvider) = subjStartPresentation.onNext(StartPresentation
+case object BlackScreenOff extends LiveSmallSlideUiEvent
+
+trait LiveSmallSlideView extends SmallSlideView with ObservableView {
+  private lazy val events = createUiEventSubject[LiveSmallSlideUiEvent]
+
+
+  protected def fireStartPresentation(source: PresentationViewProvider) = events.onNext(StartPresentation
     (source))
 
-  protected def handleHidePresentation() = subjEndPresentation.onNext(HidePresentation)
+  protected def fireStopPresentation() = events.onNext(HidePresentation)
+
+  protected def fireBlackScreenOn() = events.onNext(BlackScreen)
+
+  protected def fireBlackScreenOff() = events.onNext(BlackScreenOff)
 
   lazy val observable: Observable[LiveSmallSlideUiEvent] =
-    preventDoubleClicks(subjStartPresentation).merge(preventDoubleClicks(subjEndPresentation))
+    preventDoubleClicks(events)
 
 
 }

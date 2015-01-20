@@ -19,7 +19,7 @@
                     <content:ButtonData icon="/images/screen-16.png"/>
                 </buttonData>
             </PushButton>
-            <PushButton bxml:id="hideButton" tooltipText="%liveSmallSlide.button.hide_t">
+            <PushButton bxml:id="blackScreenButton" tooltipText="%liveSmallSlide.button.hide_t">
                 <buttonData>
                     <content:ButtonData icon="/images/screen-16-off.png"/>
                 </buttonData>
