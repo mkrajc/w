@@ -1,0 +1,18 @@
+<BoxPane xmlns:bxml="http://pivot.apache.org/bxml"
+         xmlns:content="org.apache.pivot.wtk.content"
+         xmlns:w="org.majak.w.ui.component.pivot"
+         xmlns="org.apache.pivot.wtk"
+         bxml:id="imagePanel"
+         styles="{ spacing: 0, horizontalAlignment: 'left', verticalAlignment: 'center', fill: true}">
+
+    <Checkbox bxml:id="stretchBox">
+        <buttonData>
+            <content:ButtonData
+                    text="%imageSlideSetting.stretch"
+                    icon="/images/image-settings-16.png"/>
+        </buttonData>
+    </Checkbox>
+    <ColorChooserButton selectedColor="#000000" bxml:id="colorButton" tooltipText="%imageSlideSetting.bg_t">
+
+    </ColorChooserButton>
+</BoxPane>

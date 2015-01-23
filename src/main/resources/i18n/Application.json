@@ -42,7 +42,12 @@
   },
   "previewSmallSlide": {
     "button": {
-      "format_t": "Formatting options"
+      "format_t": "Formatting options",
+      "image_t": "Image options"
     }
+  },
+  "imageSlideSetting": {
+    "bg_t": "Background",
+    "stretch": "Stretch"
   }
 }

@@ -1,6 +1,6 @@
 package org.majak.w.ui.pivot
 
-import java.awt.Font
+import java.awt.{Color, Font}
 
 import org.apache.pivot.wtk.{Component, HorizontalAlignment, VerticalAlignment}
 import org.majak.w.utils.Utils
@@ -11,10 +11,13 @@ object StylesUtils {
     applyPadding(comp, leftRight, leftRight, topBottom, topBottom)
   }
 
-  def applyPadding(comp: Component,left:Int,right: Int, top:Int, bottom: Int): Unit = {
+  def applyPadding(comp: Component, left: Int, right: Int, top: Int, bottom: Int): Unit = {
     comp.getStyles.put("padding", s"{top:$top,bottom:$bottom,left:$left,right:$right}}")
   }
 
+  def colorToHex(color: Color): String = {
+    "#" + Integer.toHexString(color.getRGB).substring(2)
+  }
 
   def centerHorizontal(comp: Component) = {
     applyHorizontalAlignement(comp, HorizontalAlignment.CENTER)

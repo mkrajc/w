@@ -14,8 +14,12 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
   @BXML var slidePanel: Panel = _
 
   @BXML var fontSettingsButton: PushButton = _
+  @BXML var imageSettingsButton: PushButton = _
 
-  private val fontPanel: FontSettingsPanel = new FontSettingsPanel
+  private val fontPanel = new FontSettingsPanel
+  private val imagePanel = new ImageSettingsPanel
+
+  private var setttingsGroup: List[Button] = Nil
 
   def handleEvent(e: UiEvent): Unit = {
     e match {
@@ -28,15 +32,14 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
       case VAlignTop => slide.setVerticalAlign(VerticalAlignment.TOP)
       case VAlignBottom => slide.setVerticalAlign(VerticalAlignment.BOTTOM)
       case FontFamilyChanged(family) => slide.setFontFamily(family)
+      case ChangeColor(color) => slide.setColor(color)
+      case StretchImage(stretch) => slide.setStretch(stretch)
       case _ => ()
     }
   }
 
   override protected def onUiBind() = {
     super.onUiBind()
-
-    fontPanel.bindView
-    fontPanel.observable.subscribe(e => handleEvent(e))
 
     slide.getComponentMouseButtonListeners.add(new ComponentMouseButtonListener.Adapter {
       override def mouseClick(component: Component, button: Mouse.Button, x: Int, y: Int, count: Int): Boolean = {
@@ -47,30 +50,32 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
       }
     })
 
+    bindButtonAndSetting(fontSettingsButton, fontPanel)
+    bindButtonAndSetting(imageSettingsButton, imagePanel)
+
+  }
+
+  private def bindButtonAndSetting(button: PushButton, settingsPanel: SettingsPanel): Unit = {
+    settingsPanel.bindView
+
+    settingsPanel.observable.subscribe(e => handleEvent(e))
+
     slidePanel.getComponentListeners.add(new ComponentListener.Adapter {
       override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
         layoutSlide()
-        fontPanel.compressToWidth(slidePanel.getWidth)
-        fontPanel.asComponent.setSize(slidePanel.getWidth, PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT)
-
-
+        settingsPanel.compressToWidth(slidePanel.getWidth)
+        settingsPanel.asComponent.setSize(slidePanel.getWidth, PreviewSmallSlide.SETTING_PANEL_HEIGHT)
       }
     })
 
-    fontSettingsButton.setPreferredHeight(PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT)
-    fontSettingsButton.setToggleButton(true)
+    setttingsGroup = button :: setttingsGroup
 
-    fontSettingsButton.getButtonStateListeners.add(new ButtonStateListener {
-      override def stateChanged(button: Button, previousState: State): Unit = {
-        button.getState match {
-          case State.SELECTED => showFontSettings()
-          case State.UNSELECTED => hideFontSettings()
-          case _ => ()
-        }
-      }
-    })
+    button.setPreferredHeight(PreviewSmallSlide.SETTING_PANEL_HEIGHT)
+    button.setToggleButton(true)
+    button.getButtonStateListeners.add(new SettingsPanelButtonStateListener(settingsPanel))
+    button.getButtonStateListeners.add(new ToggleButtonStateListener)
 
-    fontPanel.fontButton.selectFamily(slide.fontSettings.family)
+    settingsPanel.init(slide.settings)
 
   }
 
@@ -95,31 +100,55 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
     layoutSlide()
   }
 
-  private def showFontSettings(): Unit = {
-    val fontSettingsPanelComp = fontPanel.asComponent
-    slidePanel.add(fontSettingsPanelComp)
+  private def showSettings(settingsPanel: SettingsPanel): Unit = {
+    val panel = settingsPanel.asComponent
+    slidePanel.add(panel)
 
-    fontSettingsPanelComp.setSize(slidePanel.getWidth, PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT)
-    fontSettingsPanelComp.setLocation(0, 0)
+    panel.setSize(slidePanel.getWidth, PreviewSmallSlide.SETTING_PANEL_HEIGHT)
+    panel.setLocation(0, 0)
 
-    val t = new FadeInTransition(fontSettingsPanelComp, 300)
+    val t = new FadeInTransition(panel, 300)
     t.startAndRemove()
   }
 
-  private def hideFontSettings(): Unit = {
-    val fontSettingsPanelComp = fontPanel.asComponent
-    val t = new FadeOutTransition(fontSettingsPanelComp, 300)
+  private def hideSettings(settingsPanel: SettingsPanel): Unit = {
+    val panel = settingsPanel.asComponent
+    val t = new FadeOutTransition(panel, 300)
 
     t.startAndRemove(new TransitionListener {
-      override def transitionCompleted(transition: Transition): Unit = slidePanel.remove(fontSettingsPanelComp)
+      override def transitionCompleted(transition: Transition): Unit = slidePanel.remove(panel)
     })
   }
 
   override protected def setupSlide(slide: Slide): Unit = {
     slidePanel add slide
   }
+
+
+  class SettingsPanelButtonStateListener(val settingsPanel: SettingsPanel) extends ButtonStateListener {
+    override def stateChanged(button: Button, previousState: State): Unit = {
+      button.getState match {
+        case State.SELECTED => showSettings(settingsPanel)
+        case State.UNSELECTED => hideSettings(settingsPanel)
+        case _ => ()
+      }
+    }
+  }
+
+  class ToggleButtonStateListener extends ButtonStateListener {
+    override def stateChanged(sbutton: Button, previousState: State): Unit = {
+      sbutton.getState match {
+        case State.SELECTED =>
+          setttingsGroup.foreach(b => if (sbutton != b) {
+            b.setSelected(false)
+          })
+        case _ => ()
+      }
+    }
+  }
+
 }
 
 object PreviewSmallSlide {
-  val FONT_SETTING_PANEL_HEIGHT = 30
+  val SETTING_PANEL_HEIGHT = 30
 }

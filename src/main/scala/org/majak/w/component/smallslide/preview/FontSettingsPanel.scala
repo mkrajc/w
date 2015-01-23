@@ -3,11 +3,10 @@ package org.majak.w.component.smallslide.preview
 import java.awt.Font
 
 import org.apache.pivot.beans.BXML
-import org.apache.pivot.wtk.Menu.{Item, Section}
 import org.apache.pivot.wtk._
-import org.majak.w.rx.{ObservableView, UiEvent}
+import org.majak.w.component.slide.Settings
+import org.majak.w.rx.UiEvent
 import org.majak.w.ui.component.pivot.FontListButton
-import org.majak.w.ui.pivot.PivotComponent
 import rx.lang.scala.Observable
 
 import scala.collection.JavaConversions._
@@ -30,29 +29,31 @@ case object VAlignBottom extends UiEvent
 
 case class FontFamilyChanged(family: String) extends UiEvent
 
-class FontSettingsPanel extends PivotComponent with ObservableView {
+class FontSettingsPanel extends SettingsPanel{
 
-  @BXML var fontPanel: BoxPane = _
+  @BXML protected var fontPanel: BoxPane = _
 
-  @BXML var fontButton: FontListButton = _
+  @BXML protected var fontButton: FontListButton = _
 
-  @BXML var biggerSizeButton: PushButton = _
-  @BXML var smallerSizeButton: PushButton = _
+  @BXML protected var biggerSizeButton: PushButton = _
+  @BXML protected var smallerSizeButton: PushButton = _
 
-  @BXML var alignLeftButton: PushButton = _
-  @BXML var alignRightButton: PushButton = _
-  @BXML var alignCenterButton: PushButton = _
+  @BXML protected var alignLeftButton: PushButton = _
+  @BXML protected var alignRightButton: PushButton = _
+  @BXML protected var alignCenterButton: PushButton = _
 
-  @BXML var valignTopButton: PushButton = _
-  @BXML var valignBottomButton: PushButton = _
-  @BXML var valignCenterButton: PushButton = _
+  @BXML protected var valignTopButton: PushButton = _
+  @BXML protected var valignBottomButton: PushButton = _
+  @BXML protected var valignCenterButton: PushButton = _
 
-  private var removed: List[PushButton] = Nil
-  private val arrow: MenuButton = new MenuButton()
+  override def init(settings: Settings): Unit = {
+    fontButton.selectFamily(settings.text.font.family)
+  }
 
   override protected def onUiBind(): Unit = {
+    super.onUiBind()
 
-    fontPanel.iterator.foreach(_.setPreferredWidth(PreviewSmallSlide.FONT_SETTING_PANEL_HEIGHT))
+    fontPanel.iterator.foreach(_.setPreferredWidth(PreviewSmallSlide.SETTING_PANEL_HEIGHT))
 
     fontButton.setPreferredWidth(150)
     fontButton.getListButtonSelectionListeners.add(new ListButtonSelectionListener {
@@ -74,62 +75,6 @@ class FontSettingsPanel extends PivotComponent with ObservableView {
     valignBottomButton.getButtonPressListeners.add(UiEventButtonPressListener(VAlignBottom))
     valignCenterButton.getButtonPressListeners.add(UiEventButtonPressListener(VAlignCenter))
 
-    arrow.setMenu(new Menu)
-    arrow.getMenu.getSections.add(new Section)
-  }
-
-
-  def compressToWidth(width: Int): Unit = {
-    def removeUntilFit(currentWidth: Int, removed: List[PushButton]): List[PushButton] = {
-      if (currentWidth > width) {
-        val lastIndex = fontPanel.getLength - 1
-        val comp = fontPanel.get(lastIndex)
-        comp match {
-          case pb: PushButton =>
-            fontPanel.remove(pb)
-            removeUntilFit(currentWidth - pb.getPreferredWidth, pb :: removed)
-          case _ => removed
-        }
-      } else {
-        removed
-      }
-    }
-
-    def addUntilFit(currentWidth: Int, removed: List[PushButton]): List[PushButton] = {
-      if (removed.nonEmpty) {
-        val comp = removed.head
-        if (currentWidth + comp.getPreferredWidth < width) {
-          fontPanel.add(comp)
-          addUntilFit(currentWidth + comp.getPreferredWidth, removed.tail)
-        } else {
-          removed
-        }
-      } else {
-        removed
-      }
-    }
-
-    // remove arrow if present
-    fontPanel.remove(arrow)
-
-    if (fontPanel.getPreferredWidth > width) {
-      removed = removeUntilFit(fontPanel.getPreferredWidth, removed)
-    } else {
-      removed = addUntilFit(fontPanel.getPreferredWidth, removed)
-    }
-
-    if (removed.nonEmpty) {
-      val section = arrow.getMenu.getSections.get(0)
-      section.remove(0, section.getLength)
-
-      arrow.setPreferredWidth(math.max(width - fontPanel.getPreferredWidth, 0))
-      fontPanel.add(arrow)
-      removed.map(d => {
-        val item = new Item(d.getButtonData)
-        d.getButtonPressListeners.toList.foreach(item.getButtonPressListeners.add)
-        section.add(item)
-      })
-    }
   }
 
   lazy val fontSettingSubject = createUiEventSubject[UiEvent]
@@ -140,6 +85,7 @@ class FontSettingsPanel extends PivotComponent with ObservableView {
     override def buttonPressed(button: Button): Unit = fontSettingSubject.onNext(event)
   }
 
+  override protected def panel: BoxPane = fontPanel
 }
 
 

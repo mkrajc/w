@@ -1,7 +1,10 @@
 package org.majak.w.component.slide
 
 
+import java.awt.Color
+
 import org.apache.pivot.wtk._
+import org.apache.pivot.wtk.media.Image
 import org.majak.w.ui.component.Size
 import org.majak.w.ui.component.pivot.label.WLabel
 import org.majak.w.ui.pivot.StylesUtils
@@ -24,9 +27,6 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   private var textOffset: Int = _
 
-  private var horizontalAlignment = HorizontalAlignment.CENTER
-  private var verticalAlignment = VerticalAlignment.CENTER
-
   private val MINIMUM_FONT_SIZE = 1
   private val MINIMUM_PADDING = 10
   private val MAXIMUM_PADDING = 50
@@ -35,7 +35,15 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   var front: Front = EmptyFront
   var back: Back = EmptyBack
-  var fontSettings = FontSettings(DEFAULT_FONT_SIZE, "Arial")
+
+  private val DEFAULT_SETTINGS = Settings(
+    TextSettings(
+      FontSettings(DEFAULT_FONT_SIZE, "Arial"),
+      HorizontalAlignment.CENTER,
+      VerticalAlignment.CENTER),
+    ImageSettings(Color.black, stretch = true))
+
+  var settings = DEFAULT_SETTINGS
 
   StylesUtils.setBackground(this, "#000000")
   clearContent()
@@ -66,7 +74,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def showTextContent(textContent: TextContent) = {
-    if(front != textContent) {
+    if (front != textContent) {
       clearTextContent()
       textContent.texts.foreach(addLabel)
       refreshTextLayout()
@@ -97,26 +105,21 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def showImageContent(imageContent: ImageContent) = {
-    if(imageContent != back) {
-      clearBackContent()
-      addImageView(new ImageView(imageContent.img))
-      autosizeImage()
-
-      back = imageContent
-
-      if (effects) {
-        imageView.foreach(transition)
-      }
-    }
+    showImage(imageContent, imageContent.img)
   }
 
   private def showThumbContent(thumbContent: ThumbnailContent) = {
-    if(thumbContent != back) {
-      clearBackContent()
-      addImageView(new ImageView(thumbContent.thumb.thumbImage))
-      autosizeImage()
+   showImage(thumbContent, thumbContent.thumb.thumbImage)
+  }
 
-      back = thumbContent
+  private def showImage(b: Back, img: => Image) = {
+    if (b != back) {
+      clearBackContent()
+      addImageView(new ImageView(img))
+      autosizeImage()
+      refreshImgLayout()
+
+      back = b
 
       if (effects) {
         imageView.foreach(transition)
@@ -131,10 +134,6 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   private def addImageView(iv: ImageView) = {
     imageView = Some(iv)
-
-    iv.getStyles.put("fill", true)
-    iv.getStyles.put("preserveAspectRatio", false)
-
     // image must be first so it won't cover text
     insert(iv, 0)
   }
@@ -144,7 +143,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     labels = labels :+ label
 
     StylesUtils.setColor(label, "#ffffff")
-    StylesUtils.applyHorizontalAlignement(label, horizontalAlignment)
+    StylesUtils.applyHorizontalAlignement(label, settings.text.horizontalAlignment)
     StylesUtils.applyPadding(label, fontLeftRightPadding, 0)
 
     label.getStyles.put("wrapText", true)
@@ -161,7 +160,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     for (i <- 0 until labels.size) {
       val label = labels(i)
       //apply fontSize first
-      applyFontSettings(label)
+      applySettings(label)
 
       // size of label same as size of slide so can be centered nicely
       label.setWidth(getSize.width)
@@ -179,8 +178,16 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
   }
 
+  private def refreshImgLayout() = {
+    StylesUtils.setBackground(this, StylesUtils.colorToHex(settings.image.background))
+    if (imageView.isDefined) {
+      imageView.get.getStyles.put("fill", true)
+      imageView.get.getStyles.put("preserveAspectRatio", !settings.image.stretch)
+    }
+  }
+
   private def computeTextOffset(heights: List[Int]): Int = {
-    verticalAlignment match {
+    settings.text.verticalAlignment match {
       case VerticalAlignment.BOTTOM => getSize.height - heights.sum - fontTopBottomPadding
       case VerticalAlignment.CENTER => (getSize.height - heights.sum) / 2
       case VerticalAlignment.TOP => fontTopBottomPadding
@@ -192,42 +199,40 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   def setHorizontalAlign(ha: HorizontalAlignment) = {
-    horizontalAlignment = ha
+    settings = settings.updateTextSettings(settings.text.setHorizontalAlign(ha))
     labels.foreach(StylesUtils.applyHorizontalAlignement(_, ha))
   }
 
   def setVerticalAlign(va: VerticalAlignment) = {
-    verticalAlignment = va
+    settings = settings.updateTextSettings(settings.text.setVerticalAlign(va))
     refreshTextLayout()
   }
-
 
   override def toString: String = "slide@" + hashCode() + " effects=" + effects
 
   override def snapshot: SlideSnapshot = SlideSnapshot(front, back,
-    fontSettings, Size(getSize.width, getSize.height), horizontalAlignment, verticalAlignment)
+    settings, Size(getSize.width, getSize.height))
 
 
   override def apply(slideSnapshot: SlideSnapshot): Unit = {
     if (slideSnapshot != snapshot) {
+      settings = slideSnapshot.settings
 
       showContentInner(slideSnapshot.front)
       showContentInner(slideSnapshot.back)
-      fontSettings = slideSnapshot.fontSettings
+
       setSize(slideSnapshot.size.width, slideSnapshot.size.height)
 
-      setHorizontalAlign(slideSnapshot.horizontalAlignment)
-      setVerticalAlign(slideSnapshot.verticalAlignment)
-
       refreshTextLayout()
+      refreshImgLayout()
       slideChanged()
     }
   }
 
   def increaseFont(): Unit = {
-    val size = fontSettings.size
+    val size = settings.text.font.size
     val newSize = size + fontStep(size)
-    fontSettings = fontSettings.setSize(newSize)
+    settings = settings.updateFontSettings(settings.text.font.setSize(newSize))
 
     logger.info("font size increased to " + newSize)
 
@@ -236,8 +241,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   def setFontFamily(family: String): Unit = {
-
-    fontSettings = fontSettings.setFamily(family)
+    settings = settings.updateFontSettings(settings.text.font.setFamily(family))
 
     logger.info("font family changed to to " + family)
 
@@ -245,10 +249,22 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     slideChanged()
   }
 
+  def setColor(color: Color): Unit = {
+    settings = settings.updateImageSettings(settings.image.setBackground(color))
+    refreshImgLayout()
+    slideChanged()
+  }
+
+  def setStretch(stretch: Boolean): Unit = {
+    settings = settings.updateImageSettings(settings.image.setStretch(stretch))
+    refreshImgLayout()
+    slideChanged()
+  }
+
   def decreaseFont(): Unit = {
-    val size = fontSettings.size
+    val size = settings.text.font.size
     val newSize = math.max(size - fontStep(size), 1)
-    fontSettings = fontSettings.setSize(newSize)
+    settings = settings.updateFontSettings(settings.text.font.setSize(newSize))
 
     logger.info("font size decreased to " + newSize)
 
@@ -261,15 +277,16 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def fontLeftRightPadding: Int = {
-    val t = math.max(fontSettings.size, MINIMUM_PADDING)
+    val t = math.max(settings.text.font.size, MINIMUM_PADDING)
     math.min(t, MAXIMUM_PADDING)
   }
 
-  private def fontTopBottomPadding: Int = fontSettings.size / 2
+  private def fontTopBottomPadding: Int = settings.text.font.size / 2
 
-  private def applyFontSettings(label: Label): Unit = {
-    StylesUtils.setFontFamily(label, fontSettings.family)
-    StylesUtils.setFontSize(label, fontSettings.size)
+  private def applySettings(label: Label): Unit = {
+    StylesUtils.setFontFamily(label, settings.text.font.family)
+    StylesUtils.setFontSize(label, settings.text.font.size)
+    StylesUtils.applyHorizontalAlignement(label, settings.text.horizontalAlignment)
   }
 
 }

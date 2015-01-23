@@ -4,20 +4,20 @@ import org.majak.w.ui.component.Size
 import org.slf4j.LoggerFactory
 
 
-class SlideAdapter(size: => Size ) {
+class SlideAdapter(size: => Size) {
 
   val logger = LoggerFactory.getLogger(getClass)
 
   def adapt(s: SlideSnapshot): SlideSnapshot = {
-    SlideSnapshot(s.front: Front, adaptBack(s.back: Back), adaptFontSettings(s.fontSettings, s.size), size,
-      s.horizontalAlignment, s.verticalAlignment)
+    SlideSnapshot(s.front: Front, adaptBack(s.back: Back), adaptSettings(s.settings, s.size), size)
   }
 
-  private def adaptFontSettings(fontSettings: FontSettings, slideSize: Size): FontSettings = {
+  private def adaptSettings(settings: Settings, slideSize: Size): Settings = {
+    val fontSettings = settings.text.font
     val ratio: Float = slideSize.height.toFloat / fontSettings.size
     val adaptedSize = math.round(size.height / ratio)
     logger.trace(s"$this Font size adapted to: $adaptedSize [orig:${fontSettings.size}]")
-    FontSettings(adaptedSize.toInt, fontSettings.family)
+    settings.updateFontSettings(fontSettings.setSize(adaptedSize.toInt))
   }
 
   private def adaptBack(back: Back): Back = {
