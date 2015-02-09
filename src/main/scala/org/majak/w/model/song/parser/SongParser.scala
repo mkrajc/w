@@ -24,7 +24,7 @@ class TxtSongParser extends SongParser {
   override val ext: String = "txt"
 
   override def parseInputStream(inputStream: InputStream): Option[SongData] = {
-    val lines = Source.fromInputStream(inputStream).getLines().toList
+    val lines = Source.fromInputStream(inputStream, "UTF-8").getLines().toList
     val groups = groupByEmptyLine(lines)
 
     if (groups.nonEmpty) {
