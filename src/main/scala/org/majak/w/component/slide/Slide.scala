@@ -87,6 +87,20 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
     }
   }
 
+  private def reloadFront() = {
+    front match {
+      case current: TextContent =>
+        clearTextContent()
+        current.texts.foreach(addLabel)
+        refreshTextLayout()
+        front = current
+        if (effects) {
+          labels.foreach(transition)
+        }
+      case EmptyFront => ()
+    }
+  }
+
   def showContent(c: Content) = {
     showContentInner(c)
     slideChanged()
@@ -109,7 +123,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   }
 
   private def showThumbContent(thumbContent: ThumbnailContent) = {
-   showImage(thumbContent, thumbContent.thumb.thumbImage)
+    showImage(thumbContent, thumbContent.thumb.thumbImage)
   }
 
   private def showImage(b: Back, img: => Image) = {
@@ -232,11 +246,19 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   def increaseFont(): Unit = {
     val size = settings.text.font.size
     val newSize = size + fontStep(size)
-    settings = settings.updateFontSettings(settings.text.font.setSize(newSize))
+    setFontSize(newSize)
+  }
 
-    logger.info("font size increased to " + newSize)
+  def decreaseFont(): Unit = {
+    val size = settings.text.font.size
+    val newSize = math.max(size - fontStep(size), 1)
+    setFontSize(newSize)
+  }
 
-    refreshTextLayout()
+  def setFontSize(fontSize: Int): Unit = {
+    settings = settings.updateFontSettings(settings.text.font.setSize(fontSize))
+    logger.info("font size set to " + fontSize)
+    reloadFront()
     slideChanged()
   }
 
@@ -245,7 +267,7 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
 
     logger.info("font family changed to to " + family)
 
-    refreshTextLayout()
+    reloadFront()
     slideChanged()
   }
 
@@ -258,17 +280,6 @@ class Slide(val effects: Boolean = false) extends Panel with SlideView {
   def setStretch(stretch: Boolean): Unit = {
     settings = settings.updateImageSettings(settings.image.setStretch(stretch))
     refreshImgLayout()
-    slideChanged()
-  }
-
-  def decreaseFont(): Unit = {
-    val size = settings.text.font.size
-    val newSize = math.max(size - fontStep(size), 1)
-    settings = settings.updateFontSettings(settings.text.font.setSize(newSize))
-
-    logger.info("font size decreased to " + newSize)
-
-    refreshTextLayout()
     slideChanged()
   }
 
