@@ -12,10 +12,11 @@ object FontListButton {
 
 class FontListButton extends ListButton {
 
-  val fontCandidates  = GraphicsEnvironment.getLocalGraphicsEnvironment.getAllFonts
+  val fontCandidates = GraphicsEnvironment.getLocalGraphicsEnvironment.getAllFonts
+  private val supportedFonts = List("Arial", "Calibri", "Courier New", "Georgia", "SansSerif.plain", "Tahoma",
+    "Times New Roman", "Verdana")
 
-  //TODO select fonts carefully
-  val fonts = fontCandidates.groupBy(_.getFamily).map(_._2.head).toList.sortBy(_.getFamily)
+  val fonts = fontCandidates.filter(f => supportedFonts.contains(f.getFontName)).toList.sortBy(_.getName)
 
   fonts.foreach(f => {
     getListData.asInstanceOf[org.apache.pivot.collections.List[Font]].add(f)
