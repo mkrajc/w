@@ -1,8 +1,8 @@
 package org.majak.w.component.presentation
 
 import org.majak.w.component.slide._
+import org.majak.w.component.smallslide.live._
 import org.majak.w.component.smallslide.preview.PreviewSlideConfirmed
-import org.majak.w.component.smallslide._
 import org.majak.w.rx.{ObserverPresenter, UiEvent}
 import rx.lang.scala.Observable
 

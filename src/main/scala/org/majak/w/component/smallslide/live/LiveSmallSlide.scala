@@ -1,10 +1,11 @@
-package org.majak.w.component.smallslide
+package org.majak.w.component.smallslide.live
 
 import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk.Button.State
 import org.apache.pivot.wtk._
 import org.majak.w.component.presentation.PivotPresentationViewProvider
 import org.majak.w.component.slide.Slide
+import org.majak.w.component.smallslide.SmallSlide
 
 class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
 

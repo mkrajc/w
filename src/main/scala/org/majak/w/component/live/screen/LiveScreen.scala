@@ -4,8 +4,8 @@ import org.apache.pivot.beans.BXML
 import org.apache.pivot.wtk._
 import org.majak.w.component.image.{ImageLibrary, ImageLibraryView}
 import org.majak.w.component.live.song.{SongPanel, SongPanelView}
+import org.majak.w.component.smallslide.live.{LiveSmallSlide, LiveSmallSlideView}
 import org.majak.w.component.smallslide.preview.{PreviewSmallSlide, PreviewSmallSlideView}
-import org.majak.w.component.smallslide.{LiveSmallSlide, LiveSmallSlideView}
 import org.majak.w.ui.pivot.PivotComponent
 
 

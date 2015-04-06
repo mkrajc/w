@@ -5,7 +5,7 @@ import org.apache.pivot.wtk.TablePane.{Column, Row}
 import org.apache.pivot.wtk._
 import org.majak.w.component.live.screen.LiveScreen
 import org.majak.w.component.main.menu.MainMenu
-import org.majak.w.component.smallslide.LiveSmallSlide
+import org.majak.w.component.smallslide.live.LiveSmallSlide
 import org.majak.w.component.songlist.{SongItemSelected, SongListUiEvent}
 import org.majak.w.di.AppModule
 import org.majak.w.service.LocalSongService

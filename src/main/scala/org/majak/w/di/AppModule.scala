@@ -5,8 +5,8 @@ import org.majak.w.component.live.screen.{LiveScreen, LiveScreenPresenter, LiveS
 import org.majak.w.component.main.menu.{MainMenu, MainMenuPresenter, MainMenuView}
 import org.majak.w.component.main.screen.{MainScreen, MainScreenPresenter, MainScreenView}
 import org.majak.w.component.presentation.PresentationPresenter
+import org.majak.w.component.smallslide.live.{LiveSmallSlide, LiveSmallSlidePresenter, LiveSmallSlideView}
 import org.majak.w.component.smallslide.preview.{PreviewSmallSlide, PreviewSmallSlidePresenter, PreviewSmallSlideView}
-import org.majak.w.component.smallslide.{LiveSmallSlide, LiveSmallSlidePresenter, LiveSmallSlideView}
 import org.majak.w.model.song.SongUiModule
 
 
