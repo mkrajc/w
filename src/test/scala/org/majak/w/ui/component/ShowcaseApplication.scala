@@ -65,6 +65,7 @@ class ShowcaseApplication extends Application.Adapter with AppModule {
   private def handleSongListEvent(event: SongListUiEvent): Unit = {
     event match {
       case SongItemSelected(s) => println(if (s.isDefined) s.get.name else "none")
+      case _ => ()
     }
   }
 

@@ -18,14 +18,21 @@ trait LiveSmallSlideView extends SmallSlideView with ObservableView {
   private lazy val events = createUiEventSubject[LiveSmallSlideUiEvent]
 
 
-  protected def fireStartPresentation(source: PresentationViewProvider) = events.onNext(StartPresentation
-    (source))
+  protected def fireStartPresentation(source: PresentationViewProvider) = {
+    setEnableBlackScreenButton(true);
+    events.onNext(StartPresentation(source))
+  }
 
-  protected def fireStopPresentation() = events.onNext(HidePresentation)
+  protected def fireStopPresentation() = {
+    events.onNext(HidePresentation)
+    setEnableBlackScreenButton(false);
+  }
 
   protected def fireBlackScreenOn() = events.onNext(BlackScreen)
 
   protected def fireBlackScreenOff() = events.onNext(BlackScreenOff)
+
+  protected def setEnableBlackScreenButton(enabled: Boolean)
 
   lazy val observable: Observable[LiveSmallSlideUiEvent] =
     preventDoubleClicks(events)

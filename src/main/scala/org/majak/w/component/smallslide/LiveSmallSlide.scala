@@ -54,4 +54,6 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
   }
 
   override protected def setupSlide(slide: Slide): Unit = slidePanel add slide
+
+  override protected def setEnableBlackScreenButton(enabled: Boolean): Unit = blackScreenButton.setEnabled(enabled)
 }
