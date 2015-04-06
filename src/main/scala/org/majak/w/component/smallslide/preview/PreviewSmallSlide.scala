@@ -62,7 +62,6 @@ class PreviewSmallSlide extends SmallSlide with PreviewSmallSlideView {
 
     slidePanel.getComponentListeners.add(new ComponentListener.Adapter {
       override def sizeChanged(component: Component, previousWidth: Int, previousHeight: Int): Unit = {
-        layoutSlide()
         settingsPanel.compressToWidth(slidePanel.getWidth)
         settingsPanel.asComponent.setSize(slidePanel.getWidth, PreviewSmallSlide.SETTING_PANEL_HEIGHT)
       }
