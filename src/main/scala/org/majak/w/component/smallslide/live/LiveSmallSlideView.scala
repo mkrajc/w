@@ -20,13 +20,13 @@ trait LiveSmallSlideView extends SmallSlideView with ObservableView {
 
 
   protected def fireStartPresentation(source: PresentationViewProvider) = {
-    setEnableBlackScreenButton(true);
+    setEnableBlackScreenButton(true)
     events.onNext(StartPresentation(source))
   }
 
   protected def fireStopPresentation() = {
     events.onNext(HidePresentation)
-    setEnableBlackScreenButton(false);
+    setEnableBlackScreenButton(false)
   }
 
   protected def fireBlackScreenOn() = events.onNext(BlackScreen)

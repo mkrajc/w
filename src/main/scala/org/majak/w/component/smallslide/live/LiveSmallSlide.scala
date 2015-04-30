@@ -46,11 +46,13 @@ class LiveSmallSlide extends SmallSlide with LiveSmallSlideView {
   }
 
   private def startPresenting(): Unit = {
-    val pvp = new PivotPresentationViewProvider(showButton.getDisplay.getHostWindow)
+    val pvp = new PivotPresentationViewProvider(showButton.getDisplay.getHostWindow, stopPresenting)
     fireStartPresentation(pvp)
   }
 
   private def stopPresenting(): Unit = {
+    showButton.setState(State.UNSELECTED)
+    blackScreenButton.setState(State.UNSELECTED)
     fireStopPresentation()
   }
 

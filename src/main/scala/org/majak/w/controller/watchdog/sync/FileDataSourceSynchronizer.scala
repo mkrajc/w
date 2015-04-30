@@ -11,7 +11,7 @@ trait FileDataSource {
 abstract class FileDataSourceSynchronizer[T, ID](val source: FileDataSource) {
   val logger = LoggerFactory.getLogger(getClass)
 
-  protected def create(fileData: FileData): Option[T]
+  protected def cast(fileData: FileData): Option[T]
 
   protected def createId(fileData: FileData): ID
 
@@ -22,9 +22,9 @@ abstract class FileDataSourceSynchronizer[T, ID](val source: FileDataSource) {
   def objectWithIdExists(id: (ID, FileData)): Boolean
 
   def ensureExisting(ids: Set[(ID, FileData)]): Unit = {
-    ids.map(p => {
+    ids.foreach(p => {
       if (!objectWithIdExists(p)) {
-        create(p._2).map(add)
+        cast(p._2).foreach(add)
       }
     })
   }
@@ -51,11 +51,11 @@ with Observer[WatchDogEvent] {
 
   override def onNext(event: WatchDogEvent): Unit = {
     event match {
-      case FileAdded(data) => create(data).map(add)
+      case FileAdded(data) => cast(data).foreach(add)
       case FileRemoved(data) => removeById((createId(data), data))
       case FileChanged(from, data) =>
         removeById((createId(from), from))
-        create(data).map(add)
+        cast(data).foreach(add)
     }
   }
 }

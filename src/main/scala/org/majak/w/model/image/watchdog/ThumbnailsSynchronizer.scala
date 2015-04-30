@@ -32,7 +32,7 @@ class ThumbnailsSynchronizer(imgWatchDog: ImageDirectoryWatchDog) extends Direct
     }
   }
 
-  override protected def create(fileData: FileData): Option[Thumbnail] = {
+  override protected def cast(fileData: FileData): Option[Thumbnail] = {
     logger.info("Create thumbnail for " + fileData.name)
     val t: Builder[File] = Thumbnails.of(new File(fileData.path))
       .size(THUMBS_SIZE, THUMBS_SIZE)

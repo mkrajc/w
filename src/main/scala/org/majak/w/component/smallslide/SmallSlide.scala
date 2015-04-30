@@ -46,15 +46,15 @@ abstract class SmallSlide extends PivotComponent with SmallSlideView {
       var finalWidth = slide.getParent.getWidth.toFloat
       var finalHeight = slide.getParent.getHeight.toFloat
 
-      sourceSize.map(size => {
+      sourceSize.foreach(size => {
         val sizeRatio = size.width.toFloat / size.height
         val slideRatio = finalWidth / finalHeight
 
-        if (sizeRatio > slideRatio) finalHeight = finalWidth.toFloat / sizeRatio
+        if (sizeRatio > slideRatio) finalHeight = finalWidth / sizeRatio
         else finalWidth = finalHeight * sizeRatio
       })
 
-      logger.trace(s"Autoscaled size [${finalWidth}x${finalHeight}] for slide [$slide]")
+      logger.info(s"Autoscaled size [${finalWidth}x$finalHeight] for slide [$slide] original size $sourceSize")
       slide.setPreferredSize(finalWidth.toInt, finalHeight.toInt)
       slide.repaint(true)
     }

@@ -39,7 +39,7 @@ ObserverPresenter[PresentationView] {
 
   private def blackScreenOff(): Unit = {
     inBound(() => {
-      blackScreenBackup.map(view.slideView.apply)
+      blackScreenBackup.foreach(view.slideView.apply)
       blackScreenBackup = None
     })
   }

@@ -15,7 +15,7 @@ class SongSynchronizer(val songWatchDog: SongDirectoryWatchDog, val songService:
 
   private var initialized = false
 
-  override protected def create(fileData: FileData): Option[Song] = {
+  override protected def cast(fileData: FileData): Option[Song] = {
     val song = for {
       p <- parsers.find(_.ext == Utils.extension(fileData.path))
       sd <- p.parse(createInputStream(fileData))
